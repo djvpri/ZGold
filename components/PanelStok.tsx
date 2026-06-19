@@ -472,8 +472,8 @@ export default function PanelStok() {
 
       {/* Modal Stok Adjustment */}
       {stokAdjust.produkId > 0 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-sm rounded-lg bg-neutral-900 p-4">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center">
+          <div className="w-full max-w-sm rounded-t-lg bg-neutral-900 p-4 sm:rounded-lg">
             <h3 className="mb-3 text-sm font-medium">Adjust Stok</h3>
             <form onSubmit={handleStokAdjust} className="space-y-3">
               <div>
@@ -481,7 +481,7 @@ export default function PanelStok() {
                 <select
                   value={stokAdjust.tipe}
                   onChange={(e) => setStokAdjust({ ...stokAdjust, tipe: e.target.value as any })}
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-xs"
+                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
                 >
                   <option value="masuk">Stok Masuk</option>
                   <option value="keluar">Stok Keluar</option>
@@ -494,7 +494,8 @@ export default function PanelStok() {
                   type="number"
                   value={stokAdjust.jumlah}
                   onChange={(e) => setStokAdjust({ ...stokAdjust, jumlah: +e.target.value })}
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-xs"
+                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                  inputMode="numeric"
                   required
                 />
               </div>
@@ -504,21 +505,21 @@ export default function PanelStok() {
                   type="text"
                   value={stokAdjust.keterangan}
                   onChange={(e) => setStokAdjust({ ...stokAdjust, keterangan: e.target.value })}
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-xs"
+                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
                   placeholder="Opsional"
                 />
               </div>
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => setStokAdjust({ produkId: 0, jumlah: 0, tipe: "masuk", keterangan: "" })}
-                  className="rounded-md px-3 py-1.5 text-xs text-neutral-400 hover:text-neutral-200"
+                  className="rounded-md px-3 py-2.5 text-xs text-neutral-400 hover:text-neutral-200 sm:py-1.5"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="rounded-md bg-green-600 px-3 py-1.5 text-xs text-white hover:bg-green-700"
+                  className="rounded-md bg-green-600 px-3 py-2.5 text-xs text-white hover:bg-green-700 sm:py-1.5"
                 >
                   Update Stok
                 </button>

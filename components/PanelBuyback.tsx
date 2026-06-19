@@ -70,7 +70,7 @@ export default function PanelBuyback(props: any) {
               className={inputCls}
             >
               {KONDISI_OPSI.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
+                <option key={o.nilai} value={o.nilai}>{o.label}</option>
               ))}
             </select>
           </Field>
