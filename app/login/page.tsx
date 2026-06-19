@@ -33,7 +33,8 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      router.push("/");
+      // Full redirect supaya cookie terbaca middleware
+      window.location.href = "/";
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -61,7 +62,7 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      router.push("/");
+      window.location.href = "/";
     } catch (e: any) {
       setError(e.message);
     } finally {
