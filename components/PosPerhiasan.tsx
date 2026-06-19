@@ -10,7 +10,7 @@ import {
   type LogamConfig,
 } from "@/lib/logam";
 
-type Mode = "jual" | "buyback" | "riwayat";
+type Mode = "jual" | "buyback" | "riwayat" | "stok";
 
 interface RiwayatItem {
   no: string;
@@ -176,7 +176,7 @@ export default function PosPerhiasan() {
           <p className="text-xs text-neutral-400">Zomet · Multi-Logam</p>
         </div>
         <div className="flex gap-1">
-          {(["jual", "buyback", "riwayat"] as Mode[]).map((m) => (
+          {(["jual", "buyback", "riwayat", "stok"] as Mode[]).map((m) => (
             <button
               key={m}
               onClick={() => setMode(m)}
@@ -263,6 +263,7 @@ export default function PosPerhiasan() {
       )}
 
       {mode === "riwayat" && <PanelRiwayat riwayat={riwayat} />}
+      {mode === "stok" && <PanelStok />}
     </div>
   );
 }
@@ -271,3 +272,4 @@ export default function PosPerhiasan() {
 import PanelJual from "@/components/PanelJual";
 import PanelBuyback from "@/components/PanelBuyback";
 import PanelRiwayat from "@/components/PanelRiwayat";
+import PanelStok from "@/components/PanelStok";
