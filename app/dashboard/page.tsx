@@ -67,7 +67,8 @@ export default function DashboardPage() {
   const navItems = [
     { id: "overview", icon: "ti-dashboard", label: "Overview" },
     { id: "pos", icon: "ti-point-of-sale", label: "POS", href: "/" },
-    { id: "users", icon: "ti-users", label: "Pengguna" },
+    { id: "laporan", icon: "ti-chart-bar", label: "Laporan", href: "/laporan" },
+    { id: "users", icon: "ti-users", label: "Kelola Kasir", href: "/dashboard/users" },
     { id: "settings", icon: "ti-settings", label: "Pengaturan" },
   ];
 

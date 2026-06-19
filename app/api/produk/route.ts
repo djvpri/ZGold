@@ -48,6 +48,16 @@ export async function POST(req: NextRequest) {
     const auth = await getTenantFromRequest(req);
     if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    // Plan limit check
+    const { checkPlanLimit } = await import("@/lib/plan-enforcement");
+    const limit = await checkPlanLimit(auth.tenantId, "produk");
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: `Plan ${limit.plan_name} limit reached (${limit.current}/${limit.max} produk). Upgrade needed.`, upgrade: true },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     const {
       kode, logam_id, kadar_id, jenis, nama,

@@ -23,6 +23,16 @@ export async function POST(req: NextRequest) {
     const auth = await getTenantFromRequest(req);
     if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    // Plan limit check
+    const { checkPlanLimit } = await import("@/lib/plan-enforcement");
+    const limit = await checkPlanLimit(auth.tenantId, "transaksi");
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: `Plan ${limit.plan_name} limit reached (${limit.current}/${limit.max} transaksi/bulan). Upgrade needed.`, upgrade: true },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     const { tipe, logam_id, kadar_label, jenis_produk, nama_pihak, kontak,
             berat_gram, jumlah, harga_per_gram, ongkos_cetak, kondisi, diskon,

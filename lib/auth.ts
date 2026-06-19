@@ -205,7 +205,7 @@ export async function register(data: {
   return { sessionId, user, tenant };
 }
 
-// ---------- Plan Checks ----------
+// ---------- Plan Checks (uses tenant_counters for performance) ----------
 export async function checkPlanLimit(tenantId: number, type: "produk" | "transaksi"): Promise<{ allowed: boolean; current: number; max: number }> {
   const tenant = await dbOne<TenantRow>(
     `SELECT * FROM tenants WHERE id = $1`,
@@ -214,37 +214,54 @@ export async function checkPlanLimit(tenantId: number, type: "produk" | "transak
 
   if (!tenant) return { allowed: false, current: 0, max: 0 };
 
-  const plan = await dbOne<any>(
-    `SELECT * FROM plans WHERE id = $1`,
-    [tenant.plan]
-  );
+  const PLAN_DEFAULTS: Record<string, { max_produk: number; max_transaksi: number }> = {
+    free: { max_produk: 50, max_transaksi: 100 },
+    basic: { max_produk: 500, max_transaksi: 2000 },
+    pro: { max_produk: 5000, max_transaksi: 10000 },
+    enterprise: { max_produk: -1, max_transaksi: -1 },
+  };
 
-  if (!plan) return { allowed: false, current: 0, max: 0 };
-
+  const limits = PLAN_DEFAULTS[tenant.plan] ?? PLAN_DEFAULTS.free;
   const now = new Date();
   const bulan = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
   if (type === "produk") {
-    const max = plan.max_produk;
-    if (max === -1) return { allowed: true, current: 0, max: -1 }; // unlimited
+    const max = limits.max_produk;
+    if (max === -1) return { allowed: true, current: 0, max: -1 };
 
-    const counter = await dbOne<{ jumlah: number }>(
-      `SELECT COUNT(*)::int as jumlah FROM produk WHERE tenant_id = $1`,
+    const counter = await dbOne<{ value: number }>(
+      `SELECT value FROM tenant_counters WHERE tenant_id = $1 AND key = 'produk_total'`,
       [tenantId]
     );
-    const current = counter?.jumlah ?? 0;
+    let current = counter?.value ?? 0;
+    // Fallback: count directly if no counter
+    if (!counter) {
+      const c = await dbOne<{ jumlah: number }>(
+        `SELECT COUNT(*)::int as jumlah FROM produk WHERE tenant_id = $1`,
+        [tenantId]
+      );
+      current = c?.jumlah ?? 0;
+    }
     return { allowed: current < max, current, max };
   }
 
   if (type === "transaksi") {
-    const max = plan.max_transaksi;
-    if (max === -1) return { allowed: true, current: 0, max: -1 }; // unlimited
+    const max = limits.max_transaksi;
+    if (max === -1) return { allowed: true, current: 0, max: -1 };
 
-    const counter = await dbOne<{ jumlah: number }>(
-      `SELECT COUNT(*)::int as jumlah FROM transaksi WHERE tenant_id = $1 AND created_at >= $2`,
-      [tenantId, `${bulan}-01`]
+    const counterKey = `transaksi_${bulan}`;
+    const counter = await dbOne<{ value: number }>(
+      `SELECT value FROM tenant_counters WHERE tenant_id = $1 AND key = $2`,
+      [tenantId, counterKey]
     );
-    const current = counter?.jumlah ?? 0;
+    let current = counter?.value ?? 0;
+    if (!counter) {
+      const c = await dbOne<{ jumlah: number }>(
+        `SELECT COUNT(*)::int as jumlah FROM transaksi WHERE tenant_id = $1 AND created_at >= $2`,
+        [tenantId, `${bulan}-01`]
+      );
+      current = c?.jumlah ?? 0;
+    }
     return { allowed: current < max, current, max };
   }
 

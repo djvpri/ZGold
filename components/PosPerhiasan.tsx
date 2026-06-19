@@ -29,6 +29,22 @@ export default function PosPerhiasan() {
   );
   const [riwayat, setRiwayat] = useState<RiwayatItem[]>([]);
 
+  // Auto-fetch harga emas from API on mount
+  useEffect(() => {
+    async function fetchHarga() {
+      try {
+        const res = await fetch("/api/harga-emas");
+        const d = await res.json();
+        if (d.data) {
+          setSpot((s) => ({ ...s, ...d.data }));
+        }
+      } catch {
+        // Keep default prices
+      }
+    }
+    fetchHarga();
+  }, []);
+
   // ---------- State JUAL ----------
   const [logamId, setLogamId] = useState("emas");
   const [kadarIdx, setKadarIdx] = useState(0);
