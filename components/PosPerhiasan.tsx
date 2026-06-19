@@ -28,7 +28,6 @@ export default function PosPerhiasan() {
     Object.fromEntries(Object.values(LOGAM).map((l) => [l.id, l.spotDefault]))
   );
   const [riwayat, setRiwayat] = useState<RiwayatItem[]>([]);
-  const [noTrx, setNoTrx] = useState(1);
 
   // ---------- State JUAL ----------
   const [logamId, setLogamId] = useState("emas");
@@ -67,24 +66,46 @@ export default function PosPerhiasan() {
     setJenis(LOGAM[id].jenis[0]);
   }
 
-  function proses() {
-    const no =
-      (logamId === "emas" ? "TRX" : "TXO") + String(noTrx).padStart(4, "0");
-    setNoTrx((n) => n + 1);
-    setRiwayat((r) => [
-      {
-        no,
-        waktu: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
-        nama: namaPembeli || "Umum",
-        produk: `${jenis} ${kadar.label}`,
-        logam: logamId,
-        total,
-        tipe: "jual",
-      },
-      ...r,
-    ]);
-    // TODO: panggil simpanTransaksi() ke Supabase di sini.
-    setBayar(0);
+  async function proses() {
+    try {
+      const res = await fetch("/api/transaksi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tipe: "jual",
+          logam_id: logamId,
+          kadar_label: kadar.label,
+          jenis_produk: jenis,
+          nama_pihak: namaPembeli || "Umum",
+          berat_gram: berat,
+          jumlah,
+          harga_per_gram: spot[logamId] * kadar.nilai,
+          ongkos_cetak: isLM ? 0 : ongkos,
+          kondisi: 1.0,
+          diskon,
+          total,
+          bayar,
+          kembalian,
+        }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error);
+      setRiwayat((r) => [
+        {
+          no: d.data.no_transaksi,
+          waktu: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
+          nama: namaPembeli || "Umum",
+          produk: `${jenis} ${kadar.label}`,
+          logam: logamId,
+          total,
+          tipe: "jual" as const,
+        },
+        ...r,
+      ]);
+      setBayar(0);
+    } catch (e: any) {
+      alert("Gagal menyimpan: " + e.message);
+    }
   }
 
   // ---------- State BUYBACK ----------
@@ -104,21 +125,44 @@ export default function PosPerhiasan() {
     kondisi: bbKondisi,
   });
 
-  function prosesBuyback() {
-    const no = "BB" + String(noTrx).padStart(4, "0");
-    setNoTrx((n) => n + 1);
-    setRiwayat((r) => [
-      {
-        no,
-        waktu: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
-        nama: bbNama || "Penjual",
-        produk: bbKadar.label,
-        logam: bbLogamId,
-        total: bbTotal,
-        tipe: "buyback",
-      },
-      ...r,
-    ]);
+  async function prosesBuyback() {
+    try {
+      const res = await fetch("/api/transaksi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tipe: "buyback",
+          logam_id: bbLogamId,
+          kadar_label: bbKadar.label,
+          nama_pihak: bbNama || "Penjual",
+          berat_gram: bbBerat,
+          jumlah: 1,
+          harga_per_gram: spot[bbLogamId] * bbLogam.buybackRatio * bbKadar.nilai,
+          ongkos_cetak: 0,
+          kondisi: bbKondisi,
+          diskon: 0,
+          total: bbTotal,
+          bayar: 0,
+          kembalian: 0,
+        }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error);
+      setRiwayat((r) => [
+        {
+          no: d.data.no_transaksi,
+          waktu: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
+          nama: bbNama || "Penjual",
+          produk: bbKadar.label,
+          logam: bbLogamId,
+          total: bbTotal,
+          tipe: "buyback" as const,
+        },
+        ...r,
+      ]);
+    } catch (e: any) {
+      alert("Gagal menyimpan: " + e.message);
+    }
   }
 
   return (
