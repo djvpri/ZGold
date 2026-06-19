@@ -1,10 +1,29 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
+import PWARegister from "@/components/PWARegister";
 
 export const metadata: Metadata = {
-  title: "POS Toko Perhiasan — Zomet",
-  description: "Point of Sale multi-logam: emas, perak, platinum, emas putih, palladium",
+  title: "Zomet POS — Kasir Toko Perhiasan",
+  description: "Sistem kasir modern untuk toko perhiasan emas, perak, dan platinum",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Zomet POS",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f59e0b",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -16,8 +35,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css"
         />
+        {/* PWA Icons */}
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
+        <link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512.png" />
       </head>
       <body className="antialiased">
+        <PWARegister />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
