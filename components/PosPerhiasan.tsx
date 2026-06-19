@@ -166,21 +166,21 @@ export default function PosPerhiasan() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl p-4 text-neutral-100">
+    <div className="mx-auto max-w-4xl p-3 sm:p-4 text-neutral-100">
       {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-3 flex flex-col gap-2 sm:mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-lg font-medium">
+          <h1 className="text-base font-medium sm:text-lg">
             <i className="ti ti-diamond mr-2" />POS Toko Perhiasan
           </h1>
-          <p className="text-xs text-neutral-400">Zomet · Multi-Logam</p>
+          <p className="text-[10px] text-neutral-400 sm:text-xs">Zomet · Multi-Logam</p>
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1 overflow-x-auto pb-1">
           {(["jual", "buyback", "riwayat", "stok"] as Mode[]).map((m) => (
             <button
               key={m}
               onClick={() => setMode(m)}
-              className="rounded-full px-3 py-1 text-xs capitalize transition"
+              className="flex-shrink-0 rounded-full px-3 py-1.5 text-[11px] capitalize transition sm:py-1 sm:text-xs"
               style={{
                 background: mode === m ? logam.accent : "transparent",
                 color: mode === m ? "#fff" : "#9ca3af",
@@ -194,21 +194,21 @@ export default function PosPerhiasan() {
       </div>
 
       {/* Spot price bar */}
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
+      <div className="mb-4 flex gap-2 overflow-x-auto pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
         {Object.values(LOGAM).map((l) => (
           <div
             key={l.id}
-            className="min-w-[120px] flex-shrink-0 rounded-lg p-2"
+            className="min-w-[110px] flex-shrink-0 rounded-lg p-2 sm:min-w-[120px]"
             style={{ background: l.bg, color: l.textColor }}
           >
-            <div className="text-[10px] uppercase tracking-wide opacity-70" style={{ color: l.accent }}>
+            <div className="text-[9px] uppercase tracking-wide opacity-70 sm:text-[10px]" style={{ color: l.accent }}>
               {l.nama.split(" ")[0]}/gram
             </div>
             <input
               type="number"
               value={spot[l.id]}
               onChange={(e) => setSpot((s) => ({ ...s, [l.id]: +e.target.value }))}
-              className="w-full bg-transparent text-sm font-medium outline-none"
+              className="w-full bg-transparent text-xs font-medium outline-none sm:text-sm"
               style={{ color: l.textColor }}
             />
           </div>

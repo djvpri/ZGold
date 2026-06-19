@@ -3,3 +3,16 @@
 @tailwind utilities;
 
 body { background: #0a0a0a; }
+
+/* Mobile-friendly globals */
+* { -webkit-tap-highlight-color: transparent; }
+input, select, textarea { font-size: 16px !important; } /* prevent iOS zoom */
+
+/* Safe area for notch */
+.safe-top { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }

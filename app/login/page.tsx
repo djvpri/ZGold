@@ -33,7 +33,6 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      // Full redirect supaya cookie terbaca middleware
       window.location.href = "/";
     } catch (e: any) {
       setError(e.message);
@@ -71,30 +70,26 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-950 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-neutral-950 p-4 safe-top safe-bottom">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="mb-6 text-center">
-          <div className="mb-2 text-4xl">💎</div>
-          <h1 className="text-xl font-medium text-neutral-100">Zomet POS</h1>
-          <p className="text-xs text-neutral-500">Sistem Point of Sale Toko Perhiasan</p>
+          <div className="mb-2 text-3xl sm:text-4xl">💎</div>
+          <h1 className="text-lg font-medium text-neutral-100">Zomet POS</h1>
+          <p className="text-[10px] text-neutral-500 sm:text-xs">Sistem Point of Sale Toko Perhiasan</p>
         </div>
 
         {/* Tabs */}
         <div className="mb-4 flex gap-1 rounded-lg bg-neutral-900 p-1">
           <button
             onClick={() => { setIsLogin(true); setError(""); }}
-            className={`flex-1 rounded-md py-2 text-xs font-medium transition ${
-              isLogin ? "bg-neutral-800 text-white" : "text-neutral-400"
-            }`}
+            className={`flex-1 rounded-md py-2.5 text-xs font-medium transition ${isLogin ? "bg-neutral-800 text-white" : "text-neutral-400"}`}
           >
             Masuk
           </button>
           <button
             onClick={() => { setIsLogin(false); setError(""); }}
-            className={`flex-1 rounded-md py-2 text-xs font-medium transition ${
-              !isLogin ? "bg-neutral-800 text-white" : "text-neutral-400"
-            }`}
+            className={`flex-1 rounded-md py-2.5 text-xs font-medium transition ${!isLogin ? "bg-neutral-800 text-white" : "text-neutral-400"}`}
           >
             Daftar Toko
           </button>
@@ -102,7 +97,7 @@ export default function LoginPage() {
 
         {/* Error */}
         {error && (
-          <div className="mb-3 rounded-md bg-red-900/30 p-2 text-xs text-red-400">
+          <div className="mb-3 rounded-md bg-red-900/30 p-2.5 text-xs text-red-400">
             {error}
           </div>
         )}
@@ -116,7 +111,9 @@ export default function LoginPage() {
                 type="email"
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
-                className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-neutral-100 outline-none focus:border-neutral-500"
+                className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-3 text-sm text-neutral-100 outline-none focus:border-neutral-500"
+                autoComplete="email"
+                inputMode="email"
                 required
               />
             </div>
@@ -126,14 +123,15 @@ export default function LoginPage() {
                 type="password"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
-                className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-neutral-100 outline-none focus:border-neutral-500"
+                className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-3 text-sm text-neutral-100 outline-none focus:border-neutral-500"
+                autoComplete="current-password"
                 required
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-md bg-amber-600 py-2.5 text-xs font-medium text-white transition hover:bg-amber-700 disabled:opacity-50"
+              className="w-full rounded-md bg-amber-600 py-3 text-xs font-medium text-white transition hover:bg-amber-700 disabled:opacity-50"
             >
               {loading ? "Masuk..." : "Masuk"}
             </button>
@@ -149,19 +147,19 @@ export default function LoginPage() {
                   setRegNamaToko(e.target.value);
                   setRegSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-"));
                 }}
-                className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-neutral-100 outline-none focus:border-neutral-500"
+                className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-3 text-sm text-neutral-100 outline-none focus:border-neutral-500"
                 required
               />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] text-neutral-400">Slug (URL toko)</label>
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] text-neutral-600">zomet.id/</span>
+              <label className="mb-1 block text-[10px] text-neutral-400">URL Toko</label>
+              <div className="flex items-center rounded-md border border-neutral-700 bg-neutral-900">
+                <span className="pl-3 text-[10px] text-neutral-600">zomet.id/</span>
                 <input
                   type="text"
                   value={regSlug}
                   onChange={(e) => setRegSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
-                  className="flex-1 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-neutral-100 outline-none focus:border-neutral-500"
+                  className="w-full bg-transparent px-1 py-3 text-sm text-neutral-100 outline-none"
                   required
                 />
               </div>
@@ -173,7 +171,7 @@ export default function LoginPage() {
                   type="text"
                   value={regOwnerName}
                   onChange={(e) => setRegOwnerName(e.target.value)}
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-neutral-100 outline-none focus:border-neutral-500"
+                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-3 text-sm text-neutral-100 outline-none focus:border-neutral-500"
                   required
                 />
               </div>
@@ -183,7 +181,8 @@ export default function LoginPage() {
                   type="tel"
                   value={regPhone}
                   onChange={(e) => setRegPhone(e.target.value)}
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-neutral-100 outline-none focus:border-neutral-500"
+                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-3 text-sm text-neutral-100 outline-none focus:border-neutral-500"
+                  inputMode="tel"
                 />
               </div>
             </div>
@@ -193,7 +192,9 @@ export default function LoginPage() {
                 type="email"
                 value={regEmail}
                 onChange={(e) => setRegEmail(e.target.value)}
-                className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-neutral-100 outline-none focus:border-neutral-500"
+                className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-3 text-sm text-neutral-100 outline-none focus:border-neutral-500"
+                autoComplete="email"
+                inputMode="email"
                 required
               />
             </div>
@@ -203,7 +204,8 @@ export default function LoginPage() {
                 type="password"
                 value={regPassword}
                 onChange={(e) => setRegPassword(e.target.value)}
-                className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs text-neutral-100 outline-none focus:border-neutral-500"
+                className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-3 text-sm text-neutral-100 outline-none focus:border-neutral-500"
+                autoComplete="new-password"
                 required
                 minLength={6}
               />
@@ -211,7 +213,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-md bg-amber-600 py-2.5 text-xs font-medium text-white transition hover:bg-amber-700 disabled:opacity-50"
+              className="w-full rounded-md bg-amber-600 py-3 text-xs font-medium text-white transition hover:bg-amber-700 disabled:opacity-50"
             >
               {loading ? "Mendaftar..." : "Daftarkan Toko"}
             </button>

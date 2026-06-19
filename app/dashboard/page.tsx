@@ -16,6 +16,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [activeTab, setActiveTab] = useState<"overview" | "users" | "settings">("overview");
+  const [showSidebar, setShowSidebar] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -24,9 +25,7 @@ export default function DashboardPage() {
   }, [user, loading, router]);
 
   useEffect(() => {
-    if (tenant) {
-      fetchStats();
-    }
+    if (tenant) fetchStats();
   }, [tenant]);
 
   async function fetchStats() {
@@ -37,7 +36,6 @@ export default function DashboardPage() {
       ]);
       const trxData = await trxRes.json();
       const produkData = await produkRes.json();
-
       const riwayat = trxData.data || [];
       setStats({
         transaksiHariIni: riwayat.length,
@@ -46,17 +44,15 @@ export default function DashboardPage() {
         produkCount: (produkData.data || []).length,
         userCount: 1,
       });
-    } catch {
-      // ignore
-    }
+    } catch {}
   }
 
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-neutral-950">
         <div className="text-center">
-          <div className="mb-2 text-4xl">💎</div>
-          <p className="text-xs text-neutral-400">Memuat...</p>
+          <div className="mb-2 text-3xl">💎</div>
+          <p className="text-[10px] text-neutral-400">Memuat...</p>
         </div>
       </div>
     );
@@ -68,27 +64,56 @@ export default function DashboardPage() {
     return "Rp " + n.toLocaleString("id-ID");
   }
 
+  const navItems = [
+    { id: "overview", icon: "ti-dashboard", label: "Overview" },
+    { id: "pos", icon: "ti-point-of-sale", label: "POS", href: "/" },
+    { id: "users", icon: "ti-users", label: "Pengguna" },
+    { id: "settings", icon: "ti-settings", label: "Pengaturan" },
+  ];
+
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100">
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 safe-top safe-bottom">
+      {/* Mobile header */}
+      <div className="flex items-center justify-between border-b border-neutral-800 px-3 py-2 sm:hidden">
+        <button onClick={() => setShowSidebar(!showSidebar)} className="rounded p-1 text-neutral-400 hover:bg-neutral-800">
+          <i className="ti ti-menu-2 text-lg" />
+        </button>
+        <span className="text-xs font-medium">{tenant.nama_toko}</span>
+        <button onClick={() => router.push("/")} className="rounded p-1 text-neutral-400 hover:bg-neutral-800">
+          <i className="ti ti-point-of-sale text-lg" />
+        </button>
+      </div>
+
+      {/* Sidebar overlay (mobile) */}
+      {showSidebar && (
+        <div className="fixed inset-0 z-40 bg-black/50 sm:hidden" onClick={() => setShowSidebar(false)} />
+      )}
+
       {/* Sidebar */}
-      <div className="fixed left-0 top-0 h-full w-48 border-r border-neutral-800 p-3">
-        <div className="mb-6 flex items-center gap-2">
+      <div className={`fixed left-0 top-0 z-50 h-full w-56 border-r border-neutral-800 bg-neutral-950 p-3 transition-transform sm:translate-x-0 ${showSidebar ? "translate-x-0" : "-translate-x-full"}`}>
+        {/* Logo - desktop */}
+        <div className="mb-6 hidden items-center gap-2 sm:flex">
           <span className="text-lg">💎</span>
           <span className="text-xs font-medium">{tenant.nama_toko}</span>
         </div>
+        {/* Logo - mobile close button */}
+        <div className="mb-4 flex items-center justify-between sm:hidden">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">💎</span>
+            <span className="text-xs font-medium">Menu</span>
+          </div>
+          <button onClick={() => setShowSidebar(false)} className="rounded p-1 text-neutral-400">
+            <i className="ti ti-x text-lg" />
+          </button>
+        </div>
 
         <nav className="space-y-1">
-          {[
-            { id: "overview", icon: "ti-dashboard", label: "Overview" },
-            { id: "pos", icon: "ti-point-of-sale", label: "POS", href: "/" },
-            { id: "users", icon: "ti-users", label: "Pengguna" },
-            { id: "settings", icon: "ti-settings", label: "Pengaturan" },
-          ].map((item) =>
+          {navItems.map((item) =>
             item.href ? (
               <button
                 key={item.id}
-                onClick={() => router.push(item.href!)}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
+                onClick={() => { setShowSidebar(false); router.push(item.href!); }}
+                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-xs text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
               >
                 <i className={`ti ${item.icon} text-sm`} />
                 {item.label}
@@ -96,8 +121,8 @@ export default function DashboardPage() {
             ) : (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id as any)}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs transition"
+                onClick={() => { setActiveTab(item.id as any); setShowSidebar(false); }}
+                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-xs transition sm:py-1.5"
                 style={{
                   background: activeTab === item.id ? "rgb(38 38 38)" : "transparent",
                   color: activeTab === item.id ? "#e5e5e5" : "#a3a3a3",
@@ -111,10 +136,10 @@ export default function DashboardPage() {
         </nav>
 
         <div className="absolute bottom-3 left-3 right-3">
-          <div className="mb-2 text-[10px] text-neutral-600">
+          <div className="mb-1 text-[10px] text-neutral-600">
             {user.nama} · {user.role}
           </div>
-          <div className="mb-2 flex items-center gap-1">
+          <div className="mb-2">
             <span className="rounded-full bg-neutral-800 px-1.5 py-0.5 text-[9px] text-neutral-400">
               {tenant.plan}
             </span>
@@ -129,7 +154,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content */}
-      <div className="ml-48 p-6">
+      <div className="p-4 sm:ml-56 sm:p-6">
         <h1 className="mb-4 text-sm font-medium">
           {activeTab === "overview" && "Dashboard Overview"}
           {activeTab === "users" && "Manajemen Pengguna"}
@@ -139,33 +164,33 @@ export default function DashboardPage() {
         {activeTab === "overview" && stats && (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             <div className="rounded-lg border border-neutral-800 p-3">
-              <div className="text-[10px] text-neutral-500">Transaksi Hari Ini</div>
-              <div className="mt-1 text-lg font-medium">{stats.transaksiHariIni}</div>
+              <div className="text-[9px] text-neutral-500 sm:text-[10px]">Transaksi Hari Ini</div>
+              <div className="mt-1 text-base font-medium sm:text-lg">{stats.transaksiHariIni}</div>
             </div>
             <div className="rounded-lg border border-neutral-800 p-3">
-              <div className="text-[10px] text-neutral-500">Total Penjualan</div>
-              <div className="mt-1 text-lg font-medium text-green-400">{formatIDR(stats.totalPenjualan)}</div>
+              <div className="text-[9px] text-neutral-500 sm:text-[10px]">Total Penjualan</div>
+              <div className="mt-1 text-sm font-medium text-green-400 sm:text-lg">{formatIDR(stats.totalPenjualan)}</div>
             </div>
             <div className="rounded-lg border border-neutral-800 p-3">
-              <div className="text-[10px] text-neutral-500">Total Buyback</div>
-              <div className="mt-1 text-lg font-medium text-amber-400">{formatIDR(stats.totalBuyback)}</div>
+              <div className="text-[9px] text-neutral-500 sm:text-[10px]">Total Buyback</div>
+              <div className="mt-1 text-sm font-medium text-amber-400 sm:text-lg">{formatIDR(stats.totalBuyback)}</div>
             </div>
             <div className="rounded-lg border border-neutral-800 p-3">
-              <div className="text-[10px] text-neutral-500">Total Produk</div>
-              <div className="mt-1 text-lg font-medium">{stats.produkCount}</div>
+              <div className="text-[9px] text-neutral-500 sm:text-[10px]">Total Produk</div>
+              <div className="mt-1 text-base font-medium sm:text-lg">{stats.produkCount}</div>
             </div>
           </div>
         )}
 
         {activeTab === "overview" && !stats && (
-          <div className="py-8 text-center text-xs text-neutral-500">Memuat data...</div>
+          <div className="py-8 text-center text-[10px] text-neutral-500 sm:text-xs">Memuat data...</div>
         )}
 
         {activeTab === "users" && (
-          <div className="rounded-lg border border-neutral-800 p-4">
+          <div className="rounded-lg border border-neutral-800 p-3 sm:p-4">
             <div className="mb-3 flex items-center justify-between">
               <span className="text-xs font-medium">Daftar Pengguna</span>
-              <button className="rounded-md bg-amber-600 px-3 py-1 text-[10px] text-white hover:bg-amber-700">
+              <button className="rounded-md bg-amber-600 px-2 py-1 text-[10px] text-white hover:bg-amber-700 sm:px-3">
                 + Tambah
               </button>
             </div>
@@ -185,26 +210,26 @@ export default function DashboardPage() {
         )}
 
         {activeTab === "settings" && (
-          <div className="space-y-4">
-            <div className="rounded-lg border border-neutral-800 p-4">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="rounded-lg border border-neutral-800 p-3 sm:p-4">
               <div className="mb-3 text-xs font-medium">Informasi Toko</div>
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <label className="min-w-[100px] text-[10px] text-neutral-500">Nama Toko</label>
+                <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2">
+                  <label className="text-[10px] text-neutral-500 sm:min-w-[100px]">Nama Toko</label>
                   <span className="text-xs">{tenant.nama_toko}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <label className="min-w-[100px] text-[10px] text-neutral-500">URL</label>
+                <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2">
+                  <label className="text-[10px] text-neutral-500 sm:min-w-[100px]">URL</label>
                   <span className="text-xs">zomet.id/{tenant.slug}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <label className="min-w-[100px] text-[10px] text-neutral-500">Paket</label>
+                <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2">
+                  <label className="text-[10px] text-neutral-500 sm:min-w-[100px]">Paket</label>
                   <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px]">{tenant.plan}</span>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-lg border border-neutral-800 p-4">
+            <div className="rounded-lg border border-neutral-800 p-3 sm:p-4">
               <div className="mb-3 text-xs font-medium">Paket & Langganan</div>
               <p className="text-[10px] text-neutral-500">
                 Upgrade ke paket Pro atau Enterprise untuk fitur lebih lengkap.

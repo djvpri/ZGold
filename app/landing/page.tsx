@@ -53,12 +53,12 @@ export default function LandingPage() {
   if (loading || user) return null;
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100">
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 safe-top safe-bottom">
       {/* Header */}
       <header className="border-b border-neutral-800">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:py-4">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">💎</span>
+            <span className="text-xl sm:text-2xl">💎</span>
             <span className="text-sm font-medium">Zomet POS</span>
           </div>
           <div className="flex gap-2">
@@ -72,34 +72,34 @@ export default function LandingPage() {
               href="/login"
               className="rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700"
             >
-              Daftar Gratis
+              Daftar
             </Link>
           </div>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="px-4 py-16 text-center">
+      <section className="px-4 py-12 text-center sm:py-16">
         <div className="mx-auto max-w-3xl">
-          <h1 className="mb-4 text-3xl font-medium leading-tight">
+          <h1 className="mb-3 text-2xl font-medium leading-tight sm:text-3xl">
             POS Toko Perhiasan
             <br />
             <span className="text-amber-500">Multi-Logam</span>
           </h1>
-          <p className="mb-6 text-sm text-neutral-400">
+          <p className="mb-6 text-xs text-neutral-400 sm:text-sm">
             Sistem point of sale lengkap untuk toko perhiasan. 
             Kelola emas, perak, platinum, emas putih, dan palladium dalam satu aplikasi.
           </p>
           <div className="flex justify-center gap-2">
             <Link
               href="/login"
-              className="rounded-md bg-amber-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-amber-700"
+              className="rounded-md bg-amber-600 px-4 py-2 text-xs font-medium text-white hover:bg-amber-700 sm:px-5 sm:py-2.5 sm:text-sm"
             >
               Mulai Gratis →
             </Link>
             <a
               href="#pricing"
-              className="rounded-md border border-neutral-700 px-5 py-2.5 text-sm text-neutral-300 hover:border-neutral-500"
+              className="rounded-md border border-neutral-700 px-4 py-2 text-xs text-neutral-300 hover:border-neutral-500 sm:px-5 sm:py-2.5 sm:text-sm"
             >
               Lihat Harga
             </a>
@@ -108,12 +108,12 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section className="border-t border-neutral-800 px-4 py-12">
+      <section className="border-t border-neutral-800 px-4 py-8 sm:py-12">
         <div className="mx-auto max-w-5xl">
-          <h2 className="mb-6 text-center text-sm font-medium uppercase tracking-wider text-neutral-500">
+          <h2 className="mb-4 text-center text-xs font-medium uppercase tracking-wider text-neutral-500 sm:mb-6">
             Fitur Utama
           </h2>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
             {[
               { icon: "ti-diamond", label: "Multi-Logam", desc: "Emas, Perak, Platinum, dll" },
               { icon: "ti-calculator", label: "Kalkulasi Otomatis", desc: "Harga × Kadar × Berat" },
@@ -121,9 +121,9 @@ export default function LandingPage() {
               { icon: "ti-device-desktop", label: "Web-Based", desc: "Akses dari mana saja" },
             ].map((f) => (
               <div key={f.label} className="rounded-lg border border-neutral-800 p-3 text-center">
-                <i className={`ti ${f.icon} mb-2 text-2xl text-amber-500`} />
-                <div className="text-xs font-medium">{f.label}</div>
-                <div className="text-[10px] text-neutral-500">{f.desc}</div>
+                <i className={`ti ${f.icon} mb-2 text-xl sm:text-2xl text-amber-500`} />
+                <div className="text-[11px] font-medium sm:text-xs">{f.label}</div>
+                <div className="text-[9px] text-neutral-500 sm:text-[10px]">{f.desc}</div>
               </div>
             ))}
           </div>
@@ -131,12 +131,12 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="border-t border-neutral-800 px-4 py-12">
+      <section id="pricing" className="border-t border-neutral-800 px-4 py-8 sm:py-12">
         <div className="mx-auto max-w-5xl">
-          <h2 className="mb-6 text-center text-sm font-medium uppercase tracking-wider text-neutral-500">
+          <h2 className="mb-4 text-center text-xs font-medium uppercase tracking-wider text-neutral-500 sm:mb-6">
             Pilih Paket
           </h2>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4">
             {PLANS.map((plan) => (
               <div
                 key={plan.id}
@@ -159,15 +159,15 @@ export default function LandingPage() {
                 </div>
                 <ul className="mb-4 space-y-1.5">
                   {plan.fitur.map((f) => (
-                    <li key={f} className="flex items-start gap-1.5 text-[11px] text-neutral-400">
-                      <i className="ti ti-check text-[10px] text-green-500 mt-0.5" />
+                    <li key={f} className="flex items-start gap-1.5 text-[10px] text-neutral-400 sm:text-[11px]">
+                      <i className="ti ti-check text-[10px] text-green-500 mt-0.5 flex-shrink-0" />
                       {f}
                     </li>
                   ))}
                 </ul>
                 <Link
                   href="/login"
-                  className="block w-full rounded-md py-1.5 text-center text-xs font-medium text-white transition hover:opacity-90"
+                  className="block w-full rounded-md py-2 text-center text-xs font-medium text-white transition hover:opacity-90"
                   style={{ background: plan.accent }}
                 >
                   Pilih {plan.nama}

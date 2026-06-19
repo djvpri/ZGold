@@ -191,22 +191,22 @@ export default function PanelStok() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">
           Manajemen Stok
         </span>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <input
             type="text"
-            placeholder="Cari produk..."
+            placeholder="Cari..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="rounded-md border border-neutral-700 bg-neutral-900 px-3 py-1 text-xs"
+            className="rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs sm:py-1"
           />
           <select
             value={filterLogam}
             onChange={(e) => setFilterLogam(e.target.value)}
-            className="rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1 text-xs"
+            className="rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2 text-xs sm:py-1"
           >
             <option value="all">Semua Logam</option>
             {Object.values(LOGAM).map((l) => (
@@ -215,15 +215,15 @@ export default function PanelStok() {
           </select>
           <button
             onClick={() => { resetForm(); setEditId(null); setShowForm(true); }}
-            className="rounded-md bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-700"
+            className="rounded-md bg-blue-600 px-3 py-2 text-xs text-white hover:bg-blue-700 sm:py-1"
           >
-            + Tambah Produk
+            + Tambah
           </button>
         </div>
       </div>
 
       {/* Ringkasan Stok */}
-      <div className="mb-4 grid grid-cols-2 gap-2 md:grid-cols-5">
+      <div className="mb-4 grid grid-cols-3 gap-2 sm:grid-cols-5">
         {Object.values(LOGAM).map((l) => {
           const logamProduk = produk.filter(p => p.logam_id === l.id);
           const totalStok = logamProduk.reduce((a, b) => a + b.stok, 0);
@@ -233,17 +233,57 @@ export default function PanelStok() {
               className="rounded-lg p-2"
               style={{ background: l.bg, color: l.textColor }}
             >
-              <div className="text-[10px] uppercase tracking-wide opacity-70" style={{ color: l.accent }}>
+              <div className="text-[8px] uppercase tracking-wide opacity-70 sm:text-[10px]" style={{ color: l.accent }}>
                 {l.nama.split(" ")[0]}
               </div>
-              <div className="text-sm font-medium">{totalStok} item</div>
+              <div className="text-sm font-medium">{totalStok}</div>
             </div>
           );
         })}
       </div>
 
-      {/* Tabel Produk */}
-      <div className="overflow-x-auto">
+      {/* Mobile: card layout */}
+      <div className="space-y-2 sm:hidden">
+        {produk.length === 0 ? (
+          <div className="py-8 text-center text-neutral-500">
+            Belum ada produk
+          </div>
+        ) : (
+          produk.map((item) => (
+            <div key={item.id} className="rounded-lg border border-neutral-800 p-2.5">
+              <div className="mb-1 flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-medium text-neutral-300">{item.kode}</span>
+                  <span
+                    className="rounded-full px-1.5 py-0.5 text-[8px]"
+                    style={{ 
+                      background: `${getLogamAccent(item.logam_id)}20`,
+                      color: getLogamAccent(item.logam_id)
+                    }}
+                  >
+                    {LOGAM[item.logam_id]?.nama.split(" ")[0] || item.logam_id}
+                  </span>
+                </div>
+                <span className={`text-sm font-medium ${item.stok <= 0 ? "text-red-400" : ""}`}>
+                  {item.stok}
+                </span>
+              </div>
+              <div className="text-[11px] text-neutral-300">{item.nama}</div>
+              <div className="mt-1 flex items-center justify-between">
+                <span className="text-[9px] text-neutral-500">{item.jenis} · {item.berat_gram}g</span>
+                <div className="flex gap-1">
+                  <button onClick={() => openStokAdjust(item.id)} className="rounded bg-green-600/20 px-2 py-0.5 text-[9px] text-green-400">Stok</button>
+                  <button onClick={() => handleEdit(item)} className="rounded bg-blue-600/20 px-2 py-0.5 text-[9px] text-blue-400">Edit</button>
+                  <button onClick={() => handleDelete(item.id)} className="rounded bg-red-600/20 px-2 py-0.5 text-[9px] text-red-400">Hapus</button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop: table layout */}
+      <div className="hidden overflow-x-auto sm:block">
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-neutral-800 text-left text-neutral-400">
@@ -317,8 +357,8 @@ export default function PanelStok() {
 
       {/* Modal Form Produk */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-md rounded-lg bg-neutral-900 p-4">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center">
+          <div className="w-full max-w-md rounded-t-lg bg-neutral-900 p-4 sm:rounded-lg">
             <h3 className="mb-3 text-sm font-medium">
               {editId ? "Edit Produk" : "Tambah Produk Baru"}
             </h3>
@@ -330,7 +370,7 @@ export default function PanelStok() {
                     type="text"
                     value={form.kode}
                     onChange={(e) => setForm({ ...form, kode: e.target.value })}
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-xs"
+                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
                     required
                   />
                 </div>
@@ -340,7 +380,7 @@ export default function PanelStok() {
                     type="text"
                     value={form.nama}
                     onChange={(e) => setForm({ ...form, nama: e.target.value })}
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-xs"
+                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
                     required
                   />
                 </div>
@@ -352,7 +392,7 @@ export default function PanelStok() {
                   <select
                     value={form.logam_id}
                     onChange={(e) => setForm({ ...form, logam_id: e.target.value })}
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-xs"
+                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
                   >
                     {Object.values(LOGAM).map((l) => (
                       <option key={l.id} value={l.id}>{l.nama}</option>
@@ -364,7 +404,7 @@ export default function PanelStok() {
                   <select
                     value={form.jenis}
                     onChange={(e) => setForm({ ...form, jenis: e.target.value })}
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-xs"
+                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
                   >
                     {LOGAM[form.logam_id]?.jenis.map((j) => (
                       <option key={j} value={j}>{j}</option>
@@ -381,7 +421,8 @@ export default function PanelStok() {
                     step="0.1"
                     value={form.berat_gram}
                     onChange={(e) => setForm({ ...form, berat_gram: +e.target.value })}
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-xs"
+                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                    inputMode="decimal"
                     required
                   />
                 </div>
@@ -391,7 +432,8 @@ export default function PanelStok() {
                     type="number"
                     value={form.ongkos_cetak}
                     onChange={(e) => setForm({ ...form, ongkos_cetak: +e.target.value })}
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-xs"
+                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                    inputMode="numeric"
                   />
                 </div>
               </div>
@@ -402,22 +444,23 @@ export default function PanelStok() {
                   type="number"
                   value={form.stok}
                   onChange={(e) => setForm({ ...form, stok: +e.target.value })}
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-xs"
+                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                  inputMode="numeric"
                   disabled={!!editId}
                 />
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); setEditId(null); }}
-                  className="rounded-md px-3 py-1.5 text-xs text-neutral-400 hover:text-neutral-200"
+                  className="rounded-md px-3 py-2.5 text-xs text-neutral-400 hover:text-neutral-200 sm:py-1.5"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="rounded-md bg-blue-600 px-3 py-1.5 text-xs text-white hover:bg-blue-700"
+                  className="rounded-md bg-blue-600 px-3 py-2.5 text-xs text-white hover:bg-blue-700 sm:py-1.5"
                 >
                   {editId ? "Update" : "Simpan"}
                 </button>
