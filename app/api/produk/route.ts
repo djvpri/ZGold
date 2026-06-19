@@ -1,5 +1,5 @@
 // app/api/produk/route.ts
-// API endpoint untuk manajemen produk/stok
+// API endpoint untuk manajemen produk/stok (tenant-isolated)
 import { NextRequest, NextResponse } from "next/server";
 import {
   ambilSemuaProduk,
@@ -12,10 +12,14 @@ import {
   ambilRingkasanStok,
   ambilProdukByKode
 } from "@/lib/produk";
+import { getTenantFromRequest } from "@/lib/api-helpers";
 
 /** GET /api/produk — ambil semua produk atau filter */
 export async function GET(req: NextRequest) {
   try {
+    const auth = await getTenantFromRequest(req);
+    if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const { searchParams } = new URL(req.url);
     const query = searchParams.get("q");
     const logamId = searchParams.get("logam");
@@ -23,13 +27,13 @@ export async function GET(req: NextRequest) {
 
     let data;
     if (ringkasan === "true") {
-      data = await ambilRingkasanStok();
+      data = await ambilRingkasanStok(auth.tenantId);
     } else if (query) {
-      data = await cariProduk(query);
+      data = await cariProduk(query, auth.tenantId);
     } else if (logamId) {
-      data = await ambilProdukByLogam(logamId);
+      data = await ambilProdukByLogam(logamId, auth.tenantId);
     } else {
-      data = await ambilSemuaProduk();
+      data = await ambilSemuaProduk(auth.tenantId);
     }
 
     return NextResponse.json({ data });
@@ -41,6 +45,9 @@ export async function GET(req: NextRequest) {
 /** POST /api/produk — tambah produk baru */
 export async function POST(req: NextRequest) {
   try {
+    const auth = await getTenantFromRequest(req);
+    if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const body = await req.json();
     const {
       kode, logam_id, kadar_id, jenis, nama,
@@ -55,8 +62,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Cek duplikat kode
-    const existing = await ambilProdukByKode(kode);
+    // Cek duplikat kode (per tenant)
+    const existing = await ambilProdukByKode(kode, auth.tenantId);
     if (existing) {
       return NextResponse.json(
         { error: "Kode produk sudah ada" },
@@ -67,6 +74,7 @@ export async function POST(req: NextRequest) {
     const result = await tambahProduk({
       kode,
       logam_id,
+      tenant_id: auth.tenantId,
       kadar_id: kadar_id ?? null,
       jenis,
       nama,
@@ -85,6 +93,9 @@ export async function POST(req: NextRequest) {
 /** PATCH /api/produk — update produk atau stok */
 export async function PATCH(req: NextRequest) {
   try {
+    const auth = await getTenantFromRequest(req);
+    if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const body = await req.json();
     const { id, stok_delta, stok_tipe, keterangan, ...updateData } = body;
 
@@ -117,6 +128,9 @@ export async function PATCH(req: NextRequest) {
 /** DELETE /api/produk — hapus produk */
 export async function DELETE(req: NextRequest) {
   try {
+    const auth = await getTenantFromRequest(req);
+    if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const { searchParams } = new URL(req.url);
     const id = parseInt(searchParams.get("id") || "");
 

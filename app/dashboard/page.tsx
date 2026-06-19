@@ -1,0 +1,221 @@
+"use client";
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+interface DashboardStats {
+  transaksiHariIni: number;
+  totalPenjualan: number;
+  totalBuyback: number;
+  produkCount: number;
+  userCount: number;
+}
+
+export default function DashboardPage() {
+  const { user, tenant, loading, logout } = useAuth();
+  const router = useRouter();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [activeTab, setActiveTab] = useState<"overview" | "users" | "settings">("overview");
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/landing");
+    }
+  }, [user, loading, router]);
+
+  useEffect(() => {
+    if (tenant) {
+      fetchStats();
+    }
+  }, [tenant]);
+
+  async function fetchStats() {
+    try {
+      const [trxRes, produkRes] = await Promise.all([
+        fetch("/api/transaksi"),
+        fetch("/api/produk"),
+      ]);
+      const trxData = await trxRes.json();
+      const produkData = await produkRes.json();
+
+      const riwayat = trxData.data || [];
+      setStats({
+        transaksiHariIni: riwayat.length,
+        totalPenjualan: riwayat.filter((r: any) => r.tipe === "jual").reduce((a: number, b: any) => a + b.total, 0),
+        totalBuyback: riwayat.filter((r: any) => r.tipe === "buyback").reduce((a: number, b: any) => a + b.total, 0),
+        produkCount: (produkData.data || []).length,
+        userCount: 1,
+      });
+    } catch {
+      // ignore
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-neutral-950">
+        <div className="text-center">
+          <div className="mb-2 text-4xl">💎</div>
+          <p className="text-xs text-neutral-400">Memuat...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || !tenant) return null;
+
+  function formatIDR(n: number) {
+    return "Rp " + n.toLocaleString("id-ID");
+  }
+
+  return (
+    <div className="min-h-screen bg-neutral-950 text-neutral-100">
+      {/* Sidebar */}
+      <div className="fixed left-0 top-0 h-full w-48 border-r border-neutral-800 p-3">
+        <div className="mb-6 flex items-center gap-2">
+          <span className="text-lg">💎</span>
+          <span className="text-xs font-medium">{tenant.nama_toko}</span>
+        </div>
+
+        <nav className="space-y-1">
+          {[
+            { id: "overview", icon: "ti-dashboard", label: "Overview" },
+            { id: "pos", icon: "ti-point-of-sale", label: "POS", href: "/" },
+            { id: "users", icon: "ti-users", label: "Pengguna" },
+            { id: "settings", icon: "ti-settings", label: "Pengaturan" },
+          ].map((item) =>
+            item.href ? (
+              <button
+                key={item.id}
+                onClick={() => router.push(item.href!)}
+                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
+              >
+                <i className={`ti ${item.icon} text-sm`} />
+                {item.label}
+              </button>
+            ) : (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id as any)}
+                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs transition"
+                style={{
+                  background: activeTab === item.id ? "rgb(38 38 38)" : "transparent",
+                  color: activeTab === item.id ? "#e5e5e5" : "#a3a3a3",
+                }}
+              >
+                <i className={`ti ${item.icon} text-sm`} />
+                {item.label}
+              </button>
+            )
+          )}
+        </nav>
+
+        <div className="absolute bottom-3 left-3 right-3">
+          <div className="mb-2 text-[10px] text-neutral-600">
+            {user.nama} · {user.role}
+          </div>
+          <div className="mb-2 flex items-center gap-1">
+            <span className="rounded-full bg-neutral-800 px-1.5 py-0.5 text-[9px] text-neutral-400">
+              {tenant.plan}
+            </span>
+          </div>
+          <button
+            onClick={logout}
+            className="w-full rounded-md px-2 py-1.5 text-left text-[10px] text-neutral-500 hover:bg-neutral-800 hover:text-neutral-300"
+          >
+            <i className="ti ti-logout mr-1" /> Keluar
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="ml-48 p-6">
+        <h1 className="mb-4 text-sm font-medium">
+          {activeTab === "overview" && "Dashboard Overview"}
+          {activeTab === "users" && "Manajemen Pengguna"}
+          {activeTab === "settings" && "Pengaturan Toko"}
+        </h1>
+
+        {activeTab === "overview" && stats && (
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="rounded-lg border border-neutral-800 p-3">
+              <div className="text-[10px] text-neutral-500">Transaksi Hari Ini</div>
+              <div className="mt-1 text-lg font-medium">{stats.transaksiHariIni}</div>
+            </div>
+            <div className="rounded-lg border border-neutral-800 p-3">
+              <div className="text-[10px] text-neutral-500">Total Penjualan</div>
+              <div className="mt-1 text-lg font-medium text-green-400">{formatIDR(stats.totalPenjualan)}</div>
+            </div>
+            <div className="rounded-lg border border-neutral-800 p-3">
+              <div className="text-[10px] text-neutral-500">Total Buyback</div>
+              <div className="mt-1 text-lg font-medium text-amber-400">{formatIDR(stats.totalBuyback)}</div>
+            </div>
+            <div className="rounded-lg border border-neutral-800 p-3">
+              <div className="text-[10px] text-neutral-500">Total Produk</div>
+              <div className="mt-1 text-lg font-medium">{stats.produkCount}</div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "overview" && !stats && (
+          <div className="py-8 text-center text-xs text-neutral-500">Memuat data...</div>
+        )}
+
+        {activeTab === "users" && (
+          <div className="rounded-lg border border-neutral-800 p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-xs font-medium">Daftar Pengguna</span>
+              <button className="rounded-md bg-amber-600 px-3 py-1 text-[10px] text-white hover:bg-amber-700">
+                + Tambah
+              </button>
+            </div>
+            <div className="text-xs text-neutral-500">
+              <div className="flex items-center justify-between border-b border-neutral-800 py-2">
+                <div>
+                  <div className="font-medium text-neutral-300">{user.nama}</div>
+                  <div className="text-[10px]">{user.email}</div>
+                </div>
+                <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px]">{user.role}</span>
+              </div>
+            </div>
+            <p className="mt-3 text-[10px] text-neutral-600">
+              Fitur multi-user tersedia di paket Pro dan Enterprise.
+            </p>
+          </div>
+        )}
+
+        {activeTab === "settings" && (
+          <div className="space-y-4">
+            <div className="rounded-lg border border-neutral-800 p-4">
+              <div className="mb-3 text-xs font-medium">Informasi Toko</div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <label className="min-w-[100px] text-[10px] text-neutral-500">Nama Toko</label>
+                  <span className="text-xs">{tenant.nama_toko}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="min-w-[100px] text-[10px] text-neutral-500">URL</label>
+                  <span className="text-xs">zomet.id/{tenant.slug}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="min-w-[100px] text-[10px] text-neutral-500">Paket</label>
+                  <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px]">{tenant.plan}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-neutral-800 p-4">
+              <div className="mb-3 text-xs font-medium">Paket & Langganan</div>
+              <p className="text-[10px] text-neutral-500">
+                Upgrade ke paket Pro atau Enterprise untuk fitur lebih lengkap.
+              </p>
+              <button className="mt-2 rounded-md bg-amber-600 px-3 py-1.5 text-[10px] text-white hover:bg-amber-700">
+                Upgrade Paket
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

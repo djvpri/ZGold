@@ -8,6 +8,7 @@ export interface TransaksiRow {
   no_transaksi: string;
   tipe: "jual" | "buyback";
   logam_id: string;
+  tenant_id?: number;
   kadar_label: string | null;
   jenis_produk: string | null;
   nama_pihak: string | null;
@@ -28,12 +29,12 @@ export interface TransaksiRow {
 export async function simpanTransaksi(row: TransaksiRow) {
   const result = await dbRun<TransaksiRow>(
     `INSERT INTO transaksi
-      (no_transaksi, tipe, logam_id, kadar_label, jenis_produk, nama_pihak, kontak,
+      (no_transaksi, tipe, logam_id, tenant_id, kadar_label, jenis_produk, nama_pihak, kontak,
        berat_gram, jumlah, harga_per_gram, ongkos_cetak, kondisi, diskon, total, bayar, kembalian)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
      RETURNING *`,
     [
-      row.no_transaksi, row.tipe, row.logam_id, row.kadar_label, row.jenis_produk,
+      row.no_transaksi, row.tipe, row.logam_id, row.tenant_id ?? null, row.kadar_label, row.jenis_produk,
       row.nama_pihak, row.kontak, row.berat_gram, row.jumlah, row.harga_per_gram,
       row.ongkos_cetak, row.kondisi, row.diskon, row.total, row.bayar, row.kembalian,
     ]
@@ -41,10 +42,18 @@ export async function simpanTransaksi(row: TransaksiRow) {
   return result;
 }
 
-/** Ambil riwayat transaksi hari ini */
-export async function ambilRiwayatHariIni(): Promise<TransaksiRow[]> {
+/** Ambil riwayat transaksi hari ini (filtered by tenant) */
+export async function ambilRiwayatHariIni(tenantId?: number): Promise<TransaksiRow[]> {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  if (tenantId) {
+    return dbAll<TransaksiRow>(
+      `SELECT * FROM transaksi
+       WHERE created_at >= $1 AND tenant_id = $2
+       ORDER BY created_at DESC`,
+      [today.toISOString(), tenantId]
+    );
+  }
   return dbAll<TransaksiRow>(
     `SELECT * FROM transaksi
      WHERE created_at >= $1
@@ -53,12 +62,12 @@ export async function ambilRiwayatHariIni(): Promise<TransaksiRow[]> {
   );
 }
 
-/** Generate nomor transaksi berikutnya */
-export async function nomorTransaksiBerikutnya(tipe: "jual" | "buyback"): Promise<string> {
+/** Generate nomor transaksi berikutnya (tenant-aware) */
+export async function nomorTransaksiBerikutnya(tipe: "jual" | "buyback", tenantId?: number): Promise<string> {
   const prefix = tipe === "jual" ? "TRX" : "BB";
   const row = await dbOne<{ cnt: number }>(
-    `SELECT COUNT(*)::int AS cnt FROM transaksi WHERE tipe = $1`,
-    [tipe]
+    `SELECT COUNT(*)::int AS cnt FROM transaksi WHERE tipe = $1 ${tenantId ? "AND tenant_id = $2" : ""}`,
+    tenantId ? [tipe, tenantId] : [tipe]
   );
   return prefix + String((row?.cnt ?? 0) + 1).padStart(4, "0");
 }
@@ -70,17 +79,34 @@ export async function ambilRekapHarian() {
   );
 }
 
-/** Update spot price logam */
-export async function updateSpotPrice(logamId: string, spotPrice: number) {
+/** Update spot price logam (tenant-aware) */
+export async function updateSpotPrice(logamId: string, spotPrice: number, tenantId?: number) {
+  if (tenantId) {
+    return dbRun(
+      `UPDATE logam SET spot_price = $1, updated_at = now() WHERE id = $2 AND tenant_id = $3 RETURNING *`,
+      [spotPrice, logamId, tenantId]
+    );
+  }
   return dbRun(
-    `UPDATE logam SET spot_price = $1, updated_at = now() WHERE id = $2 RETURNING *`,
+    `UPDATE logam SET spot_price = $1, updated_at = now() WHERE id = $2 AND tenant_id IS NULL RETURNING *`,
     [spotPrice, logamId]
   );
 }
 
-/** Ambil semua logam + kadar */
-export async function ambilLogam() {
-  const logam = await dbAll(`SELECT * FROM logam ORDER BY id`);
+/** Ambil semua logam + kadar (tenant-aware) */
+export async function ambilLogam(tenantId?: number) {
+  if (tenantId) {
+    const logam = await dbAll(`SELECT * FROM logam WHERE tenant_id = $1 ORDER BY id`, [tenantId]);
+    const kadar = await dbAll(
+      `SELECT k.* FROM kadar k 
+       JOIN logam l ON k.logam_id = l.id 
+       WHERE l.tenant_id = $1 
+       ORDER BY k.logam_id, k.urutan`,
+      [tenantId]
+    );
+    return { logam, kadar };
+  }
+  const logam = await dbAll(`SELECT * FROM logam WHERE tenant_id IS NULL ORDER BY id`);
   const kadar = await dbAll(`SELECT * FROM kadar ORDER BY logam_id, urutan`);
   return { logam, kadar };
 }

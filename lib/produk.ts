@@ -1,5 +1,5 @@
 // lib/produk.ts
-// Query produk/manajemen stok
+// Query produk/manajemen stok (tenant-isolated)
 import { dbAll, dbOne, dbRun } from "./db";
 
 // ---------- Tipe baris produk ----------
@@ -7,6 +7,7 @@ export interface ProdukRow {
   id?: number;
   kode: string;
   logam_id: string;
+  tenant_id?: number;
   kadar_id: number | null;
   jenis: string;
   nama: string;
@@ -27,10 +28,16 @@ export interface StokLogRow {
   created_at?: string;
 }
 
-// ---------- CRUD Produk ----------
+// ---------- CRUD Produk (tenant-isolated) ----------
 
 /** Ambil semua produk */
-export async function ambilSemuaProduk(): Promise<ProdukRow[]> {
+export async function ambilSemuaProduk(tenantId?: number): Promise<ProdukRow[]> {
+  if (tenantId) {
+    return dbAll<ProdukRow>(
+      `SELECT * FROM produk WHERE tenant_id = $1 ORDER BY logam_id, nama`,
+      [tenantId]
+    );
+  }
   return dbAll<ProdukRow>(
     `SELECT * FROM produk ORDER BY logam_id, nama`
   );
@@ -45,7 +52,13 @@ export async function ambilProdukById(id: number): Promise<ProdukRow | null> {
 }
 
 /** Ambil produk berdasarkan kode */
-export async function ambilProdukByKode(kode: string): Promise<ProdukRow | null> {
+export async function ambilProdukByKode(kode: string, tenantId?: number): Promise<ProdukRow | null> {
+  if (tenantId) {
+    return dbOne<ProdukRow>(
+      `SELECT * FROM produk WHERE kode = $1 AND tenant_id = $2`,
+      [kode, tenantId]
+    );
+  }
   return dbOne<ProdukRow>(
     `SELECT * FROM produk WHERE kode = $1`,
     [kode]
@@ -55,11 +68,11 @@ export async function ambilProdukByKode(kode: string): Promise<ProdukRow | null>
 /** Tambah produk baru */
 export async function tambahProduk(row: Omit<ProdukRow, "id" | "created_at">): Promise<ProdukRow> {
   const result = await dbRun<ProdukRow>(
-    `INSERT INTO produk (kode, logam_id, kadar_id, jenis, nama, berat_gram, ongkos_cetak, stok, foto_url)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    `INSERT INTO produk (kode, logam_id, tenant_id, kadar_id, jenis, nama, berat_gram, ongkos_cetak, stok, foto_url)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
      RETURNING *`,
     [
-      row.kode, row.logam_id, row.kadar_id, row.jenis, row.nama,
+      row.kode, row.logam_id, row.tenant_id ?? null, row.kadar_id, row.jenis, row.nama,
       row.berat_gram, row.ongkos_cetak, row.stok, row.foto_url
     ]
   );
@@ -132,19 +145,33 @@ export async function ambilRiwayatStok(produkId: number): Promise<StokLogRow[]> 
 }
 
 /** Cari produk */
-export async function cariProduk(query: string): Promise<ProdukRow[]> {
+export async function cariProduk(query: string, tenantId?: number): Promise<ProdukRow[]> {
+  if (tenantId) {
+    return dbAll<ProdukRow>(
+      `SELECT * FROM produk 
+       WHERE (kode ILIKE $1 OR nama ILIKE $1 OR jenis ILIKE $1) AND tenant_id = $2
+       ORDER BY logam_id, nama`,
+      [`%${query}%`, tenantId]
+    );
+  }
   return dbAll<ProdukRow>(
     `SELECT * FROM produk 
-     WHERE kode ILIKE $1 
-        OR nama ILIKE $1 
-        OR jenis ILIKE $1
+     WHERE kode ILIKE $1 OR nama ILIKE $1 OR jenis ILIKE $1
      ORDER BY logam_id, nama`,
     [`%${query}%`]
   );
 }
 
 /** Ambil produk berdasarkan logam */
-export async function ambilProdukByLogam(logamId: string): Promise<ProdukRow[]> {
+export async function ambilProdukByLogam(logamId: string, tenantId?: number): Promise<ProdukRow[]> {
+  if (tenantId) {
+    return dbAll<ProdukRow>(
+      `SELECT * FROM produk 
+       WHERE logam_id = $1 AND tenant_id = $2
+       ORDER BY nama`,
+      [logamId, tenantId]
+    );
+  }
   return dbAll<ProdukRow>(
     `SELECT * FROM produk 
      WHERE logam_id = $1 
@@ -154,7 +181,23 @@ export async function ambilProdukByLogam(logamId: string): Promise<ProdukRow[]> 
 }
 
 /** Ambil ringkasan stok per logam */
-export async function ambilRingkasanStok(): Promise<any[]> {
+export async function ambilRingkasanStok(tenantId?: number): Promise<any[]> {
+  if (tenantId) {
+    return dbAll(
+      `SELECT 
+         l.nama as logam_nama,
+         l.id as logam_id,
+         COUNT(p.id) as jumlah_produk,
+         COALESCE(SUM(p.stok), 0) as total_stok,
+         COALESCE(SUM(p.stok * p.berat_gram), 0) as total_berat
+       FROM logam l
+       LEFT JOIN produk p ON l.id = p.logam_id AND p.tenant_id = l.tenant_id
+       WHERE l.tenant_id = $1
+       GROUP BY l.id, l.nama
+       ORDER BY l.nama`,
+      [tenantId]
+    );
+  }
   return dbAll(
     `SELECT 
        l.nama as logam_nama,
@@ -164,6 +207,7 @@ export async function ambilRingkasanStok(): Promise<any[]> {
        COALESCE(SUM(p.stok * p.berat_gram), 0) as total_berat
      FROM logam l
      LEFT JOIN produk p ON l.id = p.logam_id
+     WHERE l.tenant_id IS NULL
      GROUP BY l.id, l.nama
      ORDER BY l.nama`
   );
