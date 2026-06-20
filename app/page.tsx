@@ -56,7 +56,7 @@ export default function Home() {
                   {tenant.plan}
                 </div>
               </div>
-              {(user.role === "owner" || user.role === "admin") && (
+              {(user.role === "admin") && (
                 <button
                   onClick={() => { setShowMenu(false); router.push("/dashboard"); }}
                   className="flex w-full items-center gap-2 px-3 py-2 text-xs text-neutral-300 hover:bg-neutral-800"

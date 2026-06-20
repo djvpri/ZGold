@@ -37,7 +37,7 @@ export default function UsersPage() {
   const [error, setError] = useState("");
   const [loading2, setLoading2] = useState(false);
 
-  const isOwner = user?.role === "owner";
+  const isOwner = user?.role === "admin";
   const isAdmin = user?.role === "admin" || isOwner;
 
   useEffect(() => {
@@ -273,7 +273,7 @@ export default function UsersPage() {
                   </td>
                   {isAdmin && (
                     <td className="px-3 py-2.5 text-right">
-                      {u.role !== "owner" && (
+                      {u.role !== "admin" && (
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => openEdit(u)}
@@ -333,7 +333,7 @@ export default function UsersPage() {
               <div className="text-[9px] text-neutral-600">
                 Login: {u.last_login ? new Date(u.last_login).toLocaleString("id-ID") : "—"}
               </div>
-              {isAdmin && u.role !== "owner" && (
+              {isAdmin && u.role !== "admin" && (
                 <div className="mt-2 flex gap-1.5">
                   <button
                     onClick={() => openEdit(u)}

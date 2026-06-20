@@ -40,7 +40,7 @@ async function seed() {
     const passHash = hashPassword("password123");
     await client.query(
       `INSERT INTO users (tenant_id, email, password_hash, nama, role)
-       VALUES ($1, $2, $3, $4, 'owner')
+       VALUES ($1, $2, $3, $4, 'admin')
        ON CONFLICT (email) DO NOTHING`,
       [tenantId, "budi@tokojaya.com", passHash, "Budi Santoso"]
     );

@@ -10,7 +10,7 @@ export interface UserRow {
   email: string;
   password_hash: string;
   nama: string;
-  role: "owner" | "admin" | "kasir";
+  role: "admin" | "kasir";
   is_active: boolean;
   last_login?: string;
   created_at?: string;
@@ -110,11 +110,11 @@ export async function createTenant(data: {
       [data.nama_toko, data.slug, data.owner_name, data.owner_email, data.owner_phone || null]
     );
 
-    // Buat user owner
+    // Buat user admin
     const passwordHash = hashPassword(data.password);
     const user = await dbOne<UserRow>(
       `INSERT INTO users (tenant_id, email, password_hash, nama, role)
-       VALUES ($1, $2, $3, $4, 'owner') RETURNING *`,
+       VALUES ($1, $2, $3, $4, 'admin') RETURNING *`,
       [tenant!.id, data.owner_email, passwordHash, data.owner_name]
     );
 

@@ -82,13 +82,13 @@ export async function GET() {
   }
 }
 
-/** POST — update spot prices (owner/admin only) */
+/** POST — update spot prices (admin only) */
 export async function POST(req: NextRequest) {
   try {
     const auth = await getTenantFromRequest(req);
     if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    if (auth.role !== "owner" && auth.role !== "admin") {
-      return NextResponse.json({ error: "Hanya owner/admin yang bisa update harga" }, { status: 403 });
+    if (auth.role !== "admin") {
+      return NextResponse.json({ error: "Hanya admin yang bisa update harga" }, { status: 403 });
     }
 
     const body = await req.json();

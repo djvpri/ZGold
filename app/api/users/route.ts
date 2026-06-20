@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     const users = await dbAll(
       `SELECT id, tenant_id, email, nama, role, is_active, last_login, created_at
        FROM users WHERE tenant_id = $1 ORDER BY
-         CASE role WHEN 'owner' THEN 0 WHEN 'admin' THEN 1 WHEN 'kasir' THEN 2 END,
+         CASE role WHEN 'admin' THEN 0 WHEN 'kasir' THEN 1 END,
          created_at`,
       [auth.tenantId]
     );
@@ -25,13 +25,13 @@ export async function GET(req: NextRequest) {
   }
 }
 
-/** POST — create new user (owner/admin only) */
+/** POST — create new user (admin only) */
 export async function POST(req: NextRequest) {
   try {
     const auth = await getTenantFromRequest(req);
     if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    if (auth.role !== "owner" && auth.role !== "admin") {
-      return NextResponse.json({ error: "Hanya owner/admin yang bisa menambah user" }, { status: 403 });
+    if (auth.role !== "admin") {
+      return NextResponse.json({ error: "Hanya admin yang bisa menambah user" }, { status: 403 });
     }
 
     const body = await req.json();
@@ -49,11 +49,6 @@ export async function POST(req: NextRequest) {
     const existing = await dbOne(`SELECT id FROM users WHERE email = $1`, [email]);
     if (existing) {
       return NextResponse.json({ error: "Email sudah terdaftar" }, { status: 400 });
-    }
-
-    // Only owner can create admin
-    if (role === "admin" && auth.role !== "owner") {
-      return NextResponse.json({ error: "Hanya owner yang bisa membuat admin" }, { status: 403 });
     }
 
     const validRole = ["admin", "kasir"].includes(role) ? role : "kasir";
@@ -77,8 +72,8 @@ export async function PATCH(req: NextRequest) {
   try {
     const auth = await getTenantFromRequest(req);
     if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    if (auth.role !== "owner" && auth.role !== "admin") {
-      return NextResponse.json({ error: "Hanya owner/admin yang bisa update user" }, { status: 403 });
+    if (auth.role !== "admin") {
+      return NextResponse.json({ error: "Hanya admin yang bisa update user" }, { status: 403 });
     }
 
     const body = await req.json();
@@ -88,7 +83,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "ID wajib" }, { status: 400 });
     }
 
-    // Cannot modify owner
+    // Cannot modify the admin who is the tenant creator
     const target = await dbOne<{ role: string }>(
       `SELECT role FROM users WHERE id = $1 AND tenant_id = $2`,
       [id, auth.tenantId]
@@ -96,19 +91,12 @@ export async function PATCH(req: NextRequest) {
     if (!target) {
       return NextResponse.json({ error: "User tidak ditemukan" }, { status: 404 });
     }
-    if (target.role === "owner") {
-      return NextResponse.json({ error: "Tidak bisa mengubah owner" }, { status: 403 });
-    }
 
     const updates: string[] = [];
     const values: any[] = [];
     let idx = 1;
 
     if (role !== undefined) {
-      // Only owner can set admin
-      if (role === "admin" && auth.role !== "owner") {
-        return NextResponse.json({ error: "Hanya owner yang bisa mengubah ke admin" }, { status: 403 });
-      }
       if (["admin", "kasir"].includes(role)) {
         updates.push(`role = $${idx}`);
         values.push(role);
@@ -156,13 +144,13 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
-/** DELETE — soft delete user (owner only) */
+/** DELETE — soft delete user (admin only) */
 export async function DELETE(req: NextRequest) {
   try {
     const auth = await getTenantFromRequest(req);
     if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    if (auth.role !== "owner") {
-      return NextResponse.json({ error: "Hanya owner yang bisa menghapus user" }, { status: 403 });
+    if (auth.role !== "admin") {
+      return NextResponse.json({ error: "Hanya admin yang bisa menghapus user" }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -170,18 +158,6 @@ export async function DELETE(req: NextRequest) {
 
     if (!id) {
       return NextResponse.json({ error: "ID wajib" }, { status: 400 });
-    }
-
-    // Cannot delete owner
-    const target = await dbOne<{ role: string }>(
-      `SELECT role FROM users WHERE id = $1 AND tenant_id = $2`,
-      [id, auth.tenantId]
-    );
-    if (!target) {
-      return NextResponse.json({ error: "User tidak ditemukan" }, { status: 404 });
-    }
-    if (target.role === "owner") {
-      return NextResponse.json({ error: "Tidak bisa menghapus owner" }, { status: 403 });
     }
 
     // Soft delete — set is_active = false
