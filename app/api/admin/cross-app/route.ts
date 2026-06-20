@@ -104,6 +104,12 @@ export async function POST(req: NextRequest) {
           }
           case "deleteTenant": {
             if (!data?.tenantId) return NextResponse.json({ error: "tenantId wajib" }, { status: 400 });
+            // Delete all related data first (foreign key constraints)
+            const tables = ['log_stok', 'logam', 'produk', 'sessions', 'tenant_counters', 'transaksi', 'users'];
+            for (const t of tables) {
+              await dbRun(`DELETE FROM ${t} WHERE tenant_id = $1`, [data.tenantId]);
+            }
+            // Finally delete the tenant
             await dbRun(`DELETE FROM tenants WHERE id = $1`, [data.tenantId]);
             return NextResponse.json({ success: true });
           }
