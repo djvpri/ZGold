@@ -16,7 +16,13 @@ export async function GET(req: NextRequest) {
        FROM users ORDER BY created_at DESC`
     );
 
-    return NextResponse.json({ users });
+    // Get tenant plan info
+    const tenants = await dbAll<any>(
+      `SELECT id as "tenantId", nama_toko as "tenantName", slug, plan, plan_expires as "planExpires", is_active as "active"
+       FROM tenants ORDER BY id`
+    );
+
+    return NextResponse.json({ users, tenants });
   } catch (error) {
     console.error("Cross-app list users error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -69,6 +75,10 @@ export async function POST(req: NextRequest) {
         switch (action) {
           case "updateRole":
             await dbRun(`UPDATE users SET role = $1 WHERE email = $2`, [data.role, email]);
+            return NextResponse.json({ success: true });
+
+          case "updatePlan":
+            await dbRun(`UPDATE tenants SET plan = $1, plan_expires = $2 WHERE id = $3`, [data.plan, data.planExpires || null, data.tenantId]);
             return NextResponse.json({ success: true });
 
           case "toggleActive":
