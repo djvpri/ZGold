@@ -81,6 +81,33 @@ export async function POST(req: NextRequest) {
             await dbRun(`UPDATE tenants SET plan = $1, plan_expires = $2 WHERE id = $3`, [data.plan, data.planExpires || null, data.tenantId]);
             return NextResponse.json({ success: true });
 
+          // --- Tenant Management ---
+          case "createTenant": {
+            if (!data?.namaToko || !data?.slug) {
+              return NextResponse.json({ error: "namaToko & slug wajib" }, { status: 400 });
+            }
+            const existing = await dbOne(`SELECT id FROM tenants WHERE slug = $1`, [data.slug]);
+            if (existing) return NextResponse.json({ error: "Slug sudah dipakai" }, { status: 409 });
+            const tenant = await dbOne<any>(
+              `INSERT INTO tenants (nama_toko, slug, plan, is_active) VALUES ($1, $2, $3, true) RETURNING id, nama_toko as "namaToko", slug, plan`,
+              [data.namaToko, data.slug, data.plan || 'free']
+            );
+            return NextResponse.json({ success: true, tenant }, { status: 201 });
+          }
+          case "updateTenant": {
+            if (!data?.tenantId) return NextResponse.json({ error: "tenantId wajib" }, { status: 400 });
+            await dbRun(
+              `UPDATE tenants SET nama_toko = COALESCE($1, nama_toko), slug = COALESCE($2, slug), is_active = COALESCE($3, is_active) WHERE id = $4`,
+              [data.namaToko || null, data.slug || null, data.isActive ?? null, data.tenantId]
+            );
+            return NextResponse.json({ success: true });
+          }
+          case "deleteTenant": {
+            if (!data?.tenantId) return NextResponse.json({ error: "tenantId wajib" }, { status: 400 });
+            await dbRun(`DELETE FROM tenants WHERE id = $1`, [data.tenantId]);
+            return NextResponse.json({ success: true });
+          }
+
           case "toggleActive":
             await dbRun(`UPDATE users SET is_active = $1 WHERE email = $2`, [data.is_active, email]);
             return NextResponse.json({ success: true });
