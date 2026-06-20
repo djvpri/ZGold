@@ -67,3 +67,4 @@ Rasio buyback per logam (default): Emas 95%, Platinum 92%, Palladium 91%, Emas P
 - Auto-fetch harga emas harian (mis. API Antam).
 - Manajemen stok produk dari tabel `produk`.
 - Laporan bulanan + grafik (Recharts).
+# redeploy
