@@ -83,7 +83,14 @@ export async function POST(req: NextRequest) {
         const dup = await dbOne(`SELECT id FROM users WHERE email = $1`, [data.email]);
         if (dup) return NextResponse.json({ error: "Email sudah terdaftar" }, { status: 409 });
 
-        const tenantId = data.tenantId || 1;
+        // Use provided tenantId, or first available tenant
+        let tenantId = data.tenantId;
+        if (!tenantId) {
+          const firstTenant = await dbOne<any>(`SELECT id FROM tenants ORDER BY id LIMIT 1`);
+          tenantId = firstTenant?.id;
+        }
+        if (!tenantId) return NextResponse.json({ error: "Tidak ada tenant. Buat tenant dulu." }, { status: 400 });
+
         const hashed = hashPassword(data.password);
         const role = data.role || "kasir";
         const user = await dbOne<any>(
