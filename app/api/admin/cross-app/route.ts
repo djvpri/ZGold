@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     }
 
     const users = await dbAll<any>(
-      `SELECT id, tenant_id, email, nama as name, role, is_active, face_id as "faceId", created_at
+      `SELECT id, tenant_id, email, nama as name, role, is_active, face_id as "faceId", created_at as "createdAt"
        FROM users ORDER BY created_at DESC`
     );
 
