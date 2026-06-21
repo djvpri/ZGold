@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
         const hashed = hashPassword(data.password);
         const role = data.role || "kasir";
         const user = await dbOne<any>(
-          `INSERT INTO users (tenant_id, email, password_hash, nama, role) VALUES ($1, $2, $3, $4, $5) RETURNING id, tenant_id, email, nama as name, role`,
+          `INSERT INTO users (tenant_id, email, password_hash, nama, role, is_active) VALUES ($1, $2, $3, $4, $5, true) RETURNING id, tenant_id, email, nama as name, role`,
           [tenantId, data.email, hashed, data.name, role]
         );
         return NextResponse.json({ success: true, user }, { status: 201 });
