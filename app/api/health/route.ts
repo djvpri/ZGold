@@ -1,13 +1,24 @@
-// app/api/health/route.ts
-// Health check endpoint
-import { NextResponse } from "next/server";
-import pool from "@/lib/db";
+import { NextResponse } from 'next/server'
+import pool from '@/lib/db'
 
 export async function GET() {
   try {
-    const result = await pool.query("SELECT NOW() AS time");
-    return NextResponse.json({ ok: true, time: result.rows[0].time });
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e.message }, { status: 500 });
+    // DB health check
+    const result = await pool.query('SELECT 1')
+    
+    return NextResponse.json({
+      status: 'healthy',
+      app: 'ZGold',
+      timestamp: new Date().toISOString(),
+      database: 'connected'
+    })
+  } catch (error) {
+    return NextResponse.json({
+      status: 'unhealthy',
+      app: 'ZGold',
+      timestamp: new Date().toISOString(),
+      database: 'disconnected',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 503 })
   }
 }
