@@ -8,8 +8,10 @@ const PUBLIC_ROUTES = [
   "/register",
   "/api/auth/login",
   "/api/auth/register",
+  "/api/auth/sso-verify",
   "/api/health",
   "/api/admin/cross-app",
+  "/sso",
 ];
 
 export function middleware(req: NextRequest) {

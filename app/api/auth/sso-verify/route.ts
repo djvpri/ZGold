@@ -1,0 +1,73 @@
+import { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
+import { dbOne, dbRun } from "@/lib/db";
+import crypto from "crypto";
+
+const CROSS_APP_SECRET = new TextEncoder().encode(
+  process.env.CROSS_APP_SECRET || "z-ecosystem-admin-2026"
+);
+
+export async function POST(req: NextRequest) {
+  try {
+    const { token } = await req.json();
+    if (!token) return Response.json({ error: "Token wajib diisi" }, { status: 400 });
+
+    // 1. Verifikasi token dari Z One
+    let payload: any;
+    try {
+      const result = await jwtVerify(token, CROSS_APP_SECRET);
+      payload = result.payload;
+    } catch {
+      return Response.json({ error: "Token SSO tidak valid atau kedaluwarsa" }, { status: 401 });
+    }
+
+    if (payload.app !== "zgold") {
+      return Response.json({ error: "Token ini bukan untuk ZGold" }, { status: 400 });
+    }
+
+    const email = String(payload.email || "").trim().toLowerCase();
+    if (!email) return Response.json({ error: "Email tidak ada di token" }, { status: 400 });
+
+    // 2. Cari user di database ZGold
+    const user = await dbOne(
+      `SELECT u.id, u.nama, u.email, u.role, u.is_active,
+              t.id as tenant_id, t.nama_toko, t.is_active as tenant_active
+       FROM users u JOIN tenants t ON t.id = u.tenant_id
+       WHERE lower(u.email) = $1 LIMIT 1`,
+      [email]
+    );
+
+    if (!user) {
+      return Response.json({
+        error: `Akun ${email} belum terdaftar di ZGold. Hubungi admin.`,
+        code: "USER_NOT_FOUND",
+      }, { status: 404 });
+    }
+
+    if (!user.is_active) {
+      return Response.json({ error: "Akun Anda dinonaktifkan." }, { status: 403 });
+    }
+
+    if (!user.tenant_active) {
+      return Response.json({ error: "Toko Anda dinonaktifkan." }, { status: 403 });
+    }
+
+    // 3. Buat session ZGold
+    const sessionId = crypto.randomBytes(32).toString("hex");
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    await dbRun(
+      `INSERT INTO sessions (id, user_id, tenant_id, expires_at) VALUES ($1, $2, $3, $4)`,
+      [sessionId, user.id, user.tenant_id, expiresAt.toISOString()]
+    );
+
+    const res = Response.json({ success: true, redirect: "/pos" });
+    (res as any).headers.set(
+      "Set-Cookie",
+      `session_id=${sessionId}; HttpOnly; Path=/; Max-Age=${30 * 24 * 3600}; SameSite=Lax; Secure`
+    );
+    return res;
+  } catch (err) {
+    console.error("SSO verify error:", err);
+    return Response.json({ error: "Gagal memproses SSO" }, { status: 500 });
+  }
+}
