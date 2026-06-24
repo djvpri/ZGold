@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { LOGAM, formatIDR, type LogamConfig } from "@/lib/logam";
 import CetakNota, { type NotaData } from "./CetakNota";
 
@@ -17,9 +17,61 @@ export default function PanelJual(props: any) {
   const [loading, setLoading] = useState(false);
   const [konfirmasi, setKonfirmasi] = useState(false);
 
+  // ── Fitur cari kode produk ──
+  const [kodeInput, setKodeInput] = useState("");
+  const [kodeStatus, setKodeStatus] = useState<"idle"|"loading"|"found"|"notfound">("idle");
+  const [produkDitemukan, setProdukDitemukan] = useState<any>(null);
+  const kodeRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     fetch("/api/auth/me").then(r => r.json()).then(d => setTenant(d.data?.tenant)).catch(() => {});
   }, []);
+
+  async function cariProduk(kode: string) {
+    if (!kode.trim()) return;
+    setKodeStatus("loading");
+    try {
+      const res = await fetch(`/api/produk?q=${encodeURIComponent(kode.trim())}`);
+      const d = await res.json();
+      const produk = (d.data || []).find((p: any) =>
+        p.kode?.toLowerCase() === kode.trim().toLowerCase()
+      );
+      if (produk) {
+        setProdukDitemukan(produk);
+        setKodeStatus("found");
+        // Auto-fill form
+        if (produk.logam_id && LOGAM[produk.logam_id]) {
+          onGantiLogam(produk.logam_id);
+          // Set kadar sesuai produk
+          const logamData = LOGAM[produk.logam_id];
+          const kadarI = logamData.kadar.findIndex((k: any) =>
+            k.label === produk.kadar_label || k.id === produk.kadar_id
+          );
+          if (kadarI >= 0) onGantiKadar(kadarI);
+        }
+        if (produk.berat_gram) setBerat(produk.berat_gram);
+        if (produk.jenis) setJenis(produk.jenis);
+        if (produk.ongkos_cetak) setOngkos(produk.ongkos_cetak);
+        setJumlah(1);
+      } else {
+        setProdukDitemukan(null);
+        setKodeStatus("notfound");
+      }
+    } catch {
+      setKodeStatus("notfound");
+    }
+  }
+
+  function handleKodeKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter") cariProduk(kodeInput);
+  }
+
+  function resetKode() {
+    setKodeInput("");
+    setKodeStatus("idle");
+    setProdukDitemukan(null);
+    kodeRef.current?.focus();
+  }
 
   async function handleProses() {
     if (berat <= 0) { alert("Berat harus lebih dari 0 gram"); return; }
@@ -55,6 +107,54 @@ export default function PanelJual(props: any) {
 
   return (
     <>
+      {/* ── Cari Kode Produk / Scan Barcode ── */}
+      <div className="mb-3 rounded-lg border t-border t-bg-card p-3">
+        <div className="mb-1.5 text-[10px] font-medium uppercase tracking-wider t-text-3">
+          <i className="ti ti-barcode mr-1" />Cari Kode / Scan Barcode
+        </div>
+        <div className="flex gap-2">
+          <input
+            ref={kodeRef}
+            value={kodeInput}
+            onChange={(e) => setKodeInput(e.target.value)}
+            onKeyDown={handleKodeKeyDown}
+            placeholder="Ketik kode (mis: EMA0006) lalu Enter..."
+            className="flex-1 rounded-md border t-border-md t-bg-base px-3 py-2 text-xs outline-none t-text-1"
+            autoFocus
+          />
+          <button onClick={() => cariProduk(kodeInput)} disabled={kodeStatus === "loading"}
+            className="rounded-md px-3 py-2 text-xs font-medium text-white transition"
+            style={{ background: l.accent }}>
+            {kodeStatus === "loading" ? <i className="ti ti-loader animate-spin" /> : <i className="ti ti-search" />}
+          </button>
+          {kodeStatus !== "idle" && (
+            <button onClick={resetKode} className="rounded-md border t-border px-3 py-2 text-xs t-text-3">
+              <i className="ti ti-x" />
+            </button>
+          )}
+        </div>
+
+        {/* Hasil pencarian */}
+        {kodeStatus === "found" && produkDitemukan && (
+          <div className="mt-2 flex items-center gap-2 rounded-md border border-green-200 bg-green-50 px-3 py-2">
+            <i className="ti ti-check text-green-600" />
+            <div className="flex-1 text-xs">
+              <span className="font-semibold text-green-800">{produkDitemukan.kode}</span>
+              {" · "}{produkDitemukan.nama}
+              {" · "}{produkDitemukan.berat_gram}g
+              {" · Stok: "}<span className={produkDitemukan.stok <= 0 ? "text-red-600 font-bold" : "text-green-700 font-medium"}>
+                {produkDitemukan.stok} pcs
+              </span>
+            </div>
+          </div>
+        )}
+        {kodeStatus === "notfound" && (
+          <div className="mt-2 flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+            <i className="ti ti-alert-circle" /> Kode produk tidak ditemukan
+          </div>
+        )}
+      </div>
+
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {/* Kiri — pilih logam, kadar, jenis */}
         <div>
