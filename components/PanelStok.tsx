@@ -88,19 +88,22 @@ export default function PanelStok() {
     e.preventDefault();
     try {
       const method = editId ? "PATCH" : "POST";
-      const body = editId ? { id: editId, ...form } : form;
-      
+      const body = editId
+        ? { id: editId, ...form, ...(formFotoBase64 ? { foto_base64: formFotoBase64 } : {}) }
+        : { ...form, ...(formFotoBase64 ? { foto_base64: formFotoBase64 } : {}) };
+
       const res = await fetch("/api/produk", {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      
+
       setShowForm(false);
       setEditId(null);
+      setFormFotoBase64(null);
       resetForm();
       fetchProduk();
     } catch (e: any) {
@@ -287,27 +290,26 @@ export default function PanelStok() {
                   <div className="mb-1 flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       <span className="text-[10px] font-medium t-text-2">{item.kode}</span>
-                  <span
-                    className="rounded-full px-1.5 py-0.5 text-[8px]"
-                    style={{ 
-                      background: `${getLogamAccent(item.logam_id)}20`,
-                      color: getLogamAccent(item.logam_id)
-                    }}
-                  >
-                    {LOGAM[item.logam_id]?.nama.split(" ")[0] || item.logam_id}
-                  </span>
-                </div>
-                <span className={`text-sm font-medium ${item.stok <= 0 ? "text-red-400" : ""}`}>
-                  {item.stok}
-                </span>
-              </div>
-              <div className="text-[11px] t-text-2">{item.nama}</div>
-              <div className="mt-1 flex items-center justify-between">
-                <span className="text-[9px] t-text-4">{item.jenis} · {item.berat_gram}g</span>
-                <div className="flex gap-1">
-                  <button onClick={() => openStokAdjust(item.id)} className="rounded bg-green-600/20 px-2 py-0.5 text-[9px] text-green-400">Stok</button>
-                  <button onClick={() => handleEdit(item)} className="rounded bg-blue-600/20 px-2 py-0.5 text-[9px] text-blue-400">Edit</button>
-                  <button onClick={() => handleDelete(item.id)} className="rounded bg-red-600/20 px-2 py-0.5 text-[9px] text-red-400">Hapus</button>
+                      <span
+                        className="rounded-full px-1.5 py-0.5 text-[8px]"
+                        style={{ background: `${getLogamAccent(item.logam_id)}20`, color: getLogamAccent(item.logam_id) }}
+                      >
+                        {LOGAM[item.logam_id]?.nama.split(" ")[0] || item.logam_id}
+                      </span>
+                    </div>
+                    <span className={`text-sm font-medium ${item.stok <= 0 ? "text-red-400" : ""}`}>
+                      {item.stok}
+                    </span>
+                  </div>
+                  <div className="text-[11px] t-text-2">{item.nama}</div>
+                  <div className="mt-1 flex items-center justify-between">
+                    <span className="text-[9px] t-text-4">{item.jenis} · {item.berat_gram}g</span>
+                    <div className="flex gap-1">
+                      <button onClick={() => openStokAdjust(item.id)} className="rounded bg-green-600/20 px-2 py-0.5 text-[9px] text-green-400">Stok</button>
+                      <button onClick={() => handleEdit(item)} className="rounded bg-blue-600/20 px-2 py-0.5 text-[9px] text-blue-400">Edit</button>
+                      <button onClick={() => handleDelete(item.id)} className="rounded bg-red-600/20 px-2 py-0.5 text-[9px] text-red-400">Hapus</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
