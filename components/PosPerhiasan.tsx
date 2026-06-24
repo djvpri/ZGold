@@ -23,7 +23,11 @@ export default function PosPerhiasan() {
     }).catch(() => {});
 
     fetch("/api/harga-emas").then(r => r.json()).then(d => {
-      if (d.data) setSpot(s => ({ ...s, ...d.data }));
+      if (d.data) {
+        const parsed: Record<string, number> = {}
+        for (const [k, v] of Object.entries(d.data)) parsed[k] = Number(v)
+        setSpot(s => ({ ...s, ...parsed }))
+      }
     }).catch(() => {});
   }, []);
 
@@ -180,7 +184,10 @@ export default function PosPerhiasan() {
             </div>
             {userRole === "admin" ? (
               <input type="number" value={spot[l.id]}
-                onChange={(e) => simpanSpot(l.id, +e.target.value)}
+                onChange={(e) => {
+                  const val = Number(e.target.value)
+                  if (val > 0 && val < 100_000_000) simpanSpot(l.id, val)
+                }}
                 className="w-full bg-transparent text-xs font-medium outline-none"
                 style={{ color: l.textColor }} />
             ) : (

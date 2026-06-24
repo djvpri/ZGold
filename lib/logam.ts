@@ -134,9 +134,9 @@ export function hitungHargaJual(p: {
   jumlah: number;
   diskon: number;
 }): number {
-  const hargaPerGram = p.spot * p.kadar;
-  const subtotal = (hargaPerGram * p.berat + p.ongkos) * p.jumlah;
-  return Math.max(0, Math.round(subtotal - p.diskon));
+  const hargaPerGram = Number(p.spot) * Number(p.kadar);
+  const subtotal = (hargaPerGram * Number(p.berat) + Number(p.ongkos)) * Number(p.jumlah);
+  return Math.max(0, Math.round(subtotal - Number(p.diskon)));
 }
 
 export function hitungBuyback(p: {
