@@ -3,7 +3,7 @@
 import { NextRequest } from "next/server";
 import { getSession } from "./auth";
 
-export async function getTenantFromRequest(req: NextRequest): Promise<{ tenantId: number; userId: number; role: string } | null> {
+export async function getTenantFromRequest(req: NextRequest): Promise<{ tenantId: string; userId: string; role: string } | null> {
   const sessionId = req.headers.get("x-session-id");
   if (!sessionId) return null;
 
@@ -11,8 +11,8 @@ export async function getTenantFromRequest(req: NextRequest): Promise<{ tenantId
   if (!session) return null;
 
   return {
-    tenantId: session.tenant_id,
-    userId: session.user_id,
+    tenantId: String(session.tenant_id),
+    userId: String(session.user_id),
     role: session.role,
   };
 }

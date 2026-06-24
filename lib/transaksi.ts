@@ -43,9 +43,10 @@ export async function simpanTransaksi(row: TransaksiRow) {
   // Update stok produk otomatis
   if (row.jenis_produk) {
     const delta = row.tipe === 'jual' ? -(row.jumlah || 1) : (row.jumlah || 1)
-    const tenantClause = row.tenant_id ? 'AND tenant_id = $3' : 'AND tenant_id IS NULL'
-    const params = row.tenant_id
-      ? [delta, row.jenis_produk, row.tenant_id]
+    const tid = row.tenant_id ? String(row.tenant_id) : null
+    const tenantClause = tid ? 'AND tenant_id = $3' : ''
+    const params = tid
+      ? [delta, row.jenis_produk, tid]
       : [delta, row.jenis_produk]
     await dbRun(
       `UPDATE produk SET stok = GREATEST(0, stok + $1), updated_at = now()
