@@ -45,9 +45,11 @@ export async function POST(req: NextRequest) {
         }
         const existing = await dbOne(`SELECT id FROM tenants WHERE slug = $1`, [data.slug]);
         if (existing) return NextResponse.json({ error: "Slug sudah dipakai" }, { status: 409 });
+        const validPlans = ['free', 'basic', 'pro', 'enterprise'];
+        const plan = validPlans.includes(data.plan) ? data.plan : 'free';
         const tenant = await dbOne<any>(
           `INSERT INTO tenants (nama_toko, slug, plan, is_active, owner_name, owner_email) VALUES ($1, $2, $3, true, $4, $5) RETURNING id, nama_toko as "namaToko", slug, plan`,
-          [data.namaToko, data.slug, data.plan || "free", data.ownerName || "Admin", data.ownerEmail || `admin+${data.slug}+${Date.now()}@zgold.zomet.my.id`]
+          [data.namaToko, data.slug, plan, data.ownerName || "Admin", data.ownerEmail || `admin+${data.slug}+${Date.now()}@zgold.zomet.my.id`]
         );
         return NextResponse.json({ success: true, tenant }, { status: 201 });
       }
