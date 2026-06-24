@@ -8,7 +8,7 @@ export interface TransaksiRow {
   no_transaksi: string;
   tipe: "jual" | "buyback";
   logam_id: string;
-  tenant_id?: number;
+  tenant_id?: string | number;
   kadar_label: string | null;
   jenis_produk: string | null;
   nama_pihak: string | null;

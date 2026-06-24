@@ -6,7 +6,7 @@ import crypto from "crypto";
 // ---------- Types ----------
 export interface UserRow {
   id: number;
-  tenant_id: number;
+  tenant_id: string | number;
   email: string;
   password_hash: string;
   nama: string;
@@ -35,7 +35,7 @@ export interface TenantRow {
 export interface SessionRow {
   id: string;
   user_id: number;
-  tenant_id: number;
+  tenant_id: string | number;
   expires_at: string;
 }
 
@@ -145,7 +145,7 @@ export async function createTenant(data: {
 
 // ---------- User Management ----------
 export async function createUser(data: {
-  tenant_id: number;
+  tenant_id: string | number;
   email: string;
   password: string;
   nama: string;
