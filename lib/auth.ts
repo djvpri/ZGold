@@ -159,7 +159,7 @@ export async function createUser(data: {
   ) as Promise<UserRow>;
 }
 
-export async function getUsersByTenant(tenantId: number): Promise<Omit<UserRow, "password_hash">[]> {
+export async function getUsersByTenant(tenantId: string | number): Promise<Omit<UserRow, "password_hash">[]> {
   return dbAll(
     `SELECT id, tenant_id, email, nama, role, is_active, last_login, created_at
      FROM users WHERE tenant_id = $1 ORDER BY created_at`,
@@ -206,7 +206,7 @@ export async function register(data: {
 }
 
 // ---------- Plan Checks (uses tenant_counters for performance) ----------
-export async function checkPlanLimit(tenantId: number, type: "produk" | "transaksi"): Promise<{ allowed: boolean; current: number; max: number }> {
+export async function checkPlanLimit(tenantId: string | number, type: "produk" | "transaksi"): Promise<{ allowed: boolean; current: number; max: number }> {
   const tenant = await dbOne<TenantRow>(
     `SELECT * FROM tenants WHERE id = $1`,
     [tenantId]

@@ -33,7 +33,7 @@ export function getPlanLimits(plan: string): PlanLimit {
  * Falls back to direct COUNT if counter not available.
  */
 export async function checkPlanLimit(
-  tenantId: number,
+  tenantId: string | number,
   type: "produk" | "transaksi"
 ): Promise<CheckResult> {
   // Get tenant + plan info
@@ -94,7 +94,7 @@ export async function checkPlanLimit(
 }
 
 /** Get current usage summary for a tenant */
-export async function getTenantUsage(tenantId: number) {
+export async function getTenantUsage(tenantId: string | number) {
   const [produk, transaksi, users] = await Promise.all([
     dbOne<{ jumlah: number }>(
       `SELECT COUNT(*)::int as jumlah FROM produk WHERE tenant_id = $1`,
