@@ -2,6 +2,9 @@
 import { useState, useEffect, useRef } from "react";
 import { LOGAM, formatIDR, type LogamConfig } from "@/lib/logam";
 import CetakNota, { type NotaData } from "./CetakNota";
+import dynamic from "next/dynamic";
+
+const BarcodeScanner = dynamic(() => import("./BarcodeScanner"), { ssr: false });
 
 export default function PanelJual(props: any) {
   const {
@@ -21,7 +24,14 @@ export default function PanelJual(props: any) {
   const [kodeInput, setKodeInput] = useState("");
   const [kodeStatus, setKodeStatus] = useState<"idle"|"loading"|"found"|"notfound">("idle");
   const [produkDitemukan, setProdukDitemukan] = useState<any>(null);
+  const [showScanner, setShowScanner] = useState(false);
   const kodeRef = useRef<HTMLInputElement>(null);
+
+  function handleScanResult(kode: string) {
+    setShowScanner(false);
+    setKodeInput(kode);
+    cariProduk(kode);
+  }
 
   useEffect(() => {
     fetch("/api/auth/me").then(r => r.json()).then(d => setTenant(d.data?.tenant)).catch(() => {});
@@ -122,6 +132,10 @@ export default function PanelJual(props: any) {
             className="flex-1 rounded-md border t-border-md t-bg-base px-3 py-2 text-xs outline-none t-text-1"
             autoFocus
           />
+          <button onClick={() => setShowScanner(true)}
+            className="rounded-md border t-border px-3 py-2 text-xs t-text-3 hover:t-bg-muted" title="Scan kamera">
+            <i className="ti ti-camera text-base" />
+          </button>
           <button onClick={() => cariProduk(kodeInput)} disabled={kodeStatus === "loading"}
             className="rounded-md px-3 py-2 text-xs font-medium text-white transition"
             style={{ background: l.accent }}>
@@ -286,6 +300,7 @@ export default function PanelJual(props: any) {
       )}
 
       {notaData && <CetakNota data={notaData} onClose={() => setNotaData(null)} />}
+      {showScanner && <BarcodeScanner onResult={handleScanResult} onClose={() => setShowScanner(false)} />}
     </>
   );
 }
