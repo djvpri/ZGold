@@ -133,8 +133,10 @@ export default function PanelJual(props: any) {
             autoFocus
           />
           <button onClick={() => setShowScanner(true)}
-            className="rounded-md border t-border px-3 py-2 text-xs t-text-3 hover:t-bg-muted" title="Scan kamera">
-            <i className="ti ti-camera text-base" />
+            className="flex items-center gap-1.5 rounded-md px-3 py-2 text-xs font-medium text-white transition hover:opacity-90"
+            style={{ background: '#d97706' }} title="Scan barcode via kamera">
+            <i className="ti ti-camera text-sm" />
+            <span className="hidden sm:inline">Scan</span>
           </button>
           <button onClick={() => cariProduk(kodeInput)} disabled={kodeStatus === "loading"}
             className="rounded-md px-3 py-2 text-xs font-medium text-white transition"
