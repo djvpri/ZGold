@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const {
       kode, logam_id, kadar_id, jenis, nama,
-      berat_gram, ongkos_cetak, stok, foto_url
+      berat_gram, ongkos_cetak, stok, foto_url, foto_base64
     } = body;
 
     // Validasi field wajib
@@ -81,6 +81,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Konversi base64 ke data URL kalau ada
+    const fotoFinal = foto_base64
+      ? `data:image/jpeg;base64,${foto_base64}`
+      : (foto_url ?? null);
+
     const result = await tambahProduk({
       kode,
       logam_id,
@@ -91,7 +96,7 @@ export async function POST(req: NextRequest) {
       berat_gram,
       ongkos_cetak: ongkos_cetak ?? 0,
       stok: stok ?? 0,
-      foto_url: foto_url ?? null
+      foto_url: fotoFinal
     });
 
     return NextResponse.json({ data: result }, { status: 201 });
@@ -107,10 +112,15 @@ export async function PATCH(req: NextRequest) {
     if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await req.json();
-    const { id, stok_delta, stok_tipe, keterangan, ...updateData } = body;
+    const { id, stok_delta, stok_tipe, keterangan, foto_base64, ...updateData } = body;
 
     if (!id) {
       return NextResponse.json({ error: "ID wajib" }, { status: 400 });
+    }
+
+    // Konversi foto_base64 ke data URL
+    if (foto_base64) {
+      updateData.foto_url = `data:image/jpeg;base64,${foto_base64}`;
     }
 
     // Jika ada stok_delta, update stok

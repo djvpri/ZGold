@@ -34,6 +34,21 @@ export default function PanelStok() {
     stok: 0,
   });
 
+  // Foto preview state
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+  const [formFotoBase64, setFormFotoBase64] = useState<string | null>(null);
+
+  function handleFotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(',')[1];
+      setFormFotoBase64(base64);
+    };
+    reader.readAsDataURL(file);
+  }
+
   // Stok adjustment state
   const [stokAdjust, setStokAdjust] = useState({
     produkId: 0,
@@ -134,6 +149,7 @@ export default function PanelStok() {
 
   // Edit produk
   const handleEdit = (item: ProdukItem) => {
+    setFormFotoBase64(null);
     setForm({
       kode: item.kode,
       logam_id: item.logam_id,
@@ -163,6 +179,7 @@ export default function PanelStok() {
       ongkos_cetak: 0,
       stok: 0,
     });
+    setFormFotoBase64(null);
   };
 
   // Get logam accent color
@@ -251,9 +268,25 @@ export default function PanelStok() {
         ) : (
           produk.map((item) => (
             <div key={item.id} className="rounded-lg border t-border p-2.5">
-              <div className="mb-1 flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-medium t-text-2">{item.kode}</span>
+              <div className="mb-2 flex gap-2.5">
+                {/* Foto thumbnail */}
+                <div
+                  onClick={() => item.foto_url && setFotoPreview(item.foto_url)}
+                  className="h-14 w-14 flex-shrink-0 rounded-lg overflow-hidden border t-border cursor-pointer"
+                  style={{ background: `${getLogamAccent(item.logam_id)}15` }}
+                >
+                  {item.foto_url ? (
+                    <img src={item.foto_url} alt={item.nama} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center">
+                      <i className="ti ti-diamond text-xl" style={{ color: getLogamAccent(item.logam_id) }} />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="mb-1 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-medium t-text-2">{item.kode}</span>
                   <span
                     className="rounded-full px-1.5 py-0.5 text-[8px]"
                     style={{ 
@@ -287,6 +320,7 @@ export default function PanelStok() {
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b t-border text-left t-text-3">
+              <th className="pb-2 w-10"></th>
               <th className="pb-2">Kode</th>
               <th className="pb-2">Nama</th>
               <th className="pb-2">Logam</th>
@@ -306,6 +340,18 @@ export default function PanelStok() {
             ) : (
               produk.map((item) => (
                 <tr key={item.id} className="border-b t-border">
+                  <td className="py-1.5">
+                    <div
+                      onClick={() => item.foto_url && setFotoPreview(item.foto_url)}
+                      className="h-9 w-9 rounded-md overflow-hidden border t-border cursor-pointer flex items-center justify-center"
+                      style={{ background: `${getLogamAccent(item.logam_id)}15` }}
+                    >
+                      {item.foto_url
+                        ? <img src={item.foto_url} alt="" className="h-full w-full object-cover" />
+                        : <i className="ti ti-diamond text-sm" style={{ color: getLogamAccent(item.logam_id) }} />
+                      }
+                    </div>
+                  </td>
                   <td className="py-2 font-medium">{item.kode}</td>
                   <td className="py-2">{item.nama}</td>
                   <td className="py-2">
@@ -528,6 +574,23 @@ export default function PanelStok() {
           </div>
         </div>
       )}
+    {/* Modal Preview Foto */}
+    {fotoPreview && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+        onClick={() => setFotoPreview(null)}
+      >
+        <div className="relative max-w-sm w-full" onClick={e => e.stopPropagation()}>
+          <img src={fotoPreview} alt="Foto Produk" className="w-full rounded-xl object-contain max-h-[70vh]" />
+          <button
+            onClick={() => setFotoPreview(null)}
+            className="absolute -top-3 -right-3 rounded-full bg-white p-1.5 text-gray-800 shadow-lg"
+          >
+            <i className="ti ti-x text-sm" />
+          </button>
+        </div>
+      </div>
+    )}
     </div>
   );
 }
