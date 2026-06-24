@@ -39,7 +39,6 @@ export default function PanelBuyback(props: any) {
           nama_toko: tenant?.nama_toko ?? "Zomet POS",
           alamat_toko: tenant?.alamat,
           telepon: tenant?.owner_phone,
-          tipe: "buyback",
           items: [{ nama: `Buyback ${kadar?.label ?? ""} ${berat}g (${kondisiLabel})`, jumlah: 1, harga: total }],
           subtotal: total, diskon: 0, total, bayar: total, kembalian: 0,
         });
