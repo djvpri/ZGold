@@ -1,22 +1,19 @@
 import { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import jwt from "jsonwebtoken";
 import { dbOne, dbRun } from "@/lib/db";
 import crypto from "crypto";
 
-const CROSS_APP_SECRET = new TextEncoder().encode(
-  process.env.CROSS_APP_SECRET || "z-ecosystem-admin-2026"
-);
+const CROSS_APP_SECRET = process.env.CROSS_APP_SECRET || "z-ecosystem-admin-2026";
 
 export async function POST(req: NextRequest) {
   try {
     const { token } = await req.json();
     if (!token) return Response.json({ error: "Token wajib diisi" }, { status: 400 });
 
-    // 1. Verifikasi token dari Z One
+    // 1. Verifikasi token dari Z One (jsonwebtoken, kompatibel dengan Z One)
     let payload: any;
     try {
-      const result = await jwtVerify(token, CROSS_APP_SECRET);
-      payload = result.payload;
+      payload = jwt.verify(token, CROSS_APP_SECRET);
     } catch {
       return Response.json({ error: "Token SSO tidak valid atau kedaluwarsa" }, { status: 401 });
     }
@@ -44,13 +41,8 @@ export async function POST(req: NextRequest) {
       }, { status: 404 });
     }
 
-    if (!user.is_active) {
-      return Response.json({ error: "Akun Anda dinonaktifkan." }, { status: 403 });
-    }
-
-    if (!user.tenant_active) {
-      return Response.json({ error: "Toko Anda dinonaktifkan." }, { status: 403 });
-    }
+    if (!user.is_active) return Response.json({ error: "Akun Anda dinonaktifkan." }, { status: 403 });
+    if (!user.tenant_active) return Response.json({ error: "Toko Anda dinonaktifkan." }, { status: 403 });
 
     // 3. Buat session ZGold
     const sessionId = crypto.randomBytes(32).toString("hex");
@@ -60,7 +52,7 @@ export async function POST(req: NextRequest) {
       [sessionId, user.id, user.tenant_id, expiresAt.toISOString()]
     );
 
-    const res = Response.json({ success: true, redirect: "/pos" });
+    const res = Response.json({ success: true, redirect: "/dashboard" });
     (res as any).headers.set(
       "Set-Cookie",
       `session_id=${sessionId}; HttpOnly; Path=/; Max-Age=${30 * 24 * 3600}; SameSite=Lax; Secure`

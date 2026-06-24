@@ -20,7 +20,7 @@ function SsoContent() {
       .then(r => r.json())
       .then(d => {
         if (d.success) {
-          window.location.replace('https://zgold.zomet.my.id' + (d.redirect || '/pos'))
+          window.location.replace('https://zgold.zomet.my.id' + (d.redirect || '/dashboard'))
         } else {
           setStatus('error')
           setMsg(d.error || 'Login SSO gagal')
