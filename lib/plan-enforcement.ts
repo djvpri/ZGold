@@ -60,10 +60,13 @@ export async function checkPlanLimit(
   const bulanKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   const counterKey = type === "produk" ? `${prefix}total` : `${prefix}${bulanKey}`;
 
-  const counter = await dbOne<{ value: number }>(
-    `SELECT value FROM tenant_counters WHERE tenant_id = $1 AND key = $2`,
-    [tenantId, counterKey]
-  );
+  let counter = null;
+  try {
+    counter = await dbOne<{ value: number }>(
+      `SELECT value FROM tenant_counters WHERE tenant_id = $1 AND key = $2`,
+      [tenantId, counterKey]
+    );
+  } catch { /* tabel belum ada, skip */ }
 
   let current: number;
   if (counter) {
