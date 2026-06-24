@@ -58,7 +58,7 @@ export default function PanelBuyback(props: any) {
           <div className="grid grid-cols-2 gap-1.5 md:grid-cols-1">
             {Object.values(LOGAM).map((lg) => (
               <button key={lg.id} onClick={() => onGantiLogam(lg.id)}
-                className="rounded-lg border-2 bg-gray-100/40 p-2.5 text-left transition"
+                className="rounded-lg border-2 t-bg-muted/40 p-2.5 text-left transition"
                 style={{ borderColor: logamId === lg.id ? lg.accent : "transparent" }}>
                 <div className="flex items-center gap-2">
                   <i className={`ti ${lg.icon} text-base`} style={{ color: lg.accent }} />
@@ -86,7 +86,7 @@ export default function PanelBuyback(props: any) {
 
         <div>
           <SectionTitle>Detail Buyback</SectionTitle>
-          <div className="mb-2.5 rounded-lg border border-gray-200 bg-white p-3 space-y-1.5">
+          <div className="mb-2.5 rounded-lg border t-border t-bg-card p-3 space-y-1.5">
             <Field label="Nama Penjual">
               <input value={nama} onChange={(e) => setNama(e.target.value)} placeholder="Opsional" className={inputCls} />
             </Field>
@@ -122,9 +122,9 @@ export default function PanelBuyback(props: any) {
       {/* Modal Konfirmasi */}
       {konfirmasi && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-xl">
-            <h3 className="mb-3 text-sm font-semibold text-gray-900">Konfirmasi Buyback</h3>
-            <div className="mb-4 space-y-1 text-xs text-gray-600">
+          <div className="w-full max-w-sm rounded-xl t-bg-card p-5 shadow-xl">
+            <h3 className="mb-3 text-sm font-semibold t-text-1">Konfirmasi Buyback</h3>
+            <div className="mb-4 space-y-1 text-xs t-text-2">
               <div className="flex justify-between"><span>Logam</span><span className="font-medium">{l.nama} {kadar?.label}</span></div>
               <div className="flex justify-between"><span>Berat</span><span className="font-medium">{berat} gram</span></div>
               <div className="flex justify-between"><span>Kondisi</span><span className="font-medium">{KONDISI_OPSI.find(o => o.nilai === kondisi)?.label}</span></div>
@@ -134,7 +134,7 @@ export default function PanelBuyback(props: any) {
               </div>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setKonfirmasi(false)} className="flex-1 rounded-lg border border-gray-300 py-2 text-xs text-gray-600">Batal</button>
+              <button onClick={() => setKonfirmasi(false)} className="flex-1 rounded-lg border t-border-md py-2 text-xs t-text-2">Batal</button>
               <button onClick={konfirmasiProses} className="flex-1 rounded-lg py-2 text-xs font-medium text-white" style={{ background: l.accent }}>✓ Konfirmasi</button>
             </div>
           </div>
@@ -146,15 +146,15 @@ export default function PanelBuyback(props: any) {
   );
 }
 
-const inputCls = "flex-1 rounded-md border border-gray-300 bg-white px-2 py-2 text-xs outline-none";
+const inputCls = "flex-1 rounded-md border t-border-md t-bg-card px-2 py-2 text-xs outline-none";
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2">
-      <label className="min-w-[90px] text-[11px] text-gray-500">{label}</label>
+      <label className="min-w-[90px] text-[11px] t-text-3">{label}</label>
       {children}
     </div>
   );
 }
 function SectionTitle({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`mb-1.5 text-[10px] font-medium uppercase tracking-wider text-gray-500 ${className}`}>{children}</div>;
+  return <div className={`mb-1.5 text-[10px] font-medium uppercase tracking-wider t-text-3 ${className}`}>{children}</div>;
 }

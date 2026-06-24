@@ -9,7 +9,7 @@ export default function PanelRiwayat({ riwayat, onRefresh }: { riwayat: any[]; o
     return (
       <div className="py-12 text-center">
         <i className="ti ti-receipt mb-2 block text-3xl text-gray-300" />
-        <p className="text-xs text-gray-400">Belum ada transaksi hari ini</p>
+        <p className="text-xs t-text-4">Belum ada transaksi hari ini</p>
         <button onClick={onRefresh} className="mt-3 text-xs text-amber-500 underline">Refresh</button>
       </div>
     );
@@ -19,9 +19,9 @@ export default function PanelRiwayat({ riwayat, onRefresh }: { riwayat: any[]; o
     <div>
       {/* Rekap */}
       <div className="mb-3 grid grid-cols-3 gap-2">
-        <div className="rounded-lg border border-gray-200 bg-white p-2.5 text-center">
-          <div className="text-[10px] text-gray-500">Transaksi</div>
-          <div className="text-lg font-bold text-gray-900">{riwayat.length}</div>
+        <div className="rounded-lg border t-border t-bg-card p-2.5 text-center">
+          <div className="text-[10px] t-text-3">Transaksi</div>
+          <div className="text-lg font-bold t-text-1">{riwayat.length}</div>
         </div>
         <div className="rounded-lg border border-green-100 bg-green-50 p-2.5 text-center">
           <div className="text-[10px] text-green-600">Total Jual</div>
@@ -34,10 +34,10 @@ export default function PanelRiwayat({ riwayat, onRefresh }: { riwayat: any[]; o
       </div>
 
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-[10px] font-medium uppercase tracking-wider text-gray-500">
+        <span className="text-[10px] font-medium uppercase tracking-wider t-text-3">
           {riwayat.length} transaksi hari ini
         </span>
-        <button onClick={onRefresh} className="rounded-md border border-gray-200 px-2 py-1 text-[10px] text-gray-500 hover:bg-gray-50">
+        <button onClick={onRefresh} className="rounded-md border t-border px-2 py-1 text-[10px] t-text-3 t-bg-hover">
           <i className="ti ti-refresh mr-1" />Refresh
         </button>
       </div>
@@ -46,17 +46,17 @@ export default function PanelRiwayat({ riwayat, onRefresh }: { riwayat: any[]; o
         {riwayat.map((r, i) => {
           const lg = LOGAM[r.logam_id] || LOGAM.emas;
           return (
-            <div key={r.id || i} className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-2.5">
+            <div key={r.id || i} className="flex items-center justify-between rounded-lg border t-border t-bg-card p-2.5">
               <div className="flex items-center gap-2">
                 <div className="flex h-7 w-7 items-center justify-center rounded-full"
                   style={{ background: r.tipe === "jual" ? "#dcfce7" : "#fef3c7" }}>
                   <i className={`ti ${r.tipe === "jual" ? "ti-arrow-up text-green-600" : "ti-arrow-down text-amber-600"} text-xs`} />
                 </div>
                 <div>
-                  <div className="text-xs font-medium text-gray-800">
+                  <div className="text-xs font-medium t-text-2">
                     {r.jenis_produk || r.kadar_label} · {r.berat_gram}g
                   </div>
-                  <div className="text-[10px] text-gray-400">
+                  <div className="text-[10px] t-text-4">
                     {r.nama_pihak} · {r.no_transaksi} ·{" "}
                     {new Date(r.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
                   </div>

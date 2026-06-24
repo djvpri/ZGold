@@ -11,7 +11,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="text-center">
         <div className="w-8 h-8 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-gray-400 text-sm">Mengarahkan ke Z One...</p>
+        <p className="t-text-4 text-sm">Mengarahkan ke Z One...</p>
       </div>
     </div>
   )

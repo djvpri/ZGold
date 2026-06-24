@@ -82,13 +82,13 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-3" onClick={onClose}>
       <div
-        className="w-full max-w-sm rounded-xl border border-gray-300 bg-white shadow-2xl"
+        className="w-full max-w-sm rounded-xl border t-border-md t-bg-card shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+        <div className="flex items-center justify-between border-b t-border px-4 py-3">
           <h2 className="text-sm font-medium">Cetak Nota</h2>
-          <button onClick={onClose} className="rounded p-1 text-gray-500 hover:bg-gray-100">
+          <button onClick={onClose} className="rounded p-1 t-text-3 t-bg-hover">
             <i className="ti ti-x text-lg" />
           </button>
         </div>
@@ -96,7 +96,7 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
         {/* Receipt preview */}
         <div className="max-h-[60vh] overflow-y-auto p-4">
           <pre
-            className="whitespace-pre rounded-lg bg-white p-4 text-[10px] leading-relaxed text-black sm:text-xs"
+            className="whitespace-pre rounded-lg t-bg-card p-4 text-[10px] leading-relaxed text-black sm:text-xs"
             id="receipt-content"
             style={{ fontFamily: "monospace" }}
           >
@@ -105,10 +105,10 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2 border-t border-gray-200 p-3">
+        <div className="flex gap-2 border-t t-border p-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-lg border border-gray-300 py-2.5 text-xs text-gray-500 hover:bg-gray-100"
+            className="flex-1 rounded-lg border t-border-md py-2.5 text-xs t-text-3 t-bg-hover"
           >
             Tutup
           </button>

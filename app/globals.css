@@ -2,54 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Light theme (default) ── */
+/* ── Light theme ── */
 :root, [data-theme="light"] {
-  --bg-base:    #f9fafb;
-  --bg-card:    #ffffff;
-  --bg-muted:   #f3f4f6;
-  --bg-hover:   #e5e7eb;
-  --border:     #e5e7eb;
-  --border-md:  #d1d5db;
-  --text-1:     #111827;
-  --text-2:     #374151;
-  --text-3:     #6b7280;
-  --text-4:     #9ca3af;
-  --scrollbar:  #d1d5db;
+  --bg-base:   #f9fafb;
+  --bg-card:   #ffffff;
+  --bg-muted:  #f3f4f6;
+  --bg-hover:  #e5e7eb;
+  --border:    #e5e7eb;
+  --border-md: #d1d5db;
+  --text-1:    #111827;
+  --text-2:    #374151;
+  --text-3:    #6b7280;
+  --text-4:    #9ca3af;
+  --input-bg:  #ffffff;
+  --input-border: #d1d5db;
+  --scrollbar: #d1d5db;
 }
 
 /* ── Dark theme ── */
 [data-theme="dark"] {
-  --bg-base:    #0a0a0a;
-  --bg-card:    #171717;
-  --bg-muted:   #262626;
-  --bg-hover:   #3f3f46;
-  --border:     #27272a;
-  --border-md:  #3f3f46;
-  --text-1:     #f5f5f5;
-  --text-2:     #d4d4d4;
-  --text-3:     #a1a1aa;
-  --text-4:     #71717a;
-  --scrollbar:  #3f3f46;
+  --bg-base:   #0a0a0a;
+  --bg-card:   #171717;
+  --bg-muted:  #262626;
+  --bg-hover:  #3f3f46;
+  --border:    #27272a;
+  --border-md: #3f3f46;
+  --text-1:    #f5f5f5;
+  --text-2:    #d4d4d4;
+  --text-3:    #a1a1aa;
+  --text-4:    #71717a;
+  --input-bg:  #1c1c1c;
+  --input-border: #3f3f46;
+  --scrollbar: #3f3f46;
 }
 
-body { background: var(--bg-base); color: var(--text-1); transition: background 0.2s, color 0.2s; }
+body {
+  background: var(--bg-base);
+  color: var(--text-1);
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Theme utility classes */
+.t-bg-base   { background: var(--bg-base) !important; }
+.t-bg-card   { background: var(--bg-card) !important; }
+.t-bg-muted  { background: var(--bg-muted) !important; }
+.t-bg-hover:hover { background: var(--bg-hover) !important; }
+.t-border    { border-color: var(--border) !important; }
+.t-border-md { border-color: var(--border-md) !important; }
+.t-text-1    { color: var(--text-1) !important; }
+.t-text-2    { color: var(--text-2) !important; }
+.t-text-3    { color: var(--text-3) !important; }
+.t-text-4    { color: var(--text-4) !important; }
+
+/* Input otomatis ikut tema */
+input, select, textarea {
+  font-size: 16px !important;
+  background: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--text-1) !important;
+}
+input::placeholder { color: var(--text-4) !important; }
 
 * { -webkit-tap-highlight-color: transparent; }
-input, select, textarea { font-size: 16px !important; }
 .safe-top { padding-top: env(safe-area-inset-top); }
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
-
-/* Utility classes yang pakai CSS variables */
-.t-bg-base   { background: var(--bg-base); }
-.t-bg-card   { background: var(--bg-card); }
-.t-bg-muted  { background: var(--bg-muted); }
-.t-bg-hover:hover { background: var(--bg-hover); }
-.t-border    { border-color: var(--border); }
-.t-border-md { border-color: var(--border-md); }
-.t-text-1    { color: var(--text-1); }
-.t-text-2    { color: var(--text-2); }
-.t-text-3    { color: var(--text-3); }
-.t-text-4    { color: var(--text-4); }
