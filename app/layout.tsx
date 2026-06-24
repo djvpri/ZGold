@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
+import { ThemeProvider } from "@/lib/theme-context";
 import PWARegister from "@/components/PWARegister";
 
 export const metadata: Metadata = {
@@ -12,9 +13,7 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Zomet POS",
   },
-  formatDetection: {
-    telephone: false,
-  },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
@@ -30,19 +29,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="id">
       <head>
-        {/* Tabler Icons via CDN */}
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css"
-        />
-        {/* PWA Icons */}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
         <link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512.png" />
       </head>
       <body className="antialiased">
         <PWARegister />
-        <AuthProvider>{children}</AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

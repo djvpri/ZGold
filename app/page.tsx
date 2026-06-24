@@ -1,11 +1,13 @@
 "use client";
 import { useAuth } from "@/lib/auth-context";
+import { useTheme } from "@/lib/theme-context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import PosPerhiasan from "@/components/PosPerhiasan";
 
 export default function Home() {
   const { user, tenant, loading, logout } = useAuth();
+  const { theme, toggle } = useTheme();
   const router = useRouter();
   const [showMenu, setShowMenu] = useState(false);
 
@@ -64,6 +66,13 @@ export default function Home() {
                   <i className="ti ti-dashboard text-[10px]" /> Dashboard
                 </button>
               )}
+              <button
+                onClick={() => { toggle(); setShowMenu(false); }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-xs text-gray-500 hover:bg-gray-100"
+              >
+                <i className={`ti ${theme === 'dark' ? 'ti-sun' : 'ti-moon'} text-[10px]`} />
+                {theme === 'dark' ? 'Tema Putih' : 'Tema Hitam'}
+              </button>
               <button
                 onClick={() => { setShowMenu(false); logout(); }}
                 className="flex w-full items-center gap-2 px-3 py-2 text-xs text-red-400 hover:bg-gray-100"

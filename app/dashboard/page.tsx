@@ -1,5 +1,6 @@
 "use client";
 import { useAuth } from "@/lib/auth-context";
+import { useTheme } from "@/lib/theme-context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -13,6 +14,7 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const { user, tenant, loading, logout } = useAuth();
+  const { theme, toggle } = useTheme();
   const router = useRouter();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [activeTab, setActiveTab] = useState<"overview" | "users" | "settings">("overview");

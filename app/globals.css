@@ -2,20 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
-body { background: #f9fafb; color: #111827; }
+/* ── Light theme (default) ── */
+:root, [data-theme="light"] {
+  --bg-base:    #f9fafb;
+  --bg-card:    #ffffff;
+  --bg-muted:   #f3f4f6;
+  --bg-hover:   #e5e7eb;
+  --border:     #e5e7eb;
+  --border-md:  #d1d5db;
+  --text-1:     #111827;
+  --text-2:     #374151;
+  --text-3:     #6b7280;
+  --text-4:     #9ca3af;
+  --scrollbar:  #d1d5db;
+}
 
-/* Mobile-friendly globals */
+/* ── Dark theme ── */
+[data-theme="dark"] {
+  --bg-base:    #0a0a0a;
+  --bg-card:    #171717;
+  --bg-muted:   #262626;
+  --bg-hover:   #3f3f46;
+  --border:     #27272a;
+  --border-md:  #3f3f46;
+  --text-1:     #f5f5f5;
+  --text-2:     #d4d4d4;
+  --text-3:     #a1a1aa;
+  --text-4:     #71717a;
+  --scrollbar:  #3f3f46;
+}
+
+body { background: var(--bg-base); color: var(--text-1); transition: background 0.2s, color 0.2s; }
+
 * { -webkit-tap-highlight-color: transparent; }
 input, select, textarea { font-size: 16px !important; }
-
-/* Safe area for notch */
 .safe-top { padding-top: env(safe-area-inset-top); }
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-
-/* Scrollbar */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
 
-/* Card shadow */
-.card { box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+/* Utility classes yang pakai CSS variables */
+.t-bg-base   { background: var(--bg-base); }
+.t-bg-card   { background: var(--bg-card); }
+.t-bg-muted  { background: var(--bg-muted); }
+.t-bg-hover:hover { background: var(--bg-hover); }
+.t-border    { border-color: var(--border); }
+.t-border-md { border-color: var(--border-md); }
+.t-text-1    { color: var(--text-1); }
+.t-text-2    { color: var(--text-2); }
+.t-text-3    { color: var(--text-3); }
+.t-text-4    { color: var(--text-4); }
