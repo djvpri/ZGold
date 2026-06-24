@@ -138,10 +138,10 @@ export default function UsersPage() {
 
   if (loading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-neutral-950">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="mb-2 text-3xl">💎</div>
-          <p className="text-[10px] text-neutral-400">Memuat...</p>
+          <p className="text-[10px] text-gray-500">Memuat...</p>
         </div>
       </div>
     );
@@ -155,14 +155,14 @@ export default function UsersPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* Mobile header */}
-      <div className="flex items-center justify-between border-b border-neutral-800 px-3 py-2 sm:hidden">
-        <button onClick={() => setShowSidebar(!showSidebar)} className="rounded p-1 text-neutral-400 hover:bg-neutral-800">
+      <div className="flex items-center justify-between border-b border-gray-200 px-3 py-2 sm:hidden">
+        <button onClick={() => setShowSidebar(!showSidebar)} className="rounded p-1 text-gray-500 hover:bg-gray-100">
           <i className="ti ti-menu-2 text-lg" />
         </button>
         <span className="text-xs font-medium">Kelola Kasir</span>
-        <button onClick={() => router.push("/")} className="rounded p-1 text-neutral-400 hover:bg-neutral-800">
+        <button onClick={() => router.push("/")} className="rounded p-1 text-gray-500 hover:bg-gray-100">
           <i className="ti ti-point-of-sale text-lg" />
         </button>
       </div>
@@ -173,7 +173,7 @@ export default function UsersPage() {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 z-50 h-full w-56 border-r border-neutral-800 bg-neutral-950 p-3 transition-transform sm:translate-x-0 ${showSidebar ? "translate-x-0" : "-translate-x-full"}`}>
+      <div className={`fixed left-0 top-0 z-50 h-full w-56 border-r border-gray-200 bg-gray-50 p-3 transition-transform sm:translate-x-0 ${showSidebar ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="mb-6 hidden items-center gap-2 sm:flex">
           <span className="text-lg">💎</span>
           <span className="text-xs font-medium">{tenant?.nama_toko ?? "Zomet POS"}</span>
@@ -183,7 +183,7 @@ export default function UsersPage() {
             <span className="text-lg">💎</span>
             <span className="text-xs font-medium">Menu</span>
           </div>
-          <button onClick={() => setShowSidebar(false)} className="rounded p-1 text-neutral-400">
+          <button onClick={() => setShowSidebar(false)} className="rounded p-1 text-gray-500">
             <i className="ti ti-x text-lg" />
           </button>
         </div>
@@ -193,7 +193,7 @@ export default function UsersPage() {
               <button
                 key={item.id}
                 onClick={() => { setShowSidebar(false); router.push(item.href!); }}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-xs text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
+                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-xs text-gray-500 hover:bg-gray-100 hover:text-gray-800"
               >
                 <i className={`ti ${item.icon} text-sm`} />
                 {item.label}
@@ -202,7 +202,7 @@ export default function UsersPage() {
               <button
                 key={item.id}
                 onClick={() => setShowSidebar(false)}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-2 bg-neutral-800 text-xs text-neutral-200"
+                className="flex w-full items-center gap-2 rounded-md px-2 py-2 bg-gray-100 text-xs text-gray-800"
               >
                 <i className={`ti ${item.icon} text-sm`} />
                 {item.label}
@@ -213,7 +213,7 @@ export default function UsersPage() {
         <div className="absolute bottom-3 left-3 right-3">
           <button
             onClick={logout}
-            className="w-full rounded-md px-2 py-1.5 text-left text-[10px] text-neutral-500 hover:bg-neutral-800 hover:text-neutral-300"
+            className="w-full rounded-md px-2 py-1.5 text-left text-[10px] text-gray-400 hover:bg-gray-100 hover:text-gray-700"
           >
             <i className="ti ti-logout mr-1" /> Keluar
           </button>
@@ -238,10 +238,10 @@ export default function UsersPage() {
         </div>
 
         {/* Desktop Table */}
-        <div className="hidden overflow-x-auto rounded-lg border border-neutral-800 sm:block">
+        <div className="hidden overflow-x-auto rounded-lg border border-gray-200 sm:block">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-neutral-800 text-left text-neutral-500">
+              <tr className="border-b border-gray-200 text-left text-gray-400">
                 <th className="px-3 py-2.5">Nama</th>
                 <th className="px-3 py-2.5">Email</th>
                 <th className="px-3 py-2.5">Role</th>
@@ -252,9 +252,9 @@ export default function UsersPage() {
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.id} className="border-b border-neutral-800/50 last:border-0">
-                  <td className="px-3 py-2.5 font-medium text-neutral-300">{u.nama}</td>
-                  <td className="px-3 py-2.5 text-neutral-400">{u.email}</td>
+                <tr key={u.id} className="border-b border-gray-200/50 last:border-0">
+                  <td className="px-3 py-2.5 font-medium text-gray-700">{u.nama}</td>
+                  <td className="px-3 py-2.5 text-gray-500">{u.email}</td>
                   <td className="px-3 py-2.5">
                     <span
                       className="rounded-full px-2 py-0.5 text-[10px]"
@@ -268,7 +268,7 @@ export default function UsersPage() {
                       {u.is_active ? "Aktif" : "Nonaktif"}
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 text-[10px] text-neutral-500">
+                  <td className="px-3 py-2.5 text-[10px] text-gray-400">
                     {u.last_login ? new Date(u.last_login).toLocaleString("id-ID") : "—"}
                   </td>
                   {isAdmin && (
@@ -277,14 +277,14 @@ export default function UsersPage() {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => openEdit(u)}
-                            className="rounded px-1.5 py-1 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
+                            className="rounded px-1.5 py-1 text-gray-500 hover:bg-gray-100 hover:text-gray-800"
                             title="Edit"
                           >
                             <i className="ti ti-pencil text-sm" />
                           </button>
                           <button
                             onClick={() => toggleActive(u)}
-                            className={`rounded px-1.5 py-1 hover:bg-neutral-800 ${u.is_active ? "text-amber-400" : "text-green-400"}`}
+                            className={`rounded px-1.5 py-1 hover:bg-gray-100 ${u.is_active ? "text-amber-400" : "text-green-400"}`}
                             title={u.is_active ? "Nonaktifkan" : "Aktifkan"}
                           >
                             <i className={`ti ${u.is_active ? "ti-toggle-left" : "ti-toggle-right"} text-sm`} />
@@ -292,7 +292,7 @@ export default function UsersPage() {
                           {isOwner && (
                             <button
                               onClick={() => deleteUser(u)}
-                              className="rounded px-1.5 py-1 text-red-400 hover:bg-neutral-800"
+                              className="rounded px-1.5 py-1 text-red-400 hover:bg-gray-100"
                               title="Hapus"
                             >
                               <i className="ti ti-trash text-sm" />
@@ -307,14 +307,14 @@ export default function UsersPage() {
             </tbody>
           </table>
           {users.length === 0 && (
-            <div className="py-8 text-center text-[10px] text-neutral-500">Belum ada user</div>
+            <div className="py-8 text-center text-[10px] text-gray-400">Belum ada user</div>
           )}
         </div>
 
         {/* Mobile Cards */}
         <div className="space-y-2 sm:hidden">
           {users.map((u) => (
-            <div key={u.id} className="rounded-lg border border-neutral-800 p-3">
+            <div key={u.id} className="rounded-lg border border-gray-200 p-3">
               <div className="mb-1 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">{u.nama}</span>
@@ -329,7 +329,7 @@ export default function UsersPage() {
                   {u.is_active ? "Aktif" : "Nonaktif"}
                 </span>
               </div>
-              <div className="mb-2 text-[10px] text-neutral-500">{u.email}</div>
+              <div className="mb-2 text-[10px] text-gray-400">{u.email}</div>
               <div className="text-[9px] text-neutral-600">
                 Login: {u.last_login ? new Date(u.last_login).toLocaleString("id-ID") : "—"}
               </div>
@@ -337,7 +337,7 @@ export default function UsersPage() {
                 <div className="mt-2 flex gap-1.5">
                   <button
                     onClick={() => openEdit(u)}
-                    className="rounded bg-neutral-800 px-2 py-1 text-[9px] text-neutral-300"
+                    className="rounded bg-gray-100 px-2 py-1 text-[9px] text-gray-700"
                   >
                     <i className="ti ti-pencil mr-1" />Edit
                   </button>
@@ -360,7 +360,7 @@ export default function UsersPage() {
             </div>
           ))}
           {users.length === 0 && (
-            <div className="rounded-lg border border-neutral-800 py-6 text-center text-[10px] text-neutral-500">
+            <div className="rounded-lg border border-gray-200 py-6 text-center text-[10px] text-gray-400">
               Belum ada user
             </div>
           )}
@@ -371,12 +371,12 @@ export default function UsersPage() {
       {showModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-3" onClick={() => setShowModal(false)}>
           <div
-            className="w-full max-w-sm rounded-xl border border-neutral-700 bg-neutral-900 shadow-2xl"
+            className="w-full max-w-sm rounded-xl border border-gray-300 bg-white shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-neutral-800 px-4 py-3">
+            <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
               <h3 className="text-sm font-medium">{editingUser ? "Edit User" : "Tambah User"}</h3>
-              <button onClick={() => setShowModal(false)} className="rounded p-1 text-neutral-400 hover:bg-neutral-800">
+              <button onClick={() => setShowModal(false)} className="rounded p-1 text-gray-500 hover:bg-gray-100">
                 <i className="ti ti-x text-lg" />
               </button>
             </div>
@@ -386,42 +386,42 @@ export default function UsersPage() {
               )}
               <div className="space-y-3">
                 <div>
-                  <label className="mb-1 block text-[10px] text-neutral-500">Nama</label>
+                  <label className="mb-1 block text-[10px] text-gray-400">Nama</label>
                   <input
                     value={form.nama}
                     onChange={(e) => setForm({ ...form, nama: e.target.value })}
-                    className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs outline-none"
+                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs outline-none"
                     placeholder="Nama lengkap"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] text-neutral-500">Email</label>
+                  <label className="mb-1 block text-[10px] text-gray-400">Email</label>
                   <input
                     type="email"
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs outline-none"
+                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs outline-none"
                     placeholder="email@contoh.com"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] text-neutral-500">
+                  <label className="mb-1 block text-[10px] text-gray-400">
                     Password {editingUser && "(kosongkan jika tidak diubah)"}
                   </label>
                   <input
                     type="password"
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs outline-none"
+                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs outline-none"
                     placeholder="Minimal 6 karakter"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] text-neutral-500">Role</label>
+                  <label className="mb-1 block text-[10px] text-gray-400">Role</label>
                   <select
                     value={form.role}
                     onChange={(e) => setForm({ ...form, role: e.target.value })}
-                    className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs outline-none"
+                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs outline-none"
                   >
                     <option value="kasir">Kasir</option>
                     {isOwner && <option value="admin">Admin</option>}
@@ -431,7 +431,7 @@ export default function UsersPage() {
               <div className="mt-4 flex gap-2">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="flex-1 rounded-lg border border-neutral-700 py-2.5 text-xs text-neutral-400 hover:bg-neutral-800"
+                  className="flex-1 rounded-lg border border-gray-300 py-2.5 text-xs text-gray-500 hover:bg-gray-100"
                 >
                   Batal
                 </button>

@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-body { background: #0a0a0a; }
+body { background: #f9fafb; color: #111827; }
 
 /* Mobile-friendly globals */
 * { -webkit-tap-highlight-color: transparent; }
-input, select, textarea { font-size: 16px !important; } /* prevent iOS zoom */
+input, select, textarea { font-size: 16px !important; }
 
 /* Safe area for notch */
 .safe-top { padding-top: env(safe-area-inset-top); }
@@ -15,4 +15,7 @@ input, select, textarea { font-size: 16px !important; } /* prevent iOS zoom */
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+
+/* Card shadow */
+.card { box-shadow: 0 1px 3px rgba(0,0,0,0.08); }

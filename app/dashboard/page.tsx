@@ -49,10 +49,10 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-neutral-950">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="mb-2 text-3xl">💎</div>
-          <p className="text-[10px] text-neutral-400">Memuat...</p>
+          <p className="text-[10px] text-gray-500">Memuat...</p>
         </div>
       </div>
     );
@@ -73,14 +73,14 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 safe-top safe-bottom">
+    <div className="min-h-screen bg-gray-50 text-gray-900 safe-top safe-bottom">
       {/* Mobile header */}
-      <div className="flex items-center justify-between border-b border-neutral-800 px-3 py-2 sm:hidden">
-        <button onClick={() => setShowSidebar(!showSidebar)} className="rounded p-1 text-neutral-400 hover:bg-neutral-800">
+      <div className="flex items-center justify-between border-b border-gray-200 px-3 py-2 sm:hidden">
+        <button onClick={() => setShowSidebar(!showSidebar)} className="rounded p-1 text-gray-500 hover:bg-gray-100">
           <i className="ti ti-menu-2 text-lg" />
         </button>
         <span className="text-xs font-medium">{tenant.nama_toko}</span>
-        <button onClick={() => router.push("/")} className="rounded p-1 text-neutral-400 hover:bg-neutral-800">
+        <button onClick={() => router.push("/")} className="rounded p-1 text-gray-500 hover:bg-gray-100">
           <i className="ti ti-point-of-sale text-lg" />
         </button>
       </div>
@@ -91,7 +91,7 @@ export default function DashboardPage() {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 z-50 h-full w-56 border-r border-neutral-800 bg-neutral-950 p-3 transition-transform sm:translate-x-0 ${showSidebar ? "translate-x-0" : "-translate-x-full"}`}>
+      <div className={`fixed left-0 top-0 z-50 h-full w-56 border-r border-gray-200 bg-gray-50 p-3 transition-transform sm:translate-x-0 ${showSidebar ? "translate-x-0" : "-translate-x-full"}`}>
         {/* Logo - desktop */}
         <div className="mb-6 hidden items-center gap-2 sm:flex">
           <span className="text-lg">💎</span>
@@ -103,7 +103,7 @@ export default function DashboardPage() {
             <span className="text-lg">💎</span>
             <span className="text-xs font-medium">Menu</span>
           </div>
-          <button onClick={() => setShowSidebar(false)} className="rounded p-1 text-neutral-400">
+          <button onClick={() => setShowSidebar(false)} className="rounded p-1 text-gray-500">
             <i className="ti ti-x text-lg" />
           </button>
         </div>
@@ -114,7 +114,7 @@ export default function DashboardPage() {
               <button
                 key={item.id}
                 onClick={() => { setShowSidebar(false); router.push(item.href!); }}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-xs text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
+                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-xs text-gray-500 hover:bg-gray-100 hover:text-gray-800"
               >
                 <i className={`ti ${item.icon} text-sm`} />
                 {item.label}
@@ -141,13 +141,13 @@ export default function DashboardPage() {
             {user.nama} · {user.role}
           </div>
           <div className="mb-2">
-            <span className="rounded-full bg-neutral-800 px-1.5 py-0.5 text-[9px] text-neutral-400">
+            <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[9px] text-gray-500">
               {tenant.plan}
             </span>
           </div>
           <button
             onClick={logout}
-            className="w-full rounded-md px-2 py-1.5 text-left text-[10px] text-neutral-500 hover:bg-neutral-800 hover:text-neutral-300"
+            className="w-full rounded-md px-2 py-1.5 text-left text-[10px] text-gray-400 hover:bg-gray-100 hover:text-gray-700"
           >
             <i className="ti ti-logout mr-1" /> Keluar
           </button>
@@ -164,44 +164,44 @@ export default function DashboardPage() {
 
         {activeTab === "overview" && stats && (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <div className="rounded-lg border border-neutral-800 p-3">
-              <div className="text-[9px] text-neutral-500 sm:text-[10px]">Transaksi Hari Ini</div>
+            <div className="rounded-lg border border-gray-200 p-3">
+              <div className="text-[9px] text-gray-400 sm:text-[10px]">Transaksi Hari Ini</div>
               <div className="mt-1 text-base font-medium sm:text-lg">{stats.transaksiHariIni}</div>
             </div>
-            <div className="rounded-lg border border-neutral-800 p-3">
-              <div className="text-[9px] text-neutral-500 sm:text-[10px]">Total Penjualan</div>
+            <div className="rounded-lg border border-gray-200 p-3">
+              <div className="text-[9px] text-gray-400 sm:text-[10px]">Total Penjualan</div>
               <div className="mt-1 text-sm font-medium text-green-400 sm:text-lg">{formatIDR(stats.totalPenjualan)}</div>
             </div>
-            <div className="rounded-lg border border-neutral-800 p-3">
-              <div className="text-[9px] text-neutral-500 sm:text-[10px]">Total Buyback</div>
+            <div className="rounded-lg border border-gray-200 p-3">
+              <div className="text-[9px] text-gray-400 sm:text-[10px]">Total Buyback</div>
               <div className="mt-1 text-sm font-medium text-amber-400 sm:text-lg">{formatIDR(stats.totalBuyback)}</div>
             </div>
-            <div className="rounded-lg border border-neutral-800 p-3">
-              <div className="text-[9px] text-neutral-500 sm:text-[10px]">Total Produk</div>
+            <div className="rounded-lg border border-gray-200 p-3">
+              <div className="text-[9px] text-gray-400 sm:text-[10px]">Total Produk</div>
               <div className="mt-1 text-base font-medium sm:text-lg">{stats.produkCount}</div>
             </div>
           </div>
         )}
 
         {activeTab === "overview" && !stats && (
-          <div className="py-8 text-center text-[10px] text-neutral-500 sm:text-xs">Memuat data...</div>
+          <div className="py-8 text-center text-[10px] text-gray-400 sm:text-xs">Memuat data...</div>
         )}
 
         {activeTab === "users" && (
-          <div className="rounded-lg border border-neutral-800 p-3 sm:p-4">
+          <div className="rounded-lg border border-gray-200 p-3 sm:p-4">
             <div className="mb-3 flex items-center justify-between">
               <span className="text-xs font-medium">Daftar Pengguna</span>
               <button className="rounded-md bg-amber-600 px-2 py-1 text-[10px] text-white hover:bg-amber-700 sm:px-3">
                 + Tambah
               </button>
             </div>
-            <div className="text-xs text-neutral-500">
-              <div className="flex items-center justify-between border-b border-neutral-800 py-2">
+            <div className="text-xs text-gray-400">
+              <div className="flex items-center justify-between border-b border-gray-200 py-2">
                 <div>
-                  <div className="font-medium text-neutral-300">{user.nama}</div>
+                  <div className="font-medium text-gray-700">{user.nama}</div>
                   <div className="text-[10px]">{user.email}</div>
                 </div>
-                <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px]">{user.role}</span>
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px]">{user.role}</span>
               </div>
             </div>
             <p className="mt-3 text-[10px] text-neutral-600">
@@ -212,27 +212,27 @@ export default function DashboardPage() {
 
         {activeTab === "settings" && (
           <div className="space-y-3 sm:space-y-4">
-            <div className="rounded-lg border border-neutral-800 p-3 sm:p-4">
+            <div className="rounded-lg border border-gray-200 p-3 sm:p-4">
               <div className="mb-3 text-xs font-medium">Informasi Toko</div>
               <div className="space-y-2">
                 <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2">
-                  <label className="text-[10px] text-neutral-500 sm:min-w-[100px]">Nama Toko</label>
+                  <label className="text-[10px] text-gray-400 sm:min-w-[100px]">Nama Toko</label>
                   <span className="text-xs">{tenant.nama_toko}</span>
                 </div>
                 <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2">
-                  <label className="text-[10px] text-neutral-500 sm:min-w-[100px]">URL</label>
+                  <label className="text-[10px] text-gray-400 sm:min-w-[100px]">URL</label>
                   <span className="text-xs">zomet.id/{tenant.slug}</span>
                 </div>
                 <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2">
-                  <label className="text-[10px] text-neutral-500 sm:min-w-[100px]">Paket</label>
-                  <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px]">{tenant.plan}</span>
+                  <label className="text-[10px] text-gray-400 sm:min-w-[100px]">Paket</label>
+                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px]">{tenant.plan}</span>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-lg border border-neutral-800 p-3 sm:p-4">
+            <div className="rounded-lg border border-gray-200 p-3 sm:p-4">
               <div className="mb-3 text-xs font-medium">Paket & Langganan</div>
-              <p className="text-[10px] text-neutral-500">
+              <p className="text-[10px] text-gray-400">
                 Upgrade ke paket Pro atau Enterprise untuk fitur lebih lengkap.
               </p>
               <button className="mt-2 rounded-md bg-amber-600 px-3 py-1.5 text-[10px] text-white hover:bg-amber-700">

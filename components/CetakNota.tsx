@@ -82,13 +82,13 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-3" onClick={onClose}>
       <div
-        className="w-full max-w-sm rounded-xl border border-neutral-700 bg-neutral-900 shadow-2xl"
+        className="w-full max-w-sm rounded-xl border border-gray-300 bg-white shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-neutral-800 px-4 py-3">
+        <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
           <h2 className="text-sm font-medium">Cetak Nota</h2>
-          <button onClick={onClose} className="rounded p-1 text-neutral-400 hover:bg-neutral-800">
+          <button onClick={onClose} className="rounded p-1 text-gray-500 hover:bg-gray-100">
             <i className="ti ti-x text-lg" />
           </button>
         </div>
@@ -105,10 +105,10 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2 border-t border-neutral-800 p-3">
+        <div className="flex gap-2 border-t border-gray-200 p-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-lg border border-neutral-700 py-2.5 text-xs text-neutral-400 hover:bg-neutral-800"
+            className="flex-1 rounded-lg border border-gray-300 py-2.5 text-xs text-gray-500 hover:bg-gray-100"
           >
             Tutup
           </button>

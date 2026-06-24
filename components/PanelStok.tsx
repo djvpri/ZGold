@@ -172,7 +172,7 @@ export default function PanelStok() {
 
   if (loading) {
     return (
-      <div className="py-8 text-center text-sm text-neutral-400">
+      <div className="py-8 text-center text-sm text-gray-500">
         <i className="ti ti-loader-2 mb-2 block animate-spin text-3xl" />
         Memuat data stok...
       </div>
@@ -192,7 +192,7 @@ export default function PanelStok() {
     <div>
       {/* Header */}
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">
+        <span className="text-[10px] font-medium uppercase tracking-wider text-gray-500">
           Manajemen Stok
         </span>
         <div className="flex flex-wrap gap-2">
@@ -201,12 +201,12 @@ export default function PanelStok() {
             placeholder="Cari..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs sm:py-1"
+            className="rounded-md border border-gray-300 bg-white px-3 py-2 text-xs sm:py-1"
           />
           <select
             value={filterLogam}
             onChange={(e) => setFilterLogam(e.target.value)}
-            className="rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2 text-xs sm:py-1"
+            className="rounded-md border border-gray-300 bg-white px-2 py-2 text-xs sm:py-1"
           >
             <option value="all">Semua Logam</option>
             {Object.values(LOGAM).map((l) => (
@@ -245,15 +245,15 @@ export default function PanelStok() {
       {/* Mobile: card layout */}
       <div className="space-y-2 sm:hidden">
         {produk.length === 0 ? (
-          <div className="py-8 text-center text-neutral-500">
+          <div className="py-8 text-center text-gray-400">
             Belum ada produk
           </div>
         ) : (
           produk.map((item) => (
-            <div key={item.id} className="rounded-lg border border-neutral-800 p-2.5">
+            <div key={item.id} className="rounded-lg border border-gray-200 p-2.5">
               <div className="mb-1 flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-medium text-neutral-300">{item.kode}</span>
+                  <span className="text-[10px] font-medium text-gray-700">{item.kode}</span>
                   <span
                     className="rounded-full px-1.5 py-0.5 text-[8px]"
                     style={{ 
@@ -268,9 +268,9 @@ export default function PanelStok() {
                   {item.stok}
                 </span>
               </div>
-              <div className="text-[11px] text-neutral-300">{item.nama}</div>
+              <div className="text-[11px] text-gray-700">{item.nama}</div>
               <div className="mt-1 flex items-center justify-between">
-                <span className="text-[9px] text-neutral-500">{item.jenis} · {item.berat_gram}g</span>
+                <span className="text-[9px] text-gray-400">{item.jenis} · {item.berat_gram}g</span>
                 <div className="flex gap-1">
                   <button onClick={() => openStokAdjust(item.id)} className="rounded bg-green-600/20 px-2 py-0.5 text-[9px] text-green-400">Stok</button>
                   <button onClick={() => handleEdit(item)} className="rounded bg-blue-600/20 px-2 py-0.5 text-[9px] text-blue-400">Edit</button>
@@ -286,7 +286,7 @@ export default function PanelStok() {
       <div className="hidden overflow-x-auto sm:block">
         <table className="w-full text-xs">
           <thead>
-            <tr className="border-b border-neutral-800 text-left text-neutral-400">
+            <tr className="border-b border-gray-200 text-left text-gray-500">
               <th className="pb-2">Kode</th>
               <th className="pb-2">Nama</th>
               <th className="pb-2">Logam</th>
@@ -299,13 +299,13 @@ export default function PanelStok() {
           <tbody>
             {produk.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-neutral-500">
+                <td colSpan={7} className="py-8 text-center text-gray-400">
                   Belum ada produk
                 </td>
               </tr>
             ) : (
               produk.map((item) => (
-                <tr key={item.id} className="border-b border-neutral-800">
+                <tr key={item.id} className="border-b border-gray-200">
                   <td className="py-2 font-medium">{item.kode}</td>
                   <td className="py-2">{item.nama}</td>
                   <td className="py-2">
@@ -358,29 +358,29 @@ export default function PanelStok() {
       {/* Modal Form Produk */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center">
-          <div className="w-full max-w-md rounded-t-lg bg-neutral-900 p-4 sm:rounded-lg">
+          <div className="w-full max-w-md rounded-t-lg bg-white p-4 sm:rounded-lg">
             <h3 className="mb-3 text-sm font-medium">
               {editId ? "Edit Produk" : "Tambah Produk Baru"}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-[10px] text-neutral-400">Kode</label>
+                  <label className="mb-1 block text-[10px] text-gray-500">Kode</label>
                   <input
                     type="text"
                     value={form.kode}
                     onChange={(e) => setForm({ ...form, kode: e.target.value })}
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                    className="w-full rounded-md border border-gray-300 bg-white px-2 py-2.5 text-xs sm:py-1.5"
                     required
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] text-neutral-400">Nama</label>
+                  <label className="mb-1 block text-[10px] text-gray-500">Nama</label>
                   <input
                     type="text"
                     value={form.nama}
                     onChange={(e) => setForm({ ...form, nama: e.target.value })}
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                    className="w-full rounded-md border border-gray-300 bg-white px-2 py-2.5 text-xs sm:py-1.5"
                     required
                   />
                 </div>
@@ -388,11 +388,11 @@ export default function PanelStok() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-[10px] text-neutral-400">Logam</label>
+                  <label className="mb-1 block text-[10px] text-gray-500">Logam</label>
                   <select
                     value={form.logam_id}
                     onChange={(e) => setForm({ ...form, logam_id: e.target.value })}
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                    className="w-full rounded-md border border-gray-300 bg-white px-2 py-2.5 text-xs sm:py-1.5"
                   >
                     {Object.values(LOGAM).map((l) => (
                       <option key={l.id} value={l.id}>{l.nama}</option>
@@ -400,11 +400,11 @@ export default function PanelStok() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] text-neutral-400">Jenis</label>
+                  <label className="mb-1 block text-[10px] text-gray-500">Jenis</label>
                   <select
                     value={form.jenis}
                     onChange={(e) => setForm({ ...form, jenis: e.target.value })}
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                    className="w-full rounded-md border border-gray-300 bg-white px-2 py-2.5 text-xs sm:py-1.5"
                   >
                     {LOGAM[form.logam_id]?.jenis.map((j) => (
                       <option key={j} value={j}>{j}</option>
@@ -415,36 +415,36 @@ export default function PanelStok() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-[10px] text-neutral-400">Berat (gram)</label>
+                  <label className="mb-1 block text-[10px] text-gray-500">Berat (gram)</label>
                   <input
                     type="number"
                     step="0.1"
                     value={form.berat_gram}
                     onChange={(e) => setForm({ ...form, berat_gram: +e.target.value })}
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                    className="w-full rounded-md border border-gray-300 bg-white px-2 py-2.5 text-xs sm:py-1.5"
                     inputMode="decimal"
                     required
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] text-neutral-400">Ongkos Cetak</label>
+                  <label className="mb-1 block text-[10px] text-gray-500">Ongkos Cetak</label>
                   <input
                     type="number"
                     value={form.ongkos_cetak}
                     onChange={(e) => setForm({ ...form, ongkos_cetak: +e.target.value })}
-                    className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                    className="w-full rounded-md border border-gray-300 bg-white px-2 py-2.5 text-xs sm:py-1.5"
                     inputMode="numeric"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="mb-1 block text-[10px] text-neutral-400">Stok Awal</label>
+                <label className="mb-1 block text-[10px] text-gray-500">Stok Awal</label>
                 <input
                   type="number"
                   value={form.stok}
                   onChange={(e) => setForm({ ...form, stok: +e.target.value })}
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                  className="w-full rounded-md border border-gray-300 bg-white px-2 py-2.5 text-xs sm:py-1.5"
                   inputMode="numeric"
                   disabled={!!editId}
                 />
@@ -454,7 +454,7 @@ export default function PanelStok() {
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); setEditId(null); }}
-                  className="rounded-md px-3 py-2.5 text-xs text-neutral-400 hover:text-neutral-200 sm:py-1.5"
+                  className="rounded-md px-3 py-2.5 text-xs text-gray-500 hover:text-gray-800 sm:py-1.5"
                 >
                   Batal
                 </button>
@@ -473,15 +473,15 @@ export default function PanelStok() {
       {/* Modal Stok Adjustment */}
       {stokAdjust.produkId > 0 && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center">
-          <div className="w-full max-w-sm rounded-t-lg bg-neutral-900 p-4 sm:rounded-lg">
+          <div className="w-full max-w-sm rounded-t-lg bg-white p-4 sm:rounded-lg">
             <h3 className="mb-3 text-sm font-medium">Adjust Stok</h3>
             <form onSubmit={handleStokAdjust} className="space-y-3">
               <div>
-                <label className="mb-1 block text-[10px] text-neutral-400">Tipe</label>
+                <label className="mb-1 block text-[10px] text-gray-500">Tipe</label>
                 <select
                   value={stokAdjust.tipe}
                   onChange={(e) => setStokAdjust({ ...stokAdjust, tipe: e.target.value as any })}
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                  className="w-full rounded-md border border-gray-300 bg-white px-2 py-2.5 text-xs sm:py-1.5"
                 >
                   <option value="masuk">Stok Masuk</option>
                   <option value="keluar">Stok Keluar</option>
@@ -489,23 +489,23 @@ export default function PanelStok() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-[10px] text-neutral-400">Jumlah</label>
+                <label className="mb-1 block text-[10px] text-gray-500">Jumlah</label>
                 <input
                   type="number"
                   value={stokAdjust.jumlah}
                   onChange={(e) => setStokAdjust({ ...stokAdjust, jumlah: +e.target.value })}
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                  className="w-full rounded-md border border-gray-300 bg-white px-2 py-2.5 text-xs sm:py-1.5"
                   inputMode="numeric"
                   required
                 />
               </div>
               <div>
-                <label className="mb-1 block text-[10px] text-neutral-400">Keterangan</label>
+                <label className="mb-1 block text-[10px] text-gray-500">Keterangan</label>
                 <input
                   type="text"
                   value={stokAdjust.keterangan}
                   onChange={(e) => setStokAdjust({ ...stokAdjust, keterangan: e.target.value })}
-                  className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs sm:py-1.5"
+                  className="w-full rounded-md border border-gray-300 bg-white px-2 py-2.5 text-xs sm:py-1.5"
                   placeholder="Opsional"
                 />
               </div>
@@ -513,7 +513,7 @@ export default function PanelStok() {
                 <button
                   type="button"
                   onClick={() => setStokAdjust({ produkId: 0, jumlah: 0, tipe: "masuk", keterangan: "" })}
-                  className="rounded-md px-3 py-2.5 text-xs text-neutral-400 hover:text-neutral-200 sm:py-1.5"
+                  className="rounded-md px-3 py-2.5 text-xs text-gray-500 hover:text-gray-800 sm:py-1.5"
                 >
                   Batal
                 </button>

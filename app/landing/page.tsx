@@ -53,9 +53,9 @@ export default function LandingPage() {
   if (loading || user) return null;
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 safe-top safe-bottom">
+    <div className="min-h-screen bg-gray-50 text-gray-900 safe-top safe-bottom">
       {/* Header */}
-      <header className="border-b border-neutral-800">
+      <header className="border-b border-gray-200">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:py-4">
           <div className="flex items-center gap-2">
             <span className="text-xl sm:text-2xl">💎</span>
@@ -64,7 +64,7 @@ export default function LandingPage() {
           <div className="flex gap-2">
             <Link
               href="/login"
-              className="rounded-md px-3 py-1.5 text-xs text-neutral-400 hover:text-neutral-200"
+              className="rounded-md px-3 py-1.5 text-xs text-gray-500 hover:text-gray-800"
             >
               Masuk
             </Link>
@@ -86,7 +86,7 @@ export default function LandingPage() {
             <br />
             <span className="text-amber-500">Multi-Logam</span>
           </h1>
-          <p className="mb-6 text-xs text-neutral-400 sm:text-sm">
+          <p className="mb-6 text-xs text-gray-500 sm:text-sm">
             Sistem point of sale lengkap untuk toko perhiasan. 
             Kelola emas, perak, platinum, emas putih, dan palladium dalam satu aplikasi.
           </p>
@@ -99,7 +99,7 @@ export default function LandingPage() {
             </Link>
             <a
               href="#pricing"
-              className="rounded-md border border-neutral-700 px-4 py-2 text-xs text-neutral-300 hover:border-neutral-500 sm:px-5 sm:py-2.5 sm:text-sm"
+              className="rounded-md border border-gray-300 px-4 py-2 text-xs text-gray-700 hover:border-neutral-500 sm:px-5 sm:py-2.5 sm:text-sm"
             >
               Lihat Harga
             </a>
@@ -108,9 +108,9 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section className="border-t border-neutral-800 px-4 py-8 sm:py-12">
+      <section className="border-t border-gray-200 px-4 py-8 sm:py-12">
         <div className="mx-auto max-w-5xl">
-          <h2 className="mb-4 text-center text-xs font-medium uppercase tracking-wider text-neutral-500 sm:mb-6">
+          <h2 className="mb-4 text-center text-xs font-medium uppercase tracking-wider text-gray-400 sm:mb-6">
             Fitur Utama
           </h2>
           <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
@@ -120,10 +120,10 @@ export default function LandingPage() {
               { icon: "ti-report-analytics", label: "Laporan Harian", desc: "Rekap jual & buyback" },
               { icon: "ti-device-desktop", label: "Web-Based", desc: "Akses dari mana saja" },
             ].map((f) => (
-              <div key={f.label} className="rounded-lg border border-neutral-800 p-3 text-center">
+              <div key={f.label} className="rounded-lg border border-gray-200 p-3 text-center">
                 <i className={`ti ${f.icon} mb-2 text-xl sm:text-2xl text-amber-500`} />
                 <div className="text-[11px] font-medium sm:text-xs">{f.label}</div>
-                <div className="text-[9px] text-neutral-500 sm:text-[10px]">{f.desc}</div>
+                <div className="text-[9px] text-gray-400 sm:text-[10px]">{f.desc}</div>
               </div>
             ))}
           </div>
@@ -131,16 +131,16 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="border-t border-neutral-800 px-4 py-8 sm:py-12">
+      <section id="pricing" className="border-t border-gray-200 px-4 py-8 sm:py-12">
         <div className="mx-auto max-w-5xl">
-          <h2 className="mb-4 text-center text-xs font-medium uppercase tracking-wider text-neutral-500 sm:mb-6">
+          <h2 className="mb-4 text-center text-xs font-medium uppercase tracking-wider text-gray-400 sm:mb-6">
             Pilih Paket
           </h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4">
             {PLANS.map((plan) => (
               <div
                 key={plan.id}
-                className="relative rounded-lg border border-neutral-800 p-4 transition hover:border-neutral-600"
+                className="relative rounded-lg border border-gray-200 p-4 transition hover:border-neutral-600"
               >
                 {plan.badge && (
                   <div
@@ -155,11 +155,11 @@ export default function LandingPage() {
                     {plan.nama}
                   </div>
                   <div className="mt-1 text-lg font-medium">{plan.harga}</div>
-                  <div className="text-[10px] text-neutral-500">{plan.periode}</div>
+                  <div className="text-[10px] text-gray-400">{plan.periode}</div>
                 </div>
                 <ul className="mb-4 space-y-1.5">
                   {plan.fitur.map((f) => (
-                    <li key={f} className="flex items-start gap-1.5 text-[10px] text-neutral-400 sm:text-[11px]">
+                    <li key={f} className="flex items-start gap-1.5 text-[10px] text-gray-500 sm:text-[11px]">
                       <i className="ti ti-check text-[10px] text-green-500 mt-0.5 flex-shrink-0" />
                       {f}
                     </li>
@@ -179,7 +179,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-neutral-800 px-4 py-6">
+      <footer className="border-t border-gray-200 px-4 py-6">
         <div className="mx-auto max-w-5xl text-center text-[10px] text-neutral-600">
           © 2026 Zomet POS · Sistem Point of Sale Toko Perhiasan
         </div>

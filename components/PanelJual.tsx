@@ -97,14 +97,14 @@ export default function PanelJual(props: any) {
               <button
                 key={lg.id}
                 onClick={() => onGantiLogam(lg.id)}
-                className="rounded-lg border-2 bg-neutral-800/40 p-2.5 text-left transition"
+                className="rounded-lg border-2 bg-gray-100/40 p-2.5 text-left transition"
                 style={{ borderColor: logamId === lg.id ? lg.accent : "transparent" }}
               >
                 <div className="flex items-center gap-2">
                   <i className={`ti ${lg.icon} text-base`} style={{ color: lg.accent }} />
                   <div>
                     <div className="text-xs font-medium sm:text-[13px]">{lg.nama}</div>
-                    <div className="text-[10px] text-neutral-400 sm:text-[11px]">{formatIDR(0)}/gram</div>
+                    <div className="text-[10px] text-gray-500 sm:text-[11px]">{formatIDR(0)}/gram</div>
                   </div>
                 </div>
               </button>
@@ -121,7 +121,7 @@ export default function PanelJual(props: any) {
                 style={{
                   background: kadarIdx === i ? l.accent : "transparent",
                   color: kadarIdx === i ? "#fff" : "#9ca3af",
-                  border: kadarIdx === i ? "none" : "0.5px solid #3f3f46",
+                  border: kadarIdx === i ? "none" : "0.5px solid #d1d5db",
                 }}
               >
                 {k.label}
@@ -133,7 +133,7 @@ export default function PanelJual(props: any) {
           <select
             value={jenis}
             onChange={(e) => setJenis(e.target.value)}
-            className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2 text-xs sm:py-1.5"
+            className="w-full rounded-md border border-gray-300 bg-white px-2 py-2 text-xs sm:py-1.5"
           >
             {l.jenis.map((j) => (
               <option key={j}>{j}</option>
@@ -144,7 +144,7 @@ export default function PanelJual(props: any) {
         {/* Kanan */}
         <div>
           <SectionTitle>Detail Transaksi</SectionTitle>
-          <div className="mb-2.5 rounded-lg border border-neutral-800 bg-neutral-900 p-3">
+          <div className="mb-2.5 rounded-lg border border-gray-200 bg-white p-3">
             <Field label="Nama Pembeli">
               <input value={namaPembeli} onChange={(e) => setNamaPembeli(e.target.value)} placeholder="Opsional" className={inputCls} />
             </Field>
@@ -176,7 +176,7 @@ export default function PanelJual(props: any) {
           <Field label="Bayar (Rp)">
             <input type="number" value={bayar || ""} onChange={(e) => setBayar(+e.target.value)} placeholder="0" className={inputCls} inputMode="numeric" />
           </Field>
-          <p className="mb-2 text-[11px] text-neutral-400 sm:text-xs">
+          <p className="mb-2 text-[11px] text-gray-500 sm:text-xs">
             Kembalian:{" "}
             <span className="font-medium" style={{ color: kembalian >= 0 ? "#4ade80" : "#f87171" }}>
               {kembalian >= 0 ? formatIDR(kembalian) : "—"}
@@ -199,17 +199,17 @@ export default function PanelJual(props: any) {
   );
 }
 
-const inputCls = "flex-1 rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs outline-none sm:py-1.5";
+const inputCls = "flex-1 rounded-md border border-gray-300 bg-white px-2 py-2.5 text-xs outline-none sm:py-1.5";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mb-1.5 flex items-center gap-2">
-      <label className="min-w-[90px] text-[11px] text-neutral-400 sm:min-w-[105px] sm:text-xs">{label}</label>
+      <label className="min-w-[90px] text-[11px] text-gray-500 sm:min-w-[105px] sm:text-xs">{label}</label>
       {children}
     </div>
   );
 }
 
 function SectionTitle({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`mb-1.5 text-[10px] font-medium uppercase tracking-wider text-neutral-400 ${className}`}>{children}</div>;
+  return <div className={`mb-1.5 text-[10px] font-medium uppercase tracking-wider text-gray-500 ${className}`}>{children}</div>;
 }

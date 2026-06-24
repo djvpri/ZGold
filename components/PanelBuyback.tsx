@@ -21,7 +21,7 @@ export default function PanelBuyback(props: any) {
             <button
               key={lg.id}
               onClick={() => onGantiLogam(lg.id)}
-              className="rounded-lg border-2 bg-neutral-800/40 p-2.5 text-left transition"
+              className="rounded-lg border-2 bg-gray-100/40 p-2.5 text-left transition"
               style={{ borderColor: logamId === lg.id ? lg.accent : "transparent" }}
             >
               <div className="flex items-center gap-2">
@@ -44,7 +44,7 @@ export default function PanelBuyback(props: any) {
               style={{
                 background: kadarIdx === i ? l.accent : "transparent",
                 color: kadarIdx === i ? "#fff" : "#9ca3af",
-                border: kadarIdx === i ? "none" : "0.5px solid #3f3f46",
+                border: kadarIdx === i ? "none" : "0.5px solid #d1d5db",
               }}
             >
               {kd.label}
@@ -56,7 +56,7 @@ export default function PanelBuyback(props: any) {
       {/* Kanan */}
       <div>
         <SectionTitle>Detail Buyback</SectionTitle>
-        <div className="mb-2.5 rounded-lg border border-neutral-800 bg-neutral-900 p-3">
+        <div className="mb-2.5 rounded-lg border border-gray-200 bg-white p-3">
           <Field label="Nama Penjual">
             <input value={nama} onChange={(e) => setNama(e.target.value)} placeholder="Opsional" className={inputCls} />
           </Field>
@@ -96,17 +96,17 @@ export default function PanelBuyback(props: any) {
   );
 }
 
-const inputCls = "flex-1 rounded-md border border-neutral-700 bg-neutral-900 px-2 py-2.5 text-xs outline-none sm:py-1.5";
+const inputCls = "flex-1 rounded-md border border-gray-300 bg-white px-2 py-2.5 text-xs outline-none sm:py-1.5";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mb-1.5 flex items-center gap-2">
-      <label className="min-w-[90px] text-[11px] text-neutral-400 sm:min-w-[105px] sm:text-xs">{label}</label>
+      <label className="min-w-[90px] text-[11px] text-gray-500 sm:min-w-[105px] sm:text-xs">{label}</label>
       {children}
     </div>
   );
 }
 
 function SectionTitle({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`mb-1.5 text-[10px] font-medium uppercase tracking-wider text-neutral-400 ${className}`}>{children}</div>;
+  return <div className={`mb-1.5 text-[10px] font-medium uppercase tracking-wider text-gray-500 ${className}`}>{children}</div>;
 }

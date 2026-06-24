@@ -182,14 +182,14 @@ export default function PosPerhiasan() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl p-3 sm:p-4 text-neutral-100">
+    <div className="mx-auto max-w-4xl p-3 sm:p-4 text-gray-900">
       {/* Header */}
       <div className="mb-3 flex flex-col gap-2 sm:mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-base font-medium sm:text-lg">
             <i className="ti ti-diamond mr-2" />POS Toko Perhiasan
           </h1>
-          <p className="text-[10px] text-neutral-400 sm:text-xs">Zomet · Multi-Logam</p>
+          <p className="text-[10px] text-gray-500 sm:text-xs">Zomet · Multi-Logam</p>
         </div>
         <div className="flex gap-1 overflow-x-auto pb-1">
           {(["jual", "buyback", "riwayat", "stok"] as Mode[]).map((m) => (
@@ -200,7 +200,7 @@ export default function PosPerhiasan() {
               style={{
                 background: mode === m ? logam.accent : "transparent",
                 color: mode === m ? "#fff" : "#9ca3af",
-                border: mode === m ? "none" : "0.5px solid #3f3f46",
+                border: mode === m ? "none" : "0.5px solid #d1d5db",
               }}
             >
               {m}
