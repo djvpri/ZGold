@@ -31,7 +31,7 @@ export interface StokLogRow {
 // ---------- CRUD Produk (tenant-isolated) ----------
 
 /** Ambil semua produk */
-export async function ambilSemuaProduk(tenantId?: number): Promise<ProdukRow[]> {
+export async function ambilSemuaProduk(tenantId?: string | number): Promise<ProdukRow[]> {
   if (tenantId) {
     return dbAll<ProdukRow>(
       `SELECT * FROM produk WHERE tenant_id = $1 ORDER BY logam_id, nama`,
@@ -52,7 +52,7 @@ export async function ambilProdukById(id: number): Promise<ProdukRow | null> {
 }
 
 /** Ambil produk berdasarkan kode */
-export async function ambilProdukByKode(kode: string, tenantId?: number): Promise<ProdukRow | null> {
+export async function ambilProdukByKode(kode: string, tenantId?: string | number): Promise<ProdukRow | null> {
   if (tenantId) {
     return dbOne<ProdukRow>(
       `SELECT * FROM produk WHERE kode = $1 AND tenant_id = $2`,
@@ -145,7 +145,7 @@ export async function ambilRiwayatStok(produkId: number): Promise<StokLogRow[]> 
 }
 
 /** Cari produk */
-export async function cariProduk(query: string, tenantId?: number): Promise<ProdukRow[]> {
+export async function cariProduk(query: string, tenantId?: string | number): Promise<ProdukRow[]> {
   if (tenantId) {
     return dbAll<ProdukRow>(
       `SELECT * FROM produk 
@@ -163,7 +163,7 @@ export async function cariProduk(query: string, tenantId?: number): Promise<Prod
 }
 
 /** Ambil produk berdasarkan logam */
-export async function ambilProdukByLogam(logamId: string, tenantId?: number): Promise<ProdukRow[]> {
+export async function ambilProdukByLogam(logamId: string, tenantId?: string | number): Promise<ProdukRow[]> {
   if (tenantId) {
     return dbAll<ProdukRow>(
       `SELECT * FROM produk 
@@ -181,7 +181,7 @@ export async function ambilProdukByLogam(logamId: string, tenantId?: number): Pr
 }
 
 /** Ambil ringkasan stok per logam */
-export async function ambilRingkasanStok(tenantId?: number): Promise<any[]> {
+export async function ambilRingkasanStok(tenantId?: string | number): Promise<any[]> {
   if (tenantId) {
     return dbAll(
       `SELECT 

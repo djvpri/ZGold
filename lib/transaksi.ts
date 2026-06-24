@@ -59,7 +59,7 @@ export async function simpanTransaksi(row: TransaksiRow) {
 }
 
 /** Ambil riwayat transaksi hari ini (filtered by tenant) */
-export async function ambilRiwayatHariIni(tenantId?: number): Promise<TransaksiRow[]> {
+export async function ambilRiwayatHariIni(tenantId?: string | number): Promise<TransaksiRow[]> {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   if (tenantId) {
@@ -79,7 +79,7 @@ export async function ambilRiwayatHariIni(tenantId?: number): Promise<TransaksiR
 }
 
 /** Generate nomor transaksi berikutnya (tenant-aware) */
-export async function nomorTransaksiBerikutnya(tipe: "jual" | "buyback", tenantId?: number): Promise<string> {
+export async function nomorTransaksiBerikutnya(tipe: "jual" | "buyback", tenantId?: string | number): Promise<string> {
   const prefix = tipe === "jual" ? "TRX" : "BB";
   const row = await dbOne<{ cnt: number }>(
     `SELECT COUNT(*)::int AS cnt FROM transaksi WHERE tipe = $1 ${tenantId ? "AND tenant_id = $2" : ""}`,
