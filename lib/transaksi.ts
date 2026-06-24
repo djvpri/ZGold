@@ -25,7 +25,7 @@ export interface TransaksiRow {
   created_at?: string;
 }
 
-/** Simpan transaksi baru */
+/** Simpan transaksi baru + update stok otomatis */
 export async function simpanTransaksi(row: TransaksiRow) {
   const result = await dbRun<TransaksiRow>(
     `INSERT INTO transaksi
@@ -39,6 +39,21 @@ export async function simpanTransaksi(row: TransaksiRow) {
       row.ongkos_cetak, row.kondisi, row.diskon, row.total, row.bayar, row.kembalian,
     ]
   );
+
+  // Update stok produk otomatis
+  if (row.jenis_produk) {
+    const delta = row.tipe === 'jual' ? -(row.jumlah || 1) : (row.jumlah || 1)
+    const tenantClause = row.tenant_id ? 'AND tenant_id = $3' : 'AND tenant_id IS NULL'
+    const params = row.tenant_id
+      ? [delta, row.jenis_produk, row.tenant_id]
+      : [delta, row.jenis_produk]
+    await dbRun(
+      `UPDATE produk SET stok = GREATEST(0, stok + $1), updated_at = now()
+       WHERE nama ILIKE $2 ${tenantClause}`,
+      params
+    ).catch(() => {}) // tidak crash kalau produk tidak ditemukan
+  }
+
   return result;
 }
 
