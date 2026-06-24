@@ -11,6 +11,7 @@ interface ProdukItem {
   berat_gram: number;
   ongkos_cetak: number;
   stok: number;
+  kadar_label: string | null;
   foto_url: string | null;
 }
 
@@ -27,7 +28,7 @@ export default function PanelStok() {
 
   const [form, setForm] = useState({
     kode: "", logam_id: "emas", jenis: "Kalung",
-    nama: "", berat_gram: 0, ongkos_cetak: 0, stok: 0,
+    nama: "", kadar_label: "", berat_gram: 0, ongkos_cetak: 0, stok: 0,
   });
 
   const [stokAdjust, setStokAdjust] = useState({
@@ -108,7 +109,7 @@ export default function PanelStok() {
 
   const handleEdit = (item: ProdukItem) => {
     setFormFotoBase64(null);
-    setForm({ kode: item.kode, logam_id: item.logam_id, jenis: item.jenis, nama: item.nama, berat_gram: item.berat_gram, ongkos_cetak: item.ongkos_cetak, stok: item.stok });
+    setForm({ kode: item.kode, logam_id: item.logam_id, jenis: item.jenis, nama: item.nama, kadar_label: item.kadar_label || "", berat_gram: item.berat_gram, ongkos_cetak: item.ongkos_cetak, stok: item.stok });
     setEditId(item.id);
     setShowForm(true);
   };
@@ -116,7 +117,7 @@ export default function PanelStok() {
   const openStokAdjust = (produkId: number) => setStokAdjust({ ...stokAdjust, produkId });
 
   const resetForm = () => {
-    setForm({ kode: "", logam_id: "emas", jenis: "Kalung", nama: "", berat_gram: 0, ongkos_cetak: 0, stok: 0 });
+    setForm({ kode: "", logam_id: "emas", jenis: "Kalung", nama: "", kadar_label: "", berat_gram: 0, ongkos_cetak: 0, stok: 0 });
     setFormFotoBase64(null);
   };
 
@@ -203,6 +204,7 @@ export default function PanelStok() {
                   <span className={`text-sm font-medium ${item.stok <= 0 ? "text-red-400" : ""}`}>{item.stok}</span>
                 </div>
                 <div className="text-[11px] t-text-2 truncate">{item.nama}</div>
+                {item.kadar_label && <div className="text-[9px] t-text-4">{item.kadar_label}</div>}
                 <div className="mt-1 flex items-center justify-between">
                   <span className="text-[9px] t-text-4">{item.jenis} · {item.berat_gram}g</span>
                   <div className="flex gap-1">
@@ -227,6 +229,7 @@ export default function PanelStok() {
               <th className="pb-2">Nama</th>
               <th className="pb-2">Logam</th>
               <th className="pb-2">Jenis</th>
+              <th className="pb-2">Kadar</th>
               <th className="pb-2 text-right">Berat</th>
               <th className="pb-2 text-right">Stok</th>
               <th className="pb-2 text-right">Aksi</th>
@@ -234,7 +237,7 @@ export default function PanelStok() {
           </thead>
           <tbody>
             {produk.length === 0 ? (
-              <tr><td colSpan={8} className="py-8 text-center t-text-4">Belum ada produk</td></tr>
+              <tr><td colSpan={9} className="py-8 text-center t-text-4">Belum ada produk</td></tr>
             ) : produk.map((item) => (
               <tr key={item.id} className="border-b t-border">
                 <td className="py-1.5">
@@ -294,7 +297,7 @@ export default function PanelStok() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="mb-1 block text-[10px] t-text-3">Logam</label>
-                  <select value={form.logam_id} onChange={(e) => setForm({ ...form, logam_id: e.target.value })}
+                  <select value={form.logam_id} onChange={(e) => setForm({ ...form, logam_id: e.target.value, kadar_label: "" })}
                     className="w-full rounded-md border t-border-md t-bg-card px-2 py-2 text-xs">
                     {Object.values(LOGAM).map((l) => <option key={l.id} value={l.id}>{l.nama}</option>)}
                   </select>
@@ -304,6 +307,14 @@ export default function PanelStok() {
                   <select value={form.jenis} onChange={(e) => setForm({ ...form, jenis: e.target.value })}
                     className="w-full rounded-md border t-border-md t-bg-card px-2 py-2 text-xs">
                     {LOGAM[form.logam_id]?.jenis.map((j) => <option key={j} value={j}>{j}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1 block text-[10px] t-text-3">Kadar</label>
+                  <select value={form.kadar_label} onChange={(e) => setForm({ ...form, kadar_label: e.target.value })}
+                    className="w-full rounded-md border t-border-md t-bg-card px-2 py-2 text-xs">
+                    <option value="">-- Pilih Kadar --</option>
+                    {LOGAM[form.logam_id]?.kadar.map((k) => <option key={k.label} value={k.label}>{k.label}</option>)}
                   </select>
                 </div>
               </div>
