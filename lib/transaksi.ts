@@ -96,7 +96,7 @@ export async function ambilRekapHarian() {
 }
 
 /** Update spot price logam (tenant-aware) */
-export async function updateSpotPrice(logamId: string, spotPrice: number, tenantId?: number) {
+export async function updateSpotPrice(logamId: string, spotPrice: number, tenantId?: string | number) {
   if (tenantId) {
     return dbRun(
       `UPDATE logam SET spot_price = $1, updated_at = now() WHERE id = $2 AND tenant_id = $3 RETURNING *`,
@@ -110,7 +110,7 @@ export async function updateSpotPrice(logamId: string, spotPrice: number, tenant
 }
 
 /** Ambil semua logam + kadar (tenant-aware) */
-export async function ambilLogam(tenantId?: number) {
+export async function ambilLogam(tenantId?: string | number) {
   if (tenantId) {
     const logam = await dbAll(`SELECT * FROM logam WHERE tenant_id = $1 ORDER BY id`, [tenantId]);
     const kadar = await dbAll(
