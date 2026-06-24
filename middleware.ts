@@ -14,7 +14,7 @@ const PUBLIC_ROUTES = [
   "/sso",
 ];
 
-export function proxy(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Skip public routes
@@ -54,4 +54,3 @@ export const config = {
     "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
-export default proxy
