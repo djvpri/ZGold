@@ -7,7 +7,7 @@ export interface ProdukRow {
   id?: number;
   kode: string;
   logam_id: string;
-  tenant_id?: number;
+  tenant_id?: string | number;
   kadar_id: number | null;
   jenis: string;
   nama: string;
