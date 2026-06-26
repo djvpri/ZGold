@@ -23,13 +23,13 @@ export interface NotaData {
 interface CetakNotaProps {
   data: NotaData;
   onClose: () => void;
+  format?: "thermal" | "plq35";
 }
 
 function formatIDR(n: number) {
   return "Rp " + Math.round(n).toLocaleString("id-ID");
 }
 
-/** Pad/trim to exact width */
 function pad(s: string, w: number): string {
   if (s.length >= w) return s.slice(0, w);
   return s + " ".repeat(w - s.length);
@@ -39,8 +39,50 @@ function rpad(s: string, w: number): string {
   return " ".repeat(w - s.length) + s;
 }
 
-export default function CetakNota({ data, onClose }: CetakNotaProps) {
+export default function CetakNota({ data, onClose, format = "thermal" }: CetakNotaProps) {
   const [printed, setPrinted] = useState(false);
+  const isWide = format === "plq35";
+
+  // Lebar karakter: 42 utk thermal 58mm, 80 utk PLQ-35 landscape
+  const W = isWide ? 80 : 42;
+  const sep = "═".repeat(W);
+  const line = "─".repeat(W);
+
+  const receiptLines: string[] = [
+    sep,
+    pad(`${data.nama_toko}`, W),
+    data.alamat_toko ? pad(`${data.alamat_toko}`, W) : null,
+    data.telepon ? pad(`Telp: ${data.telepon}`, W) : null,
+    "",
+    sep,
+    "",
+    pad(`No. Transaksi : ${data.no_transaksi}`, W),
+    pad(`Tanggal       : ${data.tanggal}`, W),
+    pad(`Kasir         : ${data.nama_kasir}`, W),
+    "",
+    line,
+    pad(`Item`, isWide ? 50 : 22) + rpad(`Qty`, isWide ? 5 : 4) + rpad(`Harga`, isWide ? 25 : 16),
+    line,
+    ...data.items.flatMap((item) => [
+      pad(` ${item.nama}`, isWide ? 50 : 22) + rpad(String(item.jumlah), isWide ? 5 : 4) + rpad(formatIDR(item.harga * item.jumlah), isWide ? 25 : 16),
+      item.jumlah > 1 ? pad(`  @ ${formatIDR(item.harga)} x${item.jumlah}`, W) : null,
+    ].filter(Boolean) as string[]),
+    line,
+    "",
+    pad(`Subtotal`, isWide ? 55 : 22) + rpad(formatIDR(data.subtotal), isWide ? 25 : 20),
+    pad(`Diskon`, isWide ? 55 : 22) + rpad(formatIDR(data.diskon), isWide ? 25 : 20),
+    pad(`TOTAL`, isWide ? 55 : 22) + rpad(formatIDR(data.total), isWide ? 25 : 20),
+    "",
+    pad(`Bayar`, isWide ? 55 : 22) + rpad(formatIDR(data.bayar), isWide ? 25 : 20),
+    pad(`Kembalian`, isWide ? 55 : 22) + rpad(formatIDR(data.kembalian), isWide ? 25 : 20),
+    "",
+    line,
+    "",
+    "  Terima kasih.",
+    "  Barang dibeli tidak dapat dikembalikan.",
+    "",
+    sep,
+  ].filter((l) => l !== null) as string[];
 
   const handlePrint = useCallback(() => {
     window.print();
@@ -64,55 +106,14 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  // 80 chars per line for PLQ-35 dot matrix
-  const W = 80;
-  const sep = "═".repeat(W);
-  const line = "─".repeat(W);
-
-  const receiptLines: string[] = [
-    sep,
-    pad(`  ${data.nama_toko}`, W),
-    data.alamat_toko ? pad(`  ${data.alamat_toko}`, W) : null,
-    data.telepon ? pad(`  Telp: ${data.telepon}`, W) : null,
-    "",
-    sep,
-    "",
-    pad(`  No. Transaksi : ${data.no_transaksi}`, W),
-    pad(`  Tanggal       : ${data.tanggal}`, W),
-    pad(`  Kasir         : ${data.nama_kasir}`, W),
-    "",
-    line,
-    pad(`  Item`, 50) + rpad(`Qty`, 5) + rpad(`Harga`, 25),
-    line,
-    ...data.items.flatMap((item) => [
-      pad(`  ${item.nama}`, 50) + rpad(String(item.jumlah), 5) + rpad(formatIDR(item.harga * item.jumlah), 25),
-      item.jumlah > 1 ? pad(`    @ ${formatIDR(item.harga)} × ${item.jumlah}`, 80) : null,
-    ].filter(Boolean) as string[]),
-    line,
-    "",
-    pad(`  Subtotal`, 55) + rpad(formatIDR(data.subtotal), 25),
-    pad(`  Diskon`, 55) + rpad(formatIDR(data.diskon), 25),
-    pad(`  TOTAL`, 55) + rpad(formatIDR(data.total), 25),
-    "",
-    pad(`  Bayar`, 55) + rpad(formatIDR(data.bayar), 25),
-    pad(`  Kembalian`, 55) + rpad(formatIDR(data.kembalian), 25),
-    "",
-    line,
-    "",
-    "  Terima kasih atas kunjungan Anda.",
-    "  Barang yang sudah dibeli tidak dapat dikembalikan.",
-    "",
-    sep,
-  ].filter((line) => line !== null) as string[];
-
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-3" onClick={onClose}>
       <div
-        className="w-full max-w-sm rounded-xl border t-border-md t-bg-card shadow-2xl"
+        className={`rounded-xl border t-border-md t-bg-card shadow-2xl ${isWide ? 'w-full max-w-sm' : 'w-[280px]'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b t-border px-4 py-3">
-          <h2 className="text-sm font-medium">Cetak Nota</h2>
+          <h2 className="text-sm font-medium">Nota {isWide ? "(PLQ-35)" : "(Thermal)"}</h2>
           <button onClick={onClose} className="rounded p-1 t-text-3 t-bg-hover">
             <i className="ti ti-x text-lg" />
           </button>
@@ -141,7 +142,6 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
         </div>
       </div>
 
-      {/* Print CSS — PLQ-35 landscape 21cm x 11.5cm */}
       <style jsx global>{`
         @media print {
           html, body {
@@ -154,25 +154,32 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
             position: fixed !important;
             left: 0 !important;
             top: 0 !important;
-            width: 210mm !important;
-            max-width: 210mm !important;
-            height: auto !important;
             background: white !important;
             color: black !important;
-            padding: 3mm 5mm !important;
-            font-size: 9pt !important;
             font-family: 'Courier New', Courier, monospace !important;
-            line-height: 1.0 !important;
             z-index: 99999 !important;
             white-space: pre !important;
             overflow: visible !important;
+            ${isWide ? `
+              width: 210mm !important;
+              max-width: 210mm !important;
+              padding: 3mm 5mm !important;
+              font-size: 9pt !important;
+              line-height: 1.0 !important;
+            ` : `
+              width: 58mm !important;
+              max-width: 58mm !important;
+              padding: 2mm 3mm !important;
+              font-size: 7.5pt !important;
+              line-height: 1.15 !important;
+            `}
           }
           #receipt-content * {
             visibility: visible !important;
             color: black !important;
           }
           @page {
-            size: 210mm 115mm landscape !important;
+            ${isWide ? `size: 210mm 115mm landscape !important;` : `size: 58mm auto !important;`}
             margin: 0 !important;
           }
         }

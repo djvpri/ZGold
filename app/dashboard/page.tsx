@@ -19,6 +19,19 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [activeTab, setActiveTab] = useState<"overview" | "users" | "settings">("overview");
   const [showSidebar, setShowSidebar] = useState(false);
+  const [notaFormat, setNotaFormat] = useState<"thermal" | "plq35">("thermal");
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('zgold_nota_format');
+      if (saved === 'plq35' || saved === 'thermal') setNotaFormat(saved);
+    }
+  }, []);
+
+  function gantiNotaFormat(fmt: "thermal" | "plq35") {
+    setNotaFormat(fmt);
+    localStorage.setItem('zgold_nota_format', fmt);
+  }
 
   useEffect(() => {
     if (!loading && !user) {
@@ -259,6 +272,28 @@ export default function DashboardPage() {
               <button className="mt-2 rounded-md bg-amber-600 px-3 py-1.5 text-[10px] text-white hover:bg-amber-700">
                 Upgrade Paket
               </button>
+            </div>
+
+            {/* ⚙️ Model Nota */}
+            <div className="rounded-lg border t-border p-3 sm:p-4">
+              <div className="mb-3 text-xs font-medium">Model Nota</div>
+              <div className="flex gap-2">
+                <button onClick={() => gantiNotaFormat("thermal")}
+                  className={`flex-1 rounded-lg border-2 p-3 text-left transition ${notaFormat === "thermal" ? "border-amber-500" : "t-border"}`}>
+                  <div className="text-[10px] font-medium">🔖 Thermal</div>
+                  <div className="mt-0.5 text-[9px] t-text-4">58mm · Portrait</div>
+                  <div className="mt-0.5 text-[9px] t-text-4">Printer Bluetooth</div>
+                </button>
+                <button onClick={() => gantiNotaFormat("plq35")}
+                  className={`flex-1 rounded-lg border-2 p-3 text-left transition ${notaFormat === "plq35" ? "border-amber-500" : "t-border"}`}>
+                  <div className="text-[10px] font-medium">📄 PLQ-35</div>
+                  <div className="mt-0.5 text-[9px] t-text-4">21×11.5cm · Landscape</div>
+                  <div className="mt-0.5 text-[9px] t-text-4">Dot Matrix Passbook</div>
+                </button>
+              </div>
+              <p className="mt-2 text-[9px] t-text-4">
+                {notaFormat === "thermal" ? "Nota kecil untuk printer thermal Bluetooth (58mm)." : "Nota lebar untuk printer Epson PLQ-35 (21×11.5cm)."}
+              </p>
             </div>
           </div>
         )}

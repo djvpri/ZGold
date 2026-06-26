@@ -350,7 +350,7 @@ export default function PanelJual(props: any) {
         </div>
       )}
 
-      {notaData && <CetakNota data={notaData} onClose={() => setNotaData(null)} />}
+      {notaData && <CetakNota data={notaData} format={(typeof window !== 'undefined' && localStorage.getItem('zgold_nota_format') as 'thermal'|'plq35') || 'thermal'} onClose={() => setNotaData(null)} />}
       {showScanner && <BarcodeScanner onResult={handleScanResult} onClose={() => setShowScanner(false)} />}
     </>
   );
