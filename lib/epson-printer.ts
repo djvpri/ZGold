@@ -131,7 +131,7 @@ class EpsonPrinter {
 
     // Save device info for reconnect
     try {
-      localStorage.setItem('zgold_printer_id', device.serialNumber || device.productName);
+      localStorage.setItem('zgold_printer_id', device.serialNumber || device.productName || 'epson-plq35');
     } catch {}
 
     return {
