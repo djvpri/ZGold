@@ -105,7 +105,11 @@ export default function PanelJual(props: any) {
           nama_toko: tenant?.nama_toko ?? "Zomet POS",
           alamat_toko: tenant?.alamat,
           telepon: tenant?.owner_phone,
-          items: [{ nama: `${jenis} ${logam.kadar[kadarIdx]?.label ?? ""} ${berat}g`, jumlah, harga: total + diskon }],
+          items: [{
+            nama: `${logam.nama} ${jenis} ${logam.kadar[kadarIdx]?.label ?? ""} ${berat}g`,
+            jumlah,
+            harga: hargaPerGram * berat + (isLM ? 0 : ongkos),
+          }],
           subtotal: total + diskon, diskon, total, bayar, kembalian,
         });
       }

@@ -85,8 +85,9 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
     pad(`  Item`, 50) + rpad(`Qty`, 5) + rpad(`Harga`, 25),
     line,
     ...data.items.flatMap((item) => [
-      pad(`  ${item.nama}`, 50) + rpad(String(item.jumlah), 5) + rpad(formatIDR(item.harga), 25),
-    ]),
+      pad(`  ${item.nama}`, 50) + rpad(String(item.jumlah), 5) + rpad(formatIDR(item.harga * item.jumlah), 25),
+      item.jumlah > 1 ? pad(`    @ ${formatIDR(item.harga)} × ${item.jumlah}`, 80) : null,
+    ].filter(Boolean) as string[]),
     line,
     "",
     pad(`  Subtotal`, 55) + rpad(formatIDR(data.subtotal), 25),
