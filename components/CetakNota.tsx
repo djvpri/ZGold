@@ -159,9 +159,9 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
             position: fixed !important;
             left: 0 !important;
             top: 0 !important;
-            /* Landscape: 21.5cm wide paper, small margins */
-            width: 215mm !important;
-            max-width: 215mm !important;
+            /* Landscape: 21cm x 11.5cm paper, small margins */
+            width: 210mm !important;
+            max-width: 210mm !important;
             height: auto !important;
             background: white !important;
             color: black !important;
@@ -178,7 +178,7 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
             color: black !important;
           }
           @page {
-            size: 215mm landscape !important;
+            size: 210mm 115mm landscape !important;
             margin: 0 !important;
           }
         }
