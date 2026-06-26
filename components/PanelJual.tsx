@@ -11,7 +11,7 @@ export default function PanelJual(props: any) {
     logam, logamId, kadarIdx, spot, onGantiLogam, onGantiKadar,
     namaPembeli, setNamaPembeli, berat, setBerat, ongkos, setOngkos,
     jumlah, setJumlah, diskon, setDiskon, jenis, setJenis, bayar, setBayar,
-    isLM, total, kembalian, hargaPerGram, onProses,
+    isLM, total, kembalian, hargaPerGram, onProses, userName,
   } = props;
   const l: LogamConfig = logam;
 
@@ -101,7 +101,7 @@ export default function PanelJual(props: any) {
           no_transaksi: data.no_transaksi,
           tanggal: now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
             + " " + now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
-          nama_kasir: "Admin",
+          nama_kasir: userName || "Kasir",
           nama_toko: tenant?.nama_toko ?? "Zomet POS",
           alamat_toko: tenant?.alamat,
           telepon: tenant?.owner_phone,

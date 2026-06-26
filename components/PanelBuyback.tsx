@@ -35,7 +35,7 @@ export default function PanelBuyback(props: any) {
           no_transaksi: data.no_transaksi,
           tanggal: now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
             + " " + now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
-          nama_kasir: "Admin",
+          nama_kasir: props.userName || "Kasir",
           nama_toko: tenant?.nama_toko ?? "Zomet POS",
           alamat_toko: tenant?.alamat,
           telepon: tenant?.owner_phone,

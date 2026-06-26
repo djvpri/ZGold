@@ -14,12 +14,14 @@ export default function PosPerhiasan() {
     Object.fromEntries(Object.values(LOGAM).map((l) => [l.id, l.spotDefault]))
   );
   const [userRole, setUserRole] = useState<string>("kasir");
+  const [userName, setUserName] = useState<string>("Kasir");
   const [riwayat, setRiwayat] = useState<any[]>([]);
 
   // Fetch user role & spot price
   useEffect(() => {
     fetch("/api/auth/me").then(r => r.json()).then(d => {
       setUserRole(d.data?.user?.role || "kasir");
+      setUserName(d.data?.user?.name || d.data?.user?.email || "Kasir");
     }).catch(() => {});
 
     fetch("/api/harga-emas").then(r => r.json()).then(d => {
@@ -160,7 +162,7 @@ export default function PosPerhiasan() {
           <p className="text-[10px] t-text-3 sm:text-xs">Zomet · Multi-Logam</p>
         </div>
         <div className="flex gap-1 overflow-x-auto pb-1">
-          {(["jual", "buyback", "riwayat", "stok"] as Mode[]).map((m) => (
+          {(["jual", "buyback", ...(userRole === "admin" ? ["riwayat", "stok"] : [])] as Mode[]).map((m) => (
             <button key={m} onClick={() => setMode(m)}
               className="flex-shrink-0 rounded-full px-3 py-1.5 text-[11px] capitalize transition sm:text-xs"
               style={{
@@ -211,7 +213,7 @@ export default function PosPerhiasan() {
           jumlah={jumlah} setJumlah={setJumlah} diskon={diskon} setDiskon={setDiskon}
           jenis={jenis} setJenis={setJenis} bayar={bayar} setBayar={setBayar}
           isLM={isLM} total={total} kembalian={kembalian}
-          hargaPerGram={spot[logamId] * kadar.nilai} onProses={prosesJual}
+          hargaPerGram={spot[logamId] * kadar.nilai} userName={userName} onProses={prosesJual}
         />
       )}
 
@@ -222,7 +224,7 @@ export default function PosPerhiasan() {
           onGantiKadar={setBbKadarIdx} nama={bbNama} setNama={setBbNama}
           berat={bbBerat} setBerat={setBbBerat} kondisi={bbKondisi} setKondisi={setBbKondisi}
           total={bbTotal} hargaBeli={spot[bbLogamId] * bbLogam.buybackRatio * bbKadar.nilai}
-          logam={bbLogam} kadar={bbKadar} onProses={prosesBuyback}
+          logam={bbLogam} kadar={bbKadar} userName={userName} onProses={prosesBuyback}
         />
       )}
 
