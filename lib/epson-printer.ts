@@ -2,6 +2,22 @@
 // Epson PLQ-35 (ESC/P2) WebUSB printer driver
 // Direct USB printing from browser — no server needed
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// WebUSB API types — not in default TS lib, declared inline
+interface USBDevice {
+  vendorId: number; productId: number;
+  productName: string | null; serialNumber: string | null;
+  configuration: any; configurations: any[];
+  opened: boolean;
+  open(): Promise<void>; close(): Promise<void>;
+  selectConfiguration(v: number): Promise<void>;
+  claimInterface(n: number): Promise<void>;
+  releaseInterface(n: number): Promise<void>;
+  transferOut(endpointNumber: number, data: BufferSource): Promise<any>;
+  transferIn(endpointNumber: number, length: number): Promise<any>;
+}
+declare const navigator: Navigator & { usb?: { getDevices(): Promise<USBDevice[]>; requestDevice(o?: any): Promise<USBDevice> } };
+
 // Epson ESC/P2 commands
 const ESC = 0x1b;
 const GS = 0x1d;
