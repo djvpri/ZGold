@@ -77,7 +77,7 @@ export async function simpanTransaksi(row: TransaksiRow) {
       ? [delta, row.jenis_produk, tid]
       : [delta, row.jenis_produk];
     const updateResult = await dbRun(
-      `UPDATE produk SET stok = stok + $1, updated_at = now()
+      `UPDATE produk SET stok = stok + $1
        WHERE nama ILIKE $2 ${tenantClause}
        RETURNING stok, nama`,
       params
