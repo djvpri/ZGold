@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import { epsonPrinter, type PrinterStatus } from "@/lib/epson-printer";
 
 export interface NotaData {
   no_transaksi: string;
@@ -31,6 +32,59 @@ function formatIDR(n: number) {
 
 export default function CetakNota({ data, onClose }: CetakNotaProps) {
   const [printed, setPrinted] = useState(false);
+  const [epsonStatus, setEpsonStatus] = useState<PrinterStatus>({ connected: false, deviceName: '', printWidth: 0 });
+  const [epsonPrinting, setEpsonPrinting] = useState(false);
+  const [webUSBSupported, setWebUSBSupported] = useState(false);
+
+  // Check WebUSB support & auto-connect
+  useEffect(() => {
+    const supported = epsonPrinter.isSupported();
+    setWebUSBSupported(supported);
+    if (supported) {
+      epsonPrinter.autoConnect().then(status => {
+        if (status) setEpsonStatus(status);
+      }).catch(() => {});
+    }
+  }, []);
+
+  const handleEpsonConnect = useCallback(async () => {
+    try {
+      const status = await epsonPrinter.connect();
+      setEpsonStatus(status);
+    } catch (e: any) {
+      alert(e.message || 'Gagal menghubungkan printer');
+    }
+  }, []);
+
+  const handleEpsonPrint = useCallback(async () => {
+    if (!epsonPrinter.isConnected()) {
+      await handleEpsonConnect();
+      if (!epsonPrinter.isConnected()) return;
+    }
+    setEpsonPrinting(true);
+    try {
+      await epsonPrinter.printReceipt({
+        namaToko: data.nama_toko,
+        alamat: data.alamat_toko,
+        telepon: data.telepon,
+        noTransaksi: data.no_transaksi,
+        tanggal: data.tanggal,
+        namaKasir: data.nama_kasir,
+        items: data.items,
+        subtotal: data.subtotal,
+        diskon: data.diskon,
+        total: data.total,
+        bayar: data.bayar,
+        kembalian: data.kembalian,
+      });
+      setPrinted(true);
+      setTimeout(() => onClose(), 500);
+    } catch (e: any) {
+      alert('Gagal cetak: ' + (e.message || 'Unknown error'));
+    } finally {
+      setEpsonPrinting(false);
+    }
+  }, [data, onClose, handleEpsonConnect]);
 
   const receiptLines = [
     "══════════════════════════",
@@ -117,27 +171,69 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2 border-t t-border p-3">
-          <button
-            onClick={onClose}
-            className="flex-1 rounded-lg border t-border-md py-2.5 text-xs t-text-3 t-bg-hover"
-          >
-            Tutup
-          </button>
-          <button
-            onClick={handleShare}
-            className="flex-1 rounded-lg border t-border-md py-2.5 text-xs t-text-3 t-bg-hover"
-          >
-            <i className="ti ti-share mr-1.5" />
-            Bagikan
-          </button>
-          <button
-            onClick={handlePrint}
-            className="flex-1 rounded-lg bg-amber-600 py-2.5 text-xs font-medium text-white hover:bg-amber-700"
-          >
-            <i className="ti ti-printer mr-1.5" />
-            Cetak
-          </button>
+        <div className="flex flex-col gap-2 border-t t-border p-3">
+          {/* Epson printer row */}
+          {webUSBSupported && (
+            <div className="flex gap-2">
+              <button
+                onClick={handleEpsonConnect}
+                disabled={epsonPrinting}
+                className={`flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-xs transition ${
+                  epsonStatus.connected
+                    ? "border-green-600 bg-green-900/30 text-green-400"
+                    : "border-gray-600 t-text-3 t-bg-hover"
+                }`}
+              >
+                <i className={`ti ti-printer ${epsonStatus.connected ? 'text-green-400' : ''}`} />
+                {epsonStatus.connected ? 'PLQ-35 ✓' : 'Hubungkan PLQ-35'}
+              </button>
+              <button
+                onClick={handleEpsonPrint}
+                disabled={epsonPrinting}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2.5 text-xs font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+              >
+                {epsonPrinting ? (
+                  <>
+                    <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    Mencetak...
+                  </>
+                ) : (
+                  <>
+                    <i className="ti ti-printer" />
+                    Cetak ke PLQ-35
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+          {!webUSBSupported && (
+            <p className="text-[10px] t-text-4 text-center -mb-1">
+              WebUSB tidak tersedia. Gunakan Chrome/Edge untuk cetak langsung ke printer.
+            </p>
+          )}
+          {/* Standard actions */}
+          <div className="flex gap-2">
+            <button
+              onClick={onClose}
+              className="flex-1 rounded-lg border t-border-md py-2.5 text-xs t-text-3 t-bg-hover"
+            >
+              Tutup
+            </button>
+            <button
+              onClick={handleShare}
+              className="flex-1 rounded-lg border t-border-md py-2.5 text-xs t-text-3 t-bg-hover"
+            >
+              <i className="ti ti-share mr-1.5" />
+              Bagikan
+            </button>
+            <button
+              onClick={handlePrint}
+              className="flex-1 rounded-lg bg-amber-600 py-2.5 text-xs font-medium text-white hover:bg-amber-700"
+            >
+              <i className="ti ti-printer mr-1.5" />
+              Cetak Browser
+            </button>
+          </div>
         </div>
       </div>
 
