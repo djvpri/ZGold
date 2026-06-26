@@ -125,23 +125,28 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
       {/* Print-only receipt */}
       <style jsx global>{`
         @media print {
-          body * {
+          html, body {
             visibility: hidden !important;
-          }
-          #receipt-content,
-          #receipt-content * {
-            visibility: visible !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
           #receipt-content {
-            position: absolute;
-            left: 0;
-            top: 0;
+            visibility: visible !important;
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 72mm !important;
+            max-width: 72mm !important;
             background: white !important;
             color: black !important;
-            padding: 8mm;
-            font-size: 12pt;
-            width: 72mm;
-            max-width: 72mm;
+            padding: 4mm !important;
+            font-size: 11pt !important;
+            font-family: monospace !important;
+            z-index: 99999 !important;
+          }
+          #receipt-content * {
+            visibility: visible !important;
+            color: black !important;
           }
         }
       `}</style>
