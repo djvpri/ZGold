@@ -268,7 +268,7 @@ export default function PanelJual(props: any) {
             </div>
           </Field>
           {bayar > 0 && (
-            <p className="mb-2 text-[11px]">
+            <p className="mb-3 text-[11px]">
               Kembalian: <span className="font-medium" style={{ color: kembalian >= 0 ? "#16a34a" : "#dc2626" }}>
                 {kembalian >= 0 ? formatIDR(kembalian) : "KURANG " + formatIDR(-kembalian)}
               </span>
@@ -276,7 +276,7 @@ export default function PanelJual(props: any) {
           )}
 
           <button onClick={handleProses} disabled={loading}
-            className="w-full rounded-md py-2.5 text-xs font-medium text-white transition hover:opacity-90 disabled:opacity-50 sm:text-[13px]"
+            className="w-full rounded-md py-3 text-xs font-medium text-white transition hover:opacity-90 disabled:opacity-50 sm:text-[13px] mt-2"
             style={{ background: l.accent }}>
             {loading ? "Memproses..." : <><i className="ti ti-receipt mr-1.5" />Proses & Cetak Nota</>}
           </button>
