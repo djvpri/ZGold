@@ -108,7 +108,7 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
         {/* Receipt preview */}
         <div className="max-h-[60vh] overflow-y-auto p-4">
           <pre
-            className="whitespace-pre rounded-lg t-bg-card p-4 text-[10px] leading-relaxed text-black sm:text-xs"
+            className="whitespace-pre rounded-lg bg-white p-4 text-[10px] leading-relaxed text-black sm:text-xs"
             id="receipt-content"
             style={{ fontFamily: "monospace" }}
           >
