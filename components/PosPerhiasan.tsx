@@ -89,18 +89,25 @@ export default function PosPerhiasan() {
     if (jumlah <= 0) { alert("Jumlah harus lebih dari 0"); return; }
     if (!jenis) { alert("Pilih jenis produk terlebih dahulu"); return; }
 
-    // Cek stok
+    // Cek stok — WAJIB ada produk di database
     try {
       const stokRes = await fetch(`/api/produk?nama=${encodeURIComponent(jenis)}`);
       const stokData = await stokRes.json();
       const produk = (stokData.data || []).find((p: any) =>
         p.nama?.toLowerCase().includes(jenis.toLowerCase())
       );
-      if (produk && produk.stok < jumlah) {
-        alert(`Stok ${jenis} tidak cukup. Tersedia: ${produk.stok} pcs`);
+      if (!produk) {
+        alert(`Produk "${jenis}" tidak ditemukan di database stok. Tambahkan produk terlebih dahulu.`);
         return;
       }
-    } catch {}
+      if (produk.stok < jumlah) {
+        alert(`Stok ${produk.nama} tidak cukup. Tersedia: ${produk.stok} pcs, diminta: ${jumlah} pcs`);
+        return;
+      }
+    } catch (e) {
+      alert("Gagal mengecek stok. Coba lagi.");
+      return;
+    }
 
     const res = await fetch("/api/transaksi", {
       method: "POST",
