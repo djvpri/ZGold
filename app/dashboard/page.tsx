@@ -45,17 +45,20 @@ export default function DashboardPage() {
 
   async function fetchStats() {
     try {
-      const [trxRes, produkRes] = await Promise.all([
+      const [trxRes, produkRes, laporanRes] = await Promise.all([
         fetch("/api/transaksi"),
         fetch("/api/produk"),
+        fetch("/api/laporan?from=2020-01-01&to=" + new Date().toISOString().slice(0, 10)),
       ]);
       const trxData = await trxRes.json();
       const produkData = await produkRes.json();
+      const laporanData = await laporanRes.json();
       const riwayat = trxData.data || [];
+      const summary = laporanData.summary || {};
       setStats({
         transaksiHariIni: riwayat.length,
-        totalPenjualan: riwayat.filter((r: any) => r.tipe === "jual").reduce((a: number, b: any) => a + b.total, 0),
-        totalBuyback: riwayat.filter((r: any) => r.tipe === "buyback").reduce((a: number, b: any) => a + b.total, 0),
+        totalPenjualan: summary.total_jual || 0,
+        totalBuyback: summary.total_buyback || 0,
         produkCount: (produkData.data || []).length,
         userCount: 1,
       });
