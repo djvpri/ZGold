@@ -63,7 +63,8 @@ export default function PosPerhiasan() {
   const [ongkos, setOngkos] = useState(LOGAM.emas.ongkosDefault);
   const [jumlah, setJumlah] = useState(1);
   const [diskon, setDiskon] = useState(0);
-  const [jenis, setJenis] = useState(LOGAM.emas.jenis[0]);
+  const [jenis, setJenis] = useState("");
+  const [produkList, setProdukList] = useState<any[]>([]);
   const [bayar, setBayar] = useState(0);
 
   const logam = LOGAM[logamId];
@@ -80,32 +81,49 @@ export default function PosPerhiasan() {
     setLogamId(id);
     setKadarIdx(0);
     setOngkos(LOGAM[id].ongkosDefault);
-    setJenis(LOGAM[id].jenis[0]);
+    setJenis("");
+    setProdukList([]);
+  }
+
+  // Fetch produk untuk logam yang dipilih
+  useEffect(() => {
+    fetch(`/api/produk?logam=${encodeURIComponent(logamId)}&jenis=jual`)
+      .then(r => r.json())
+      .then(d => {
+        const list = d.data || [];
+        setProdukList(list);
+        if (list.length > 0) {
+          setJenis(list[0].nama);
+          setBerat(list[0].berat_gram);
+          setOngkos(list[0].ongkos_cetak || 0);
+        }
+      })
+      .catch(() => {});
+  }, [logamId]);
+
+  function pilihProduk(nama: string) {
+    const p = produkList.find(pp => pp.nama === nama);
+    if (p) {
+      setJenis(p.nama);
+      setBerat(p.berat_gram);
+      setOngkos(p.ongkos_cetak || 0);
+    }
   }
 
   async function prosesJual() {
     // Validasi
     if (berat <= 0) { alert("Berat harus lebih dari 0"); return; }
     if (jumlah <= 0) { alert("Jumlah harus lebih dari 0"); return; }
-    if (!jenis) { alert("Pilih jenis produk terlebih dahulu"); return; }
+    if (!jenis) { alert("Pilih produk dari stok terlebih dahulu"); return; }
 
-    // Cek stok — WAJIB ada produk di database
-    try {
-      const stokRes = await fetch(`/api/produk?nama=${encodeURIComponent(jenis)}`);
-      const stokData = await stokRes.json();
-      const produk = (stokData.data || []).find((p: any) =>
-        p.nama?.toLowerCase().includes(jenis.toLowerCase())
-      );
-      if (!produk) {
-        alert(`Produk "${jenis}" tidak ditemukan di database stok. Tambahkan produk terlebih dahulu.`);
-        return;
-      }
-      if (produk.stok < jumlah) {
-        alert(`Stok ${produk.nama} tidak cukup. Tersedia: ${produk.stok} pcs, diminta: ${jumlah} pcs`);
-        return;
-      }
-    } catch (e) {
-      alert("Gagal mengecek stok. Coba lagi.");
+    // Cek stok dari produkList (udah ada dari DB)
+    const produk = produkList.find(p => p.nama === jenis);
+    if (!produk) {
+      alert(`Produk tidak ditemukan di database stok. Tambahkan produk terlebih dahulu.`);
+      return;
+    }
+    if (produk.stok < jumlah) {
+      alert(`Stok ${produk.nama} tidak cukup. Tersedia: ${produk.stok} pcs, diminta: ${jumlah} pcs`);
       return;
     }
 
@@ -223,6 +241,7 @@ export default function PosPerhiasan() {
           jenis={jenis} setJenis={setJenis} bayar={bayar} setBayar={setBayar}
           isLM={isLM} total={total} kembalian={kembalian}
           hargaPerGram={spot[logamId] * kadar.nilai} userName={userName} onProses={prosesJual}
+          produkList={produkList} onPilihProduk={pilihProduk}
         />
       )}
 

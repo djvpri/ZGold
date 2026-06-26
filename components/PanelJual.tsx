@@ -12,6 +12,7 @@ export default function PanelJual(props: any) {
     namaPembeli, setNamaPembeli, berat, setBerat, ongkos, setOngkos,
     jumlah, setJumlah, diskon, setDiskon, jenis, setJenis, bayar, setBayar,
     isLM, total, kembalian, hargaPerGram, onProses, userName,
+    produkList = [], onPilihProduk,
   } = props;
   const l: LogamConfig = logam;
 
@@ -213,10 +214,18 @@ export default function PanelJual(props: any) {
           </div>
 
           <SectionTitle>Jenis Produk</SectionTitle>
-          <select value={jenis} onChange={(e) => setJenis(e.target.value)}
-            className="w-full rounded-md border t-border-md t-bg-card px-2 py-2 text-xs">
-            {l.jenis.map((j) => <option key={j}>{j}</option>)}
-          </select>
+          {produkList.length === 0 ? (
+            <p className="text-[11px] text-red-400">Belum ada produk stok. Tambah di menu Stok dulu.</p>
+          ) : (
+            <select value={jenis} onChange={(e) => onPilihProduk?.(e.target.value)}
+              className="w-full rounded-md border t-border-md t-bg-card px-2 py-2 text-xs">
+              {produkList.map((p: any) => (
+                <option key={p.id} value={p.nama}>
+                  {p.nama} — {p.berat_gram}g — stok: {p.stok}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         {/* Kanan — detail & total */}
