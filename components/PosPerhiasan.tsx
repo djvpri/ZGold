@@ -87,6 +87,7 @@ export default function PosPerhiasan() {
     // Validasi
     if (berat <= 0) { alert("Berat harus lebih dari 0"); return; }
     if (jumlah <= 0) { alert("Jumlah harus lebih dari 0"); return; }
+    if (!jenis) { alert("Pilih jenis produk terlebih dahulu"); return; }
 
     // Cek stok
     try {
@@ -96,7 +97,8 @@ export default function PosPerhiasan() {
         p.nama?.toLowerCase().includes(jenis.toLowerCase())
       );
       if (produk && produk.stok < jumlah) {
-        if (!confirm(`Stok ${jenis} hanya ${produk.stok} pcs. Lanjutkan?`)) return;
+        alert(`Stok ${jenis} tidak cukup. Tersedia: ${produk.stok} pcs`);
+        return;
       }
     } catch {}
 

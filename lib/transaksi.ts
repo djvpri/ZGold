@@ -25,8 +25,36 @@ export interface TransaksiRow {
   created_at?: string;
 }
 
+/** Cek stok cukup sebelum transaksi */
+export async function cekStok(
+  jenisProduk: string,
+  jumlah: number,
+  tenantId?: string | number
+): Promise<{ cukup: boolean; stokSekarang: number; produk: string }> {
+  if (!jenisProduk) return { cukup: true, stokSekarang: 0, produk: '' };
+  const tid = tenantId ? String(tenantId) : null;
+  const tenantClause = tid ? 'AND tenant_id = $2' : '';
+  const params = tid ? [jenisProduk, tid] : [jenisProduk];
+  const row = await dbOne<{ stok: number; nama: string }>(
+    `SELECT stok, nama FROM produk WHERE nama ILIKE $1 ${tenantClause}`,
+    params
+  );
+  if (!row) return { cukup: true, stokSekarang: 0, produk: jenisProduk };
+  return { cukup: row.stok >= jumlah, stokSekarang: row.stok, produk: row.nama };
+}
+
 /** Simpan transaksi baru + update stok otomatis */
 export async function simpanTransaksi(row: TransaksiRow) {
+  // Cek stok dulu kalau jual
+  if (row.tipe === 'jual' && row.jenis_produk) {
+    const { cukup, stokSekarang, produk } = await cekStok(
+      row.jenis_produk, row.jumlah || 1, row.tenant_id
+    );
+    if (!cukup) {
+      throw new Error(`Stok ${produk} tidak cukup. Tersedia: ${stokSekarang}, diminta: ${row.jumlah || 1}`);
+    }
+  }
+
   const result = await dbRun<TransaksiRow>(
     `INSERT INTO transaksi
       (no_transaksi, tipe, logam_id, tenant_id, kadar_label, jenis_produk, nama_pihak, kontak,
@@ -42,17 +70,22 @@ export async function simpanTransaksi(row: TransaksiRow) {
 
   // Update stok produk otomatis
   if (row.jenis_produk) {
-    const delta = row.tipe === 'jual' ? -(row.jumlah || 1) : (row.jumlah || 1)
-    const tid = row.tenant_id ? String(row.tenant_id) : null
-    const tenantClause = tid ? 'AND tenant_id = $3' : ''
+    const delta = row.tipe === 'jual' ? -(row.jumlah || 1) : (row.jumlah || 1);
+    const tid = row.tenant_id ? String(row.tenant_id) : null;
+    const tenantClause = tid ? 'AND tenant_id = $3' : '';
     const params = tid
       ? [delta, row.jenis_produk, tid]
-      : [delta, row.jenis_produk]
-    await dbRun(
-      `UPDATE produk SET stok = GREATEST(0, stok + $1), updated_at = now()
-       WHERE nama ILIKE $2 ${tenantClause}`,
+      : [delta, row.jenis_produk];
+    const updateResult = await dbRun(
+      `UPDATE produk SET stok = stok + $1, updated_at = now()
+       WHERE nama ILIKE $2 ${tenantClause}
+       RETURNING stok, nama`,
       params
-    ).catch(() => {}) // tidak crash kalau produk tidak ditemukan
+    );
+    // Log warning kalau produk tidak ditemukan (bukan error fatal)
+    if (!updateResult) {
+      console.warn(`[STOK] Produk "${row.jenis_produk}" tidak ditemukan saat update stok`);
+    }
   }
 
   return result;
