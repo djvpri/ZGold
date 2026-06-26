@@ -12,7 +12,6 @@ export default function PanelJual(props: any) {
     namaPembeli, setNamaPembeli, berat, setBerat, ongkos, setOngkos,
     jumlah, setJumlah, diskon, setDiskon, jenis, setJenis, bayar, setBayar,
     isLM, total, kembalian, hargaPerGram, onProses, userName,
-    produkList = [], onPilihProduk,
   } = props;
   const l: LogamConfig = logam;
 
@@ -21,10 +20,11 @@ export default function PanelJual(props: any) {
   const [loading, setLoading] = useState(false);
   const [konfirmasi, setKonfirmasi] = useState(false);
 
-  // ── Fitur cari kode produk ──
+  // ── Cari / Scan Produk ──
   const [kodeInput, setKodeInput] = useState("");
   const [kodeStatus, setKodeStatus] = useState<"idle"|"loading"|"found"|"notfound">("idle");
-  const [produkDitemukan, setProdukDitemukan] = useState<any>(null);
+  const [produkDipilih, setProdukDipilih] = useState<any>(null);
+  const [hasilCari, setHasilCari] = useState<any[]>([]);
   const [showScanner, setShowScanner] = useState(false);
   const kodeRef = useRef<HTMLInputElement>(null);
 
@@ -38,34 +38,29 @@ export default function PanelJual(props: any) {
     fetch("/api/auth/me").then(r => r.json()).then(d => setTenant(d.data?.tenant)).catch(() => {});
   }, []);
 
-  async function cariProduk(kode: string) {
-    if (!kode.trim()) return;
+  async function cariProduk(q: string) {
+    if (!q.trim()) return;
     setKodeStatus("loading");
     try {
-      const res = await fetch(`/api/produk?q=${encodeURIComponent(kode.trim())}`);
+      const res = await fetch(`/api/produk?q=${encodeURIComponent(q.trim())}`);
       const d = await res.json();
-      const produk = (d.data || []).find((p: any) =>
-        p.kode?.toLowerCase() === kode.trim().toLowerCase()
+      const list: any[] = d.data || [];
+      // Cari exact match by kode
+      const exact = list.find((p: any) =>
+        p.kode?.toLowerCase() === q.trim().toLowerCase()
       );
-      if (produk) {
-        setProdukDitemukan(produk);
+      if (exact) {
+        pilihProduk(exact);
         setKodeStatus("found");
-        // Auto-fill form
-        if (produk.logam_id && LOGAM[produk.logam_id]) {
-          onGantiLogam(produk.logam_id);
-          // Set kadar sesuai produk
-          const logamData = LOGAM[produk.logam_id];
-          const kadarI = logamData.kadar.findIndex((k: any) =>
-            k.label === produk.kadar_label || k.id === produk.kadar_id
-          );
-          if (kadarI >= 0) onGantiKadar(kadarI);
-        }
-        if (produk.berat_gram) setBerat(produk.berat_gram);
-        if (produk.jenis) setJenis(produk.jenis);
-        if (produk.ongkos_cetak) setOngkos(produk.ongkos_cetak);
-        setJumlah(1);
+        setHasilCari([]);
+      } else if (list.length > 0) {
+        // Tampilkan hasil pencarian
+        setHasilCari(list);
+        setProdukDipilih(null);
+        setKodeStatus("idle");
       } else {
-        setProdukDitemukan(null);
+        setProdukDipilih(null);
+        setHasilCari([]);
         setKodeStatus("notfound");
       }
     } catch {
@@ -73,18 +68,41 @@ export default function PanelJual(props: any) {
     }
   }
 
+  function pilihProduk(p: any) {
+    setProdukDipilih(p);
+    setKodeStatus("found");
+    setHasilCari([]);
+    setKodeInput(p.kode);
+
+    // Auto-fill form dari produk
+    if (p.logam_id && LOGAM[p.logam_id]) {
+      onGantiLogam(p.logam_id);
+      const logamData = LOGAM[p.logam_id];
+      const kadarI = logamData.kadar.findIndex((k: any) =>
+        k.label === p.kadar_label || k.id === p.kadar_id
+      );
+      if (kadarI >= 0) onGantiKadar(kadarI);
+    }
+    if (p.jenis) setJenis(p.jenis);
+    if (p.berat_gram) setBerat(p.berat_gram);
+    if (p.ongkos_cetak) setOngkos(p.ongkos_cetak);
+    setJumlah(1);
+  }
+
   function handleKodeKeyDown(e: React.KeyboardEvent) {
     if (e.key === "Enter") cariProduk(kodeInput);
   }
 
-  function resetKode() {
+  function resetProduk() {
     setKodeInput("");
     setKodeStatus("idle");
-    setProdukDitemukan(null);
+    setProdukDipilih(null);
+    setHasilCari([]);
     kodeRef.current?.focus();
   }
 
   async function handleProses() {
+    if (!produkDipilih) { alert("Cari dan pilih produk dulu"); return; }
     if (berat <= 0) { alert("Berat harus lebih dari 0 gram"); return; }
     if (jumlah <= 0) { alert("Jumlah harus minimal 1"); return; }
     if (bayar > 0 && bayar < total) { alert("Pembayaran kurang dari total"); return; }
@@ -122,10 +140,10 @@ export default function PanelJual(props: any) {
 
   return (
     <>
-      {/* ── Cari Kode Produk / Scan Barcode ── */}
+      {/* ── Cari / Scan Produk ── */}
       <div className="mb-3 rounded-lg border t-border t-bg-card p-3">
         <div className="mb-1.5 text-[10px] font-medium uppercase tracking-wider t-text-3">
-          <i className="ti ti-barcode mr-1" />Cari Kode / Scan Barcode
+          <i className="ti ti-barcode mr-1" />Cari Produk
         </div>
         <div className="flex gap-2">
           <input
@@ -148,83 +166,93 @@ export default function PanelJual(props: any) {
             style={{ background: l.accent }}>
             {kodeStatus === "loading" ? <i className="ti ti-loader animate-spin" /> : <i className="ti ti-search" />}
           </button>
-          {kodeStatus !== "idle" && (
-            <button onClick={resetKode} className="rounded-md border t-border px-3 py-2 text-xs t-text-3">
-              <i className="ti ti-x" />
+          {produkDipilih && (
+            <button onClick={resetProduk} className="rounded-md border t-border px-3 py-2 text-xs t-text-3">
+              <i className="ti ti-x" /> Ganti
             </button>
           )}
         </div>
 
-        {/* Hasil pencarian */}
-        {kodeStatus === "found" && produkDitemukan && (
-          <div className="mt-2 flex items-center gap-2 rounded-md border border-green-200 bg-green-50 px-3 py-2">
-            <i className="ti ti-check text-green-600" />
-            <div className="flex-1 text-xs">
-              <span className="font-semibold text-green-800">{produkDitemukan.kode}</span>
-              {" · "}{produkDitemukan.nama}
-              {" · "}{produkDitemukan.berat_gram}g
-              {" · Stok: "}<span className={produkDitemukan.stok <= 0 ? "text-red-600 font-bold" : "text-green-700 font-medium"}>
-                {produkDitemukan.stok} pcs
-              </span>
+        {/* Produk terpilih — kartu besar */}
+        {produkDipilih && (
+          <div className="mt-2 rounded-lg border-2 p-3" style={{ borderColor: l.accent, background: l.bg + "20" }}>
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="rounded bg-green-600 px-1.5 py-0.5 text-[10px] font-bold text-white">{produkDipilih.kode}</span>
+                  <span className="text-sm font-bold t-text-1">{produkDipilih.nama}</span>
+                </div>
+                <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] t-text-3">
+                  <span>{produkDipilih.jenis}</span>
+                  <span>{produkDipilih.berat_gram}g</span>
+                  {produkDipilih.ongkos_cetak > 0 && <span>Ongkos: {formatIDR(produkDipilih.ongkos_cetak)}</span>}
+                  <span className={produkDipilih.stok <= 0 ? "text-red-500 font-bold" : "text-green-600"}>
+                    Stok: {produkDipilih.stok}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         )}
+
+        {/* Hasil pencarian (multiple) */}
+        {hasilCari.length > 0 && !produkDipilih && (
+          <div className="mt-2 space-y-1">
+            <p className="text-[10px] t-text-3">Pilih produk:</p>
+            {hasilCari.map((p: any) => (
+              <button key={p.id} onClick={() => pilihProduk(p)}
+                className="flex w-full items-center gap-3 rounded-lg border t-border-md t-bg-card p-2.5 text-left transition hover:opacity-80">
+                <i className="ti ti-box text-base" style={{ color: l.accent }} />
+                <div className="flex-1 text-xs">
+                  <span className="font-semibold">{p.kode}</span> — {p.nama}
+                  <div className="text-[10px] t-text-3">{p.berat_gram}g · Stok: {p.stok}</div>
+                </div>
+                <i className="ti ti-chevron-right t-text-3" />
+              </button>
+            ))}
+          </div>
+        )}
+
         {kodeStatus === "notfound" && (
           <div className="mt-2 flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
-            <i className="ti ti-alert-circle" /> Kode produk tidak ditemukan
+            <i className="ti ti-alert-circle" /> Produk tidak ditemukan
+          </div>
+        )}
+
+        {kodeStatus === "idle" && !produkDipilih && !hasilCari.length && (
+          <div className="mt-2 flex items-center gap-2 rounded-md t-bg-muted/30 px-3 py-2 text-[11px] t-text-3">
+            <i className="ti ti-info-circle" /> Scan barcode atau ketik kode produk
           </div>
         )}
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        {/* Kiri — pilih logam, kadar, jenis */}
+        {/* Kiri — ringkasan produk */}
         <div>
-          <SectionTitle>Pilih Logam</SectionTitle>
-          <div className="grid grid-cols-2 gap-1.5 md:grid-cols-1">
-            {Object.values(LOGAM).map((lg) => (
-              <button key={lg.id} onClick={() => onGantiLogam(lg.id)}
-                className="rounded-lg border-2 t-bg-muted/40 p-2.5 text-left transition"
-                style={{ borderColor: logamId === lg.id ? lg.accent : "transparent" }}>
-                <div className="flex items-center gap-2">
-                  <i className={`ti ${lg.icon} text-base`} style={{ color: lg.accent }} />
-                  <div>
-                    <div className="text-xs font-medium">{lg.nama}</div>
-                    <div className="text-[10px] t-text-3">
-                      {formatIDR(spot[lg.id])}/g
-                    </div>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          <SectionTitle className="mt-3">Kadar</SectionTitle>
-          <div className="mb-2 flex flex-wrap gap-1.5">
-            {l.kadar.map((k, i) => (
-              <button key={k.label} onClick={() => onGantiKadar(i)}
-                className="rounded-full px-2.5 py-1.5 text-[11px] transition sm:text-xs"
-                style={{
-                  background: kadarIdx === i ? l.accent : "transparent",
-                  color: kadarIdx === i ? "#fff" : "#9ca3af",
-                  border: kadarIdx === i ? "none" : "0.5px solid #d1d5db",
-                }}>
-                {k.label}
-              </button>
-            ))}
-          </div>
-
-          <SectionTitle>Jenis Produk</SectionTitle>
-          {produkList.length === 0 ? (
-            <p className="text-[11px] text-red-400">Belum ada produk stok. Tambah di menu Stok dulu.</p>
+          <SectionTitle>Info Produk</SectionTitle>
+          {produkDipilih ? (
+            <div className="rounded-lg border t-border t-bg-card p-3 space-y-1.5">
+              <div className="flex justify-between text-xs">
+                <span className="t-text-3">Logam</span>
+                <span className="font-medium">{l.nama}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="t-text-3">Kadar</span>
+                <span className="font-medium">{l.kadar[kadarIdx]?.label}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="t-text-3">Jenis</span>
+                <span className="font-medium">{jenis}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="t-text-3">Stok</span>
+                <span className={produkDipilih.stok <= 0 ? "text-red-500 font-bold" : "text-green-600 font-medium"}>
+                  {produkDipilih.stok} pcs
+                </span>
+              </div>
+            </div>
           ) : (
-            <select value={jenis} onChange={(e) => onPilihProduk?.(e.target.value)}
-              className="w-full rounded-md border t-border-md t-bg-card px-2 py-2 text-xs">
-              {produkList.map((p: any) => (
-                <option key={p.id} value={p.nama}>
-                  {p.nama} — {p.berat_gram}g — stok: {p.stok}
-                </option>
-              ))}
-            </select>
+            <p className="text-[11px] t-text-3">Belum ada produk dipilih</p>
           )}
         </div>
 
@@ -288,10 +316,11 @@ export default function PanelJual(props: any) {
             </p>
           )}
 
-          <button onClick={handleProses} disabled={loading}
+          <button onClick={handleProses} disabled={loading || !produkDipilih}
             className="w-full rounded-md py-3 text-xs font-medium text-white transition hover:opacity-90 disabled:opacity-50 sm:text-[13px] mt-2"
-            style={{ background: l.accent }}>
-            {loading ? "Memproses..." : <><i className="ti ti-receipt mr-1.5" />Proses & Cetak Nota</>}
+            style={{ background: produkDipilih ? l.accent : '#6b7280' }}>
+            {!produkDipilih ? "Pilih produk dulu" :
+             loading ? "Memproses..." : <><i className="ti ti-receipt mr-1.5" />Proses & Cetak Nota</>}
           </button>
         </div>
       </div>
@@ -302,7 +331,7 @@ export default function PanelJual(props: any) {
           <div className="w-full max-w-sm rounded-xl t-bg-card p-5 shadow-xl">
             <h3 className="mb-3 text-sm font-semibold t-text-1">Konfirmasi Transaksi</h3>
             <div className="mb-4 space-y-1 text-xs t-text-2">
-              <div className="flex justify-between"><span>Produk</span><span className="font-medium">{jenis} {l.kadar[kadarIdx]?.label}</span></div>
+              <div className="flex justify-between"><span>Produk</span><span className="font-medium">{produkDipilih?.kode} — {jenis} {l.kadar[kadarIdx]?.label}</span></div>
               <div className="flex justify-between"><span>Berat</span><span className="font-medium">{berat} gram × {jumlah} pcs</span></div>
               <div className="flex justify-between"><span>Pembeli</span><span className="font-medium">{namaPembeli || "Umum"}</span></div>
               {diskon > 0 && <div className="flex justify-between text-green-600"><span>Diskon</span><span>− {formatIDR(diskon)}</span></div>}
