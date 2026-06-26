@@ -276,6 +276,47 @@ export default function PanelStok() {
         </table>
       </div>
 
+      {/* Mobile: card layout */}
+      <div className="space-y-2 sm:hidden">
+        {produk.length === 0 ? (
+          <div className="py-8 text-center text-[10px] t-text-4">Belum ada produk</div>
+        ) : produk.map((item) => (
+          <div key={item.id} className="rounded-lg border t-border p-3">
+            <div className="flex items-start gap-3">
+              <div
+                onClick={() => item.foto_url && setFotoPreview(item.foto_url)}
+                className="h-12 w-12 flex-shrink-0 rounded-lg overflow-hidden border t-border-muted flex items-center justify-center"
+                style={{ background: `${getAccent(item.logam_id)}15`, cursor: item.foto_url ? "pointer" : "default" }}
+              >
+                {item.foto_url
+                  ? <img src={item.foto_url} alt="" className="h-full w-full object-cover" />
+                  : <i className="ti ti-diamond text-lg" style={{ color: getAccent(item.logam_id) }} />
+                }
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="rounded bg-gray-700 px-1.5 py-0.5 text-[9px] font-mono text-gray-200">{item.kode}</span>
+                  <span className="text-xs font-medium truncate">{item.nama}</span>
+                </div>
+                <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] t-text-3">
+                  <span style={{ color: getAccent(item.logam_id) }}>{LOGAM[item.logam_id]?.nama.split(" ")[0] || item.logam_id}</span>
+                  <span>{item.jenis}</span>
+                  <span>{item.berat_gram}g</span>
+                  <span className={item.stok <= 0 ? "text-red-400 font-semibold" : "text-green-400"}>
+                    Stok: {item.stok}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="mt-2 flex gap-1.5">
+              <button onClick={() => openStokAdjust(item.id)} className="flex-1 rounded bg-green-600/20 py-1.5 text-[10px] text-green-400 font-medium">Atur Stok</button>
+              <button onClick={() => handleEdit(item)} className="flex-1 rounded bg-blue-600/20 py-1.5 text-[10px] text-blue-400 font-medium">Edit</button>
+              <button onClick={() => handleDelete(item.id)} className="flex-1 rounded bg-red-600/20 py-1.5 text-[10px] text-red-400 font-medium">Hapus</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Form Tambah/Edit */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center">
