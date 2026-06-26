@@ -139,8 +139,12 @@ export default function DashboardPage() {
         </nav>
 
         <div className="absolute bottom-3 left-3 right-3">
-          <div className="mb-1 text-[10px] text-neutral-600">
-            {user.nama} · {user.role}
+          <div className="mb-1 flex items-center gap-1.5 text-[10px] text-neutral-600">
+            <span>{user.nama}</span>
+            <span className="rounded px-1.5 py-0.5 text-[9px] font-medium text-white"
+              style={{ background: user.role === "admin" ? "#059669" : "#d97706" }}>
+              {user.role}
+            </span>
           </div>
           <div className="mb-2">
             <span className="rounded-full t-bg-muted px-1.5 py-0.5 text-[9px] t-text-3">
@@ -163,6 +167,21 @@ export default function DashboardPage() {
           {activeTab === "users" && "Manajemen Pengguna"}
           {activeTab === "settings" && "Pengaturan Toko"}
         </h1>
+
+        {/* User info bar — role visible */}
+        <div className="mb-3 flex items-center gap-3 rounded-lg border t-border t-bg-card px-4 py-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full t-bg-muted text-xs font-bold">
+            {user.nama?.charAt(0)?.toUpperCase() || "?"}
+          </div>
+          <div className="flex-1 text-xs">
+            <div className="font-medium">{user.nama}</div>
+            <div className="text-[10px] t-text-4">{user.email}</div>
+          </div>
+          <span className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-white"
+            style={{ background: user.role === "admin" ? "#059669" : "#d97706" }}>
+            {user.role}
+          </span>
+        </div>
 
         {activeTab === "overview" && stats && (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
