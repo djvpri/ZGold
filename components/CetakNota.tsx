@@ -32,21 +32,6 @@ function formatIDR(n: number) {
 export default function CetakNota({ data, onClose }: CetakNotaProps) {
   const [printed, setPrinted] = useState(false);
 
-  const handlePrint = useCallback(() => {
-    window.print();
-    setPrinted(true);
-    setTimeout(() => onClose(), 500);
-  }, [onClose]);
-
-  // Close on Escape
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
   const receiptLines = [
     "══════════════════════════",
     `    ${data.nama_toko}`,
@@ -78,6 +63,33 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
     "tidak dapat dikembalikan",
     "══════════════════════════",
   ].filter((line) => line !== null) as string[];
+
+  const handlePrint = useCallback(() => {
+    window.print();
+    setPrinted(true);
+    setTimeout(() => onClose(), 500);
+  }, [onClose]);
+
+  const handleShare = useCallback(async () => {
+    const text = receiptLines.join("\n");
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Nota Transaksi", text });
+      } catch {}
+    } else {
+      await navigator.clipboard.writeText(text);
+      alert("Teks nota berhasil disalin ke clipboard!");
+    }
+  }, [receiptLines]);
+
+  // Close on Escape
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-3" onClick={onClose}>
@@ -111,6 +123,13 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
             className="flex-1 rounded-lg border t-border-md py-2.5 text-xs t-text-3 t-bg-hover"
           >
             Tutup
+          </button>
+          <button
+            onClick={handleShare}
+            className="flex-1 rounded-lg border t-border-md py-2.5 text-xs t-text-3 t-bg-hover"
+          >
+            <i className="ti ti-share mr-1.5" />
+            Bagikan
           </button>
           <button
             onClick={handlePrint}
