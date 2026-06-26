@@ -13,7 +13,7 @@ interface USBDevice {
   selectConfiguration(v: number): Promise<void>;
   claimInterface(n: number): Promise<void>;
   releaseInterface(n: number): Promise<void>;
-  transferOut(endpointNumber: number, data: BufferSource): Promise<any>;
+  transferOut(endpointNumber: number, data: any): Promise<any>;
   transferIn(endpointNumber: number, length: number): Promise<any>;
 }
 declare const navigator: Navigator & { usb?: { getDevices(): Promise<USBDevice[]>; requestDevice(o?: any): Promise<USBDevice> } };
