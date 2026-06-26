@@ -29,6 +29,16 @@ function formatIDR(n: number) {
   return "Rp " + Math.round(n).toLocaleString("id-ID");
 }
 
+/** Pad/trim to exact width */
+function pad(s: string, w: number): string {
+  if (s.length >= w) return s.slice(0, w);
+  return s + " ".repeat(w - s.length);
+}
+function rpad(s: string, w: number): string {
+  if (s.length >= w) return s.slice(0, w);
+  return " ".repeat(w - s.length) + s;
+}
+
 export default function CetakNota({ data, onClose }: CetakNotaProps) {
   const [printed, setPrinted] = useState(false);
 
@@ -41,59 +51,57 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
   const handleShare = useCallback(async () => {
     const text = receiptLines.join("\n");
     if (navigator.share) {
-      try {
-        await navigator.share({ title: "Nota Transaksi", text });
-      } catch {}
+      try { await navigator.share({ title: "Nota Transaksi", text }); } catch {}
     } else {
       await navigator.clipboard.writeText(text);
       alert("Teks nota berhasil disalin ke clipboard!");
     }
   }, []);
 
-  // Close on Escape
   useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
+    function onKey(e: KeyboardEvent) { if (e.key === "Escape") onClose(); }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const receiptLines = [
-    "════════════════════════════════════════════════════════════════════════════════",
+  // 80 chars per line for PLQ-35 dot matrix
+  const W = 80;
+  const sep = "═".repeat(W);
+  const line = "─".repeat(W);
+
+  const receiptLines: string[] = [
+    sep,
+    pad(`  ${data.nama_toko}`, W),
+    data.alamat_toko ? pad(`  ${data.alamat_toko}`, W) : null,
+    data.telepon ? pad(`  Telp: ${data.telepon}`, W) : null,
     "",
-    `    ${data.nama_toko}`,
-    data.alamat_toko ? `    ${data.alamat_toko}` : null,
-    data.telepon ? `    Telp: ${data.telepon}` : null,
+    sep,
     "",
-    "════════════════════════════════════════════════════════════════════════════════",
+    pad(`  No. Transaksi : ${data.no_transaksi}`, W),
+    pad(`  Tanggal       : ${data.tanggal}`, W),
+    pad(`  Kasir         : ${data.nama_kasir}`, W),
     "",
-    `No. Transaksi : ${data.no_transaksi}`,
-    `Tanggal       : ${data.tanggal}`,
-    `Kasir         : ${data.nama_kasir}`,
-    "",
-    "────────────────────────────────────────────────────────────────────────────────",
-    "  Item                                          Qty      Harga",
-    "────────────────────────────────────────────────────────────────────────────────",
+    line,
+    pad(`  Item`, 50) + rpad(`Qty`, 5) + rpad(`Harga`, 25),
+    line,
     ...data.items.flatMap((item) => [
-      `  ${item.nama}`,
-      `                                    ${String(item.jumlah).padStart(4)}   ${formatIDR(item.harga).padStart(14)}`,
+      pad(`  ${item.nama}`, 50) + rpad(String(item.jumlah), 5) + rpad(formatIDR(item.harga), 25),
     ]),
-    "────────────────────────────────────────────────────────────────────────────────",
+    line,
     "",
-    `  Subtotal   : ${formatIDR(data.subtotal).padStart(16)}`,
-    `  Diskon     : ${formatIDR(data.diskon).padStart(16)}`,
-    `  TOTAL      : ${formatIDR(data.total).padStart(16)}`,
+    pad(`  Subtotal`, 55) + rpad(formatIDR(data.subtotal), 25),
+    pad(`  Diskon`, 55) + rpad(formatIDR(data.diskon), 25),
+    pad(`  TOTAL`, 55) + rpad(formatIDR(data.total), 25),
     "",
-    `  Bayar      : ${formatIDR(data.bayar).padStart(16)}`,
-    `  Kembalian  : ${formatIDR(data.kembalian).padStart(16)}`,
+    pad(`  Bayar`, 55) + rpad(formatIDR(data.bayar), 25),
+    pad(`  Kembalian`, 55) + rpad(formatIDR(data.kembalian), 25),
     "",
-    "────────────────────────────────────────────────────────────────────────────────",
+    line,
     "",
     "  Terima kasih atas kunjungan Anda.",
     "  Barang yang sudah dibeli tidak dapat dikembalikan.",
     "",
-    "════════════════════════════════════════════════════════════════════════════════",
+    sep,
   ].filter((line) => line !== null) as string[];
 
   return (
@@ -102,7 +110,6 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
         className="w-full max-w-sm rounded-xl border t-border-md t-bg-card shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between border-b t-border px-4 py-3">
           <h2 className="text-sm font-medium">Cetak Nota</h2>
           <button onClick={onClose} className="rounded p-1 t-text-3 t-bg-hover">
@@ -110,10 +117,9 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
           </button>
         </div>
 
-        {/* Receipt preview — portrait representation of landscape print */}
         <div className="max-h-[60vh] overflow-y-auto p-4">
           <pre
-            className="whitespace-pre rounded-lg bg-white p-3 text-[9px] leading-[1.3] text-black sm:text-[10px]"
+            className="whitespace-pre rounded-lg bg-white p-3 text-[8px] leading-[1.2] text-black sm:text-[9px]"
             id="receipt-content"
             style={{ fontFamily: "'Courier New', Courier, monospace" }}
           >
@@ -121,32 +127,20 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
           </pre>
         </div>
 
-        {/* Actions */}
         <div className="flex gap-2 border-t t-border p-3">
-          <button
-            onClick={onClose}
-            className="flex-1 rounded-lg border t-border-md py-2.5 text-xs t-text-3 t-bg-hover"
-          >
+          <button onClick={onClose} className="flex-1 rounded-lg border t-border-md py-2.5 text-xs t-text-3 t-bg-hover">
             Tutup
           </button>
-          <button
-            onClick={handleShare}
-            className="flex-1 rounded-lg border t-border-md py-2.5 text-xs t-text-3 t-bg-hover"
-          >
-            <i className="ti ti-share mr-1.5" />
-            Bagikan
+          <button onClick={handleShare} className="flex-1 rounded-lg border t-border-md py-2.5 text-xs t-text-3 t-bg-hover">
+            <i className="ti ti-share mr-1.5" />Bagikan
           </button>
-          <button
-            onClick={handlePrint}
-            className="flex-1 rounded-lg bg-amber-600 py-2.5 text-xs font-medium text-white hover:bg-amber-700"
-          >
-            <i className="ti ti-printer mr-1.5" />
-            Cetak
+          <button onClick={handlePrint} className="flex-1 rounded-lg bg-amber-600 py-2.5 text-xs font-medium text-white hover:bg-amber-700">
+            <i className="ti ti-printer mr-1.5" />Cetak
           </button>
         </div>
       </div>
 
-      {/* Print-only receipt — landscape for PLQ-35 (21.5cm paper) */}
+      {/* Print CSS — PLQ-35 landscape 21cm x 11.5cm */}
       <style jsx global>{`
         @media print {
           html, body {
@@ -159,19 +153,18 @@ export default function CetakNota({ data, onClose }: CetakNotaProps) {
             position: fixed !important;
             left: 0 !important;
             top: 0 !important;
-            /* Landscape: 21cm x 11.5cm paper, small margins */
             width: 210mm !important;
             max-width: 210mm !important;
             height: auto !important;
             background: white !important;
             color: black !important;
-            padding: 5mm 8mm !important;
-            font-size: 10pt !important;
+            padding: 3mm 5mm !important;
+            font-size: 9pt !important;
             font-family: 'Courier New', Courier, monospace !important;
-            line-height: 1.2 !important;
+            line-height: 1.0 !important;
             z-index: 99999 !important;
-            /* Force landscape orientation */
-            page-break-inside: avoid !important;
+            white-space: pre !important;
+            overflow: visible !important;
           }
           #receipt-content * {
             visibility: visible !important;
