@@ -49,7 +49,7 @@ class EpsonPrinter {
   private endpointIn: number | null = null;
 
   /** Check if WebUSB is available */
-  static isSupported(): boolean {
+  isSupported(): boolean {
     return typeof navigator !== 'undefined' && !!navigator.usb;
   }
 
