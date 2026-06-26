@@ -257,8 +257,15 @@ export default function PanelJual(props: any) {
           </div>
 
           <Field label="Bayar (Rp)">
-            <input type="number" value={bayar || ""} onChange={(e) => setBayar(+e.target.value)}
-              placeholder="0 = tanpa bayar" className={inputCls} inputMode="numeric" />
+            <div className="flex gap-2">
+              <input type="number" value={bayar || ""} onChange={(e) => setBayar(+e.target.value)}
+                placeholder="0 = tanpa bayar" className={inputCls} inputMode="numeric" style={{flex:1}} />
+              <button type="button" onClick={() => setBayar(total)}
+                className="px-3 rounded-lg text-xs font-semibold border transition"
+                style={{background:'var(--t-accent)',color:'#fff',borderColor:'var(--t-accent)',whiteSpace:'nowrap'}}>
+                Pas
+              </button>
+            </div>
           </Field>
           {bayar > 0 && (
             <p className="mb-2 text-[11px]">
