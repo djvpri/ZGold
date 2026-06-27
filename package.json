@@ -5,10 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "node scripts/gen-version.js && next build",
-    "start": "next start",
+    "start": "node scripts/migrate.js && next start",
     "lint": "next lint",
     "migrate": "node scripts/migrate.js",
-    "postinstall": "node scripts/migrate.js"
+    "postinstall": "node scripts/gen-version.js"
   },
   "dependencies": {
     "html5-qrcode": "^2.3.8",
