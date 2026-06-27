@@ -4,10 +4,21 @@ const { Pool } = require("pg");
 const fs = require("fs");
 const path = require("path");
 
+const dns = require("dns");
+
 async function migrate() {
   if (!process.env.DATABASE_URL) {
     console.error("ERROR: DATABASE_URL tidak diset!");
     process.exit(1);
+  }
+
+  // Skip migration at build time (DB host not resolvable)
+  const hostname = new URL(process.env.DATABASE_URL).hostname;
+  try {
+    await dns.promises.lookup(hostname);
+  } catch {
+    console.log("⚠️ DB host unreachable (build time), skipping migration");
+    process.exit(0);
   }
 
   const pool = new Pool({
