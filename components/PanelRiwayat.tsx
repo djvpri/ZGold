@@ -5,6 +5,21 @@ export default function PanelRiwayat({ riwayat, onRefresh }: { riwayat: any[]; o
   const totalJual = riwayat.filter(r => r.tipe === "jual").reduce((a, b) => a + (b.total || 0), 0);
   const totalBuyback = riwayat.filter(r => r.tipe === "buyback").reduce((a, b) => a + (b.total || 0), 0);
 
+  function exportCSV() {
+    const rows = [["No Transaksi", "Tipe", "Nama", "Produk", "Berat", "Total", "Bayar", "Tanggal"]];
+    riwayat.forEach((r) => {
+      rows.push([r.no_transaksi || "", r.tipe, r.nama_pihak || "", r.jenis_produk || "", String(r.berat_gram), String(r.total || 0), String(r.bayar || 0), r.created_at?.slice(0, 10) || ""]);
+    });
+    const csv = rows.map((r) => r.join(",")).join("\n");
+    const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `transaksi_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   if (riwayat.length === 0) {
     return (
       <div className="py-12 text-center">
@@ -37,9 +52,14 @@ export default function PanelRiwayat({ riwayat, onRefresh }: { riwayat: any[]; o
         <span className="text-[10px] font-medium uppercase tracking-wider t-text-3">
           {riwayat.length} transaksi hari ini
         </span>
-        <button onClick={onRefresh} className="rounded-md border t-border px-2 py-1 text-[10px] t-text-3 t-bg-hover">
-          <i className="ti ti-refresh mr-1" />Refresh
-        </button>
+        <div className="flex gap-1">
+          <button onClick={exportCSV} className="rounded-md border t-border px-2 py-1 text-[10px] t-text-3 t-bg-hover">
+            <i className="ti ti-table-export mr-1" />CSV
+          </button>
+          <button onClick={onRefresh} className="rounded-md border t-border px-2 py-1 text-[10px] t-text-3 t-bg-hover">
+            <i className="ti ti-refresh mr-1" />Refresh
+          </button>
+        </div>
       </div>
 
       <div className="space-y-1.5">

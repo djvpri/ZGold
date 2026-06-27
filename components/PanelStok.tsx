@@ -67,6 +67,21 @@ export default function PanelStok() {
 
   useEffect(() => { fetchProduk(); }, [filterLogam]);
 
+  function exportCSV() {
+    const rows = [["Kode", "Nama", "Logam", "Jenis", "Berat", "Stok", "Ongkos"]];
+    produk.forEach((p) => {
+      rows.push([p.kode, p.nama, p.logam_id, p.jenis, String(p.berat_gram), String(p.stok), String(p.ongkos_cetak)]);
+    });
+    const csv = rows.map((r) => r.join(",")).join("\n");
+    const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `stok_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -172,6 +187,16 @@ export default function PanelStok() {
           );
         })}
       </div>
+
+      {/* Export actions */}
+      {produk.length > 0 && (
+        <div className="mb-3 flex gap-1.5">
+          <button onClick={exportCSV}
+            className="rounded bg-emerald-600/20 px-2.5 py-1 text-[9px] text-emerald-400 hover:bg-emerald-600/30 sm:text-[10px]">
+            <i className="ti ti-table-export mr-1" />Export CSV
+          </button>
+        </div>
+      )}
 
       {/* Mobile: card layout */}
       <div className="space-y-2 sm:hidden">

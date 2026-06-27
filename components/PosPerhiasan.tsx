@@ -5,8 +5,9 @@ import PanelJual from "./PanelJual";
 import PanelBuyback from "./PanelBuyback";
 import PanelRiwayat from "./PanelRiwayat";
 import PanelStok from "./PanelStok";
+import PanelHutang from "./PanelHutang";
 
-type Mode = "jual" | "buyback" | "riwayat" | "stok";
+type Mode = "jual" | "buyback" | "riwayat" | "stok" | "hutang";
 
 export default function PosPerhiasan() {
   const [mode, setMode] = useState<Mode>("jual");
@@ -95,6 +96,7 @@ export default function PosPerhiasan() {
       body: JSON.stringify({
         tipe: "jual", logam_id: logamId, kadar_label: kadar.label,
         jenis_produk: jenis, nama_pihak: namaPembeli || "Umum",
+        kontak: "",
         berat_gram: berat, jumlah, harga_per_gram: spot[logamId] * kadar.nilai,
         ongkos_cetak: isLM ? 0 : ongkos, kondisi: 1.0,
         diskon, total, bayar, kembalian,
@@ -102,6 +104,23 @@ export default function PosPerhiasan() {
     });
     const d = await res.json();
     if (!res.ok) throw new Error(d.error);
+
+    // Auto-create hutang if outstanding balance
+    if (bayar > 0 && bayar < total && d.data?.id) {
+      await fetch("/api/hutang", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transaksi_id: d.data.id,
+          tipe: "jual",
+          nama_pihak: namaPembeli || "Umum",
+          total,
+          dibayar: bayar,
+          sisa: total - bayar,
+        }),
+      });
+    }
+
     setBayar(0);
     fetchRiwayat();
     return d.data;
@@ -128,14 +147,33 @@ export default function PosPerhiasan() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         tipe: "buyback", logam_id: bbLogamId, kadar_label: bbKadar.label,
-        nama_pihak: bbNama || "Penjual", berat_gram: bbBerat, jumlah: 1,
+        nama_pihak: bbNama || "Penjual",
+        kontak: "",
+        berat_gram: bbBerat, jumlah: 1,
         harga_per_gram: spot[bbLogamId] * bbLogam.buybackRatio * bbKadar.nilai,
         ongkos_cetak: 0, kondisi: bbKondisi, diskon: 0,
-        total: bbTotal, bayar: 0, kembalian: 0,
+        total: bbTotal, bayar: bbTotal, kembalian: 0,
       }),
     });
     const d = await res.json();
     if (!res.ok) throw new Error(d.error);
+
+    // Auto-create hutang if not fully paid (bayar < total)
+    if (bbTotal > 0 && d.data?.id && 0 < bbTotal) {
+      await fetch("/api/hutang", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transaksi_id: d.data.id,
+          tipe: "buyback",
+          nama_pihak: bbNama || "Penjual",
+          total: bbTotal,
+          dibayar: 0,
+          sisa: bbTotal,
+        }),
+      });
+    }
+
     fetchRiwayat();
     return d.data;
   }
@@ -151,7 +189,7 @@ export default function PosPerhiasan() {
           <p className="text-[10px] t-text-3 sm:text-xs">Zomet · Multi-Logam</p>
         </div>
         <div className="flex gap-1 overflow-x-auto pb-1">
-          {(["jual", "buyback", ...(userRole === "admin" ? ["riwayat", "stok"] : [])] as Mode[]).map((m) => (
+          {(["jual", "buyback", ...(userRole === "admin" ? ["riwayat", "stok", "hutang"] : ["hutang"])] as Mode[]).map((m) => (
             <button key={m} onClick={() => setMode(m)}
               className="flex-shrink-0 rounded-full px-3 py-1.5 text-[11px] capitalize transition sm:text-xs"
               style={{
@@ -219,6 +257,7 @@ export default function PosPerhiasan() {
 
       {mode === "riwayat" && <PanelRiwayat riwayat={riwayat} onRefresh={fetchRiwayat} />}
       {mode === "stok" && <PanelStok />}
+      {mode === "hutang" && <PanelHutang />}
     </div>
   );
 }

@@ -88,6 +88,83 @@ export default function LaporanPage() {
     } catch {}
   }
 
+  function exportCSV() {
+    if (!data) return;
+    const { from, to } = getDateRange();
+    const rows = [["Tanggal", "Penjualan", "Buyback", "Jumlah Transaksi"]];
+    data.daily.forEach((d) => {
+      rows.push([d.tanggal, d.total_jual.toString(), d.total_buyback.toString(), d.jumlah.toString()]);
+    });
+    const csv = rows.map((r) => r.join(",")).join("\n");
+    const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `laporan_${from}_${to}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function cetakPDF() {
+    if (!data || !tenant) return;
+    const { from, to } = getDateRange();
+    const { jsPDF } = require("jspdf");
+    require("jspdf-autotable");
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+
+    // Title
+    doc.setFontSize(14);
+    doc.text("Laporan Penjualan", 14, 20);
+    doc.setFontSize(9);
+    doc.text(tenant.nama_toko, 14, 26);
+    doc.text(`Periode: ${from} s/d ${to}`, 14, 31);
+
+    // Summary
+    doc.setFontSize(10);
+    doc.text(`Total Penjualan: ${formatIDR(data.summary.total_jual)}`, 14, 39);
+    doc.text(`Total Buyback: ${formatIDR(data.summary.total_buyback)}`, 14, 45);
+    doc.text(`Jumlah Transaksi: ${data.summary.jumlah_transaksi}`, 14, 51);
+    doc.text(`Rata-rata: ${formatIDR(data.summary.avg_transaksi)}`, 14, 57);
+
+    // Daily table
+    const headers = [["Tanggal", "Penjualan", "Buyback", "Trx"]];
+    const body = data.daily.map((d) => [
+      new Date(d.tanggal).toLocaleDateString("id-ID"),
+      formatIDR(d.total_jual),
+      formatIDR(d.total_buyback),
+      String(d.jumlah),
+    ]);
+    (doc as any).autoTable({
+      startY: 62,
+      head: headers,
+      body,
+      theme: "striped",
+      headStyles: { fillColor: [184, 134, 11] },
+    });
+
+    // By logam
+    if (data.byLogam.length > 0) {
+      const finalY = (doc as any).lastAutoTable?.finalY || 62;
+      doc.text("Breakdown per Logam", 14, finalY + 12);
+      const logamHeaders = [["Logam", "Penjualan", "Buyback", "Trx"]];
+      const logamBody = data.byLogam.map((l) => [
+        l.logam_nama,
+        formatIDR(l.total_jual),
+        formatIDR(l.total_buyback),
+        String(l.jumlah),
+      ]);
+      (doc as any).autoTable({
+        startY: finalY + 16,
+        head: logamHeaders,
+        body: logamBody,
+        theme: "striped",
+        headStyles: { fillColor: [100, 100, 100] },
+      });
+    }
+
+    doc.save(`laporan_${from}_${to}.pdf`);
+  }
+
   if (loading || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center t-bg-base">
@@ -218,9 +295,17 @@ export default function LaporanPage() {
 
         {/* Date range display */}
         {data && (
-          <p className="mb-4 text-[10px] t-text-4 sm:text-xs">
-            {data.range.from} s/d {data.range.to}
-          </p>
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <p className="text-[10px] t-text-4 sm:text-xs">{data.range.from} s/d {data.range.to}</p>
+            <div className="ml-auto flex gap-1.5">
+              <button onClick={cetakPDF} className="rounded bg-amber-600/20 px-2.5 py-1 text-[9px] text-amber-400 hover:bg-amber-600/30 sm:text-[10px]">
+                <i className="ti ti-file-text mr-1" />PDF
+              </button>
+              <button onClick={exportCSV} className="rounded bg-emerald-600/20 px-2.5 py-1 text-[9px] text-emerald-400 hover:bg-emerald-600/30 sm:text-[10px]">
+                <i className="ti ti-table-export mr-1" />CSV
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Summary Cards */}
