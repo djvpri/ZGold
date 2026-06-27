@@ -1,70 +1,71 @@
-const CACHE_NAME = 'zomet-pos-v1';
-const STATIC_ASSETS = [
-  '/',
-  '/landing',
-  '/login',
-  '/dashboard',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-];
+// Zomet POS Service Worker
+// Version auto-bumped on each deploy via /version.json
+// If version.json changes, SW clears all caches and reloads
 
-// Install: cache static assets
+const STATIC_CACHE = 'zomet-static-v1';
+
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    })
-  );
   self.skipWaiting();
-});
-
-// Activate: clean old caches
-self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      );
-    })
+    fetch('/version.json?' + Date.now())
+      .then(r => r.json())
+      .then(v => {
+        const ver = v.version || 'unknown';
+        console.log('[SW] Version:', ver);
+      })
+      .catch(() => {})
   );
-  self.clients.claim();
 });
 
-// Fetch: network-first for API, cache-first for static
+self.addEventListener('activate', (event) => {
+  // Check version and clear if different
+  event.waitUntil(
+    (async () => {
+      // Claim all clients
+      await self.clients.claim();
+
+      // Fetch latest version.json
+      try {
+        const res = await fetch('/version.json?' + Date.now());
+        const v = await res.json();
+        const expectedVersion = v.version || 'unknown';
+
+        // Get stored version from IndexedDB or just compare to cached
+        const cacheKeys = await caches.keys();
+        const staleCaches = cacheKeys.filter(k => !k.includes(expectedVersion));
+        
+        if (staleCaches.length > 0 && cacheKeys.length > 0) {
+          // Version mismatch — clear everything
+          await Promise.all(staleCaches.map(k => caches.delete(k)));
+          // Cache version.json for future checks
+          const cache = await caches.open('zomet-' + expectedVersion);
+          cache.put('/version.json', new Response(JSON.stringify(v)));
+        }
+      } catch (e) {
+        // No network — use existing cache
+      }
+    })()
+  );
+});
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
-
-  // Skip non-GET requests
   if (request.method !== 'GET') return;
-
-  // Skip API calls (always network)
   if (url.pathname.startsWith('/api/')) return;
-
-  // Skip auth-related pages (always network)
   if (url.pathname === '/login' || url.pathname === '/dashboard') return;
 
   event.respondWith(
     caches.match(request).then((cached) => {
       const fetched = fetch(request)
         .then((response) => {
-          // Clone and cache successful responses
           if (response.ok) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone);
-            });
+            const clone = response.clone();
+            caches.open(STATIC_CACHE).then((c) => c.put(request, clone));
           }
           return response;
         })
-        .catch(() => {
-          // Network failed, return cached or offline page
-          return cached || caches.match('/');
-        });
-
+        .catch(() => cached || caches.match('/'));
       return cached || fetched;
     })
   );

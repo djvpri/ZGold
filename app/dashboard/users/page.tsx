@@ -136,6 +136,29 @@ export default function UsersPage() {
     }
   }
 
+  const [resetUserId, setResetUserId] = useState<number | null>(null);
+  const [resetPassword, setResetPassword] = useState("");
+  const [resetError, setResetError] = useState("");
+
+  async function handleResetPassword() {
+    if (!resetUserId || !resetPassword) return;
+    setResetError("");
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: resetUserId, newPassword: resetPassword }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error);
+      alert("Password berhasil direset");
+      setResetUserId(null);
+      setResetPassword("");
+    } catch (e: any) {
+      setResetError(e.message);
+    }
+  }
+
   if (loading || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -289,6 +312,13 @@ export default function UsersPage() {
                           >
                             <i className={`ti ${u.is_active ? "ti-toggle-left" : "ti-toggle-right"} text-sm`} />
                           </button>
+                          <button
+                            onClick={() => { setResetUserId(u.id); setResetPassword(""); }}
+                            className="rounded px-1.5 py-1 text-amber-500 hover:bg-gray-100"
+                            title="Reset Password"
+                          >
+                            <i className="ti ti-key text-sm" />
+                          </button>
                           {isOwner && (
                             <button
                               onClick={() => deleteUser(u)}
@@ -346,6 +376,12 @@ export default function UsersPage() {
                     className={`rounded px-2 py-1 text-[9px] ${u.is_active ? "bg-amber-900/30 text-amber-400" : "bg-green-900/30 text-green-400"}`}
                   >
                     {u.is_active ? "Nonaktif" : "Aktif"}
+                  </button>
+                  <button
+                    onClick={() => { setResetUserId(u.id); setResetPassword(""); }}
+                    className="rounded bg-amber-900/30 px-2 py-1 text-[9px] text-amber-400"
+                  >
+                    <i className="ti ti-key mr-1" />Reset PW
                   </button>
                   {isOwner && (
                     <button
@@ -443,6 +479,36 @@ export default function UsersPage() {
                   {loading2 ? "Menyimpan..." : editingUser ? "Update" : "Tambah"}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Password Modal */}
+      {resetUserId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setResetUserId(null)}>
+          <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="mb-1 text-sm font-semibold text-gray-800">Reset Password</h3>
+            <p className="mb-3 text-[10px] text-gray-400">Masukkan password baru untuk user ini</p>
+            {resetError && <p className="mb-2 text-[10px] text-red-500">{resetError}</p>}
+            <input
+              type="text"
+              value={resetPassword}
+              onChange={(e) => setResetPassword(e.target.value)}
+              placeholder="Password baru (min 4 karakter)"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-xs outline-none"
+              autoFocus
+              onKeyDown={(e) => e.key === "Enter" && handleResetPassword()}
+            />
+            <div className="mt-3 flex gap-2">
+              <button onClick={() => setResetUserId(null)}
+                className="flex-1 rounded-lg border border-gray-300 py-2 text-xs text-gray-500 hover:bg-gray-100">
+                Batal
+              </button>
+              <button onClick={handleResetPassword}
+                className="flex-1 rounded-lg bg-amber-600 py-2 text-xs font-medium text-white hover:bg-amber-700">
+                Reset
+              </button>
             </div>
           </div>
         </div>

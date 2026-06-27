@@ -135,6 +135,36 @@ export async function createTenant(data: {
       [tenant!.id]
     );
 
+    await dbRun(
+      `INSERT INTO kadar (logam_id, label, nilai, is_lm, urutan)
+       SELECT k.logam_id, k.label, k.nilai, k.is_lm, k.urutan
+       FROM kadar k
+       JOIN logam l ON k.logam_id = l.id
+       WHERE l.tenant_id = $1`,
+      [tenant!.id]
+    );
+
+    // Seed contoh produk untuk tenant baru
+    const seedProduk = [
+      { logam: 'emas', jenis: 'Kalung', nama: 'Kalung Emas 24K', berat: 10, ongkos: 50000, kadar: '24K' },
+      { logam: 'emas', jenis: 'Kalung', nama: 'Kalung Emas 22K', berat: 8, ongkos: 45000, kadar: '22K' },
+      { logam: 'emas', jenis: 'Gelang', nama: 'Gelang Emas 24K', berat: 5, ongkos: 35000, kadar: '24K' },
+      { logam: 'emas', jenis: 'Cincin', nama: 'Cincin Emas 22K', berat: 3, ongkos: 25000, kadar: '22K' },
+      { logam: 'emas', jenis: 'Anting', nama: 'Anting Emas 22K', berat: 2, ongkos: 20000, kadar: '22K' },
+      { logam: 'perak', jenis: 'Gelang', nama: 'Gelang Perak Murni', berat: 15, ongkos: 15000, kadar: 'Murni' },
+      { logam: 'perak', jenis: 'Cincin', nama: 'Cincin Perak Murni', berat: 5, ongkos: 10000, kadar: 'Murni' },
+      { logam: 'perak', jenis: 'Kalung', nama: 'Kalung Perak Murni', berat: 12, ongkos: 20000, kadar: 'Murni' },
+    ];
+
+    for (const p of seedProduk) {
+      await dbRun(
+        `INSERT INTO produk (kode, logam_id, jenis, nama, berat_gram, ongkos_cetak, stok, kadar_label, tenant_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [`${p.logam.slice(0, 2).toUpperCase()}${String(Math.floor(Math.random() * 900) + 100)}`,
+         p.logam, p.jenis, p.nama, p.berat, p.ongkos, 10, p.kadar, tenant!.id]
+      );
+    }
+
     await dbRun("COMMIT");
     return { tenant: tenant!, user: user! };
   } catch (error) {
