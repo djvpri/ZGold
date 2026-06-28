@@ -179,7 +179,7 @@ export default function PosPerhiasan() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl p-3 sm:p-4">
+    <div className="mx-auto max-w-4xl p-3 sm:p-4 pb-20 sm:pb-4">
       {/* Header */}
       <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
