@@ -4,7 +4,11 @@
 -- =============================================================
 
 -- ---------- ENUM ----------
-create type tipe_transaksi as enum ('jual', 'buyback');
+do $$ begin
+  create type tipe_transaksi as enum ('jual', 'buyback');
+exception
+  when duplicate_object then null;
+end $$;
 
 -- ---------- MASTER LOGAM ----------
 create table if not exists logam (
