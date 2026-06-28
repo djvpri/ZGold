@@ -89,6 +89,27 @@ export default function Home() {
 
       {/* Main POS */}
       <PosPerhiasan />
+
+      {/* Bottom Nav — mobile only */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 border-t t-border t-bg-card sm:hidden safe-bottom">
+        <div className="flex">
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] t-text-2">
+            <i className="ti ti-point-of-sale text-sm" />
+            <span>POS</span>
+          </button>
+          <button onClick={() => router.push("/dashboard")}
+            className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] t-text-3">
+            <i className="ti ti-dashboard text-sm" />
+            <span>Dashboard</span>
+          </button>
+          <button onClick={() => router.push("/laporan")}
+            className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] t-text-3">
+            <i className="ti ti-chart-bar text-sm" />
+            <span>Laporan</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
