@@ -188,10 +188,10 @@ export default function PosPerhiasan() {
           </h1>
           <p className="text-[10px] t-text-3 sm:text-xs">Zomet · Multi-Logam</p>
         </div>
-        <div className="flex gap-1 overflow-x-auto pb-1">
+        <div className="flex flex-wrap gap-1 pb-1">
           {(["jual", "buyback", ...(userRole === "admin" ? ["riwayat", "stok", "hutang"] : ["hutang"])] as Mode[]).map((m) => (
             <button key={m} onClick={() => setMode(m)}
-              className="flex-shrink-0 rounded-full px-3 py-1.5 text-[11px] capitalize transition sm:text-xs"
+              className="flex-shrink-0 rounded-full px-2.5 py-1 text-[10px] capitalize transition sm:px-3 sm:py-1.5 sm:text-xs"
               style={{
                 background: mode === m ? logam.accent : "transparent",
                 color: mode === m ? "#fff" : "#9ca3af",
