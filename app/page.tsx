@@ -58,14 +58,12 @@ export default function Home() {
                   {tenant.plan}
                 </div>
               </div>
-              {(user.role === "admin") && (
-                <button
-                  onClick={() => { setShowMenu(false); router.push("/dashboard"); }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-xs t-text-2 t-bg-hover"
-                >
-                  <i className="ti ti-dashboard text-[10px]" /> Dashboard
-                </button>
-              )}
+              <button
+                onClick={() => { setShowMenu(false); router.push("/dashboard"); }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-xs t-text-2 t-bg-hover"
+              >
+                <i className="ti ti-dashboard text-[10px]" /> Dashboard
+              </button>
               <button
                 onClick={() => { toggle(); setShowMenu(false); }}
                 className="flex w-full items-center gap-2 px-3 py-2 text-xs t-text-3 t-bg-hover"
