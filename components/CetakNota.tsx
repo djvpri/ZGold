@@ -26,8 +26,10 @@ interface CetakNotaProps {
   format?: "thermal" | "plq35";
 }
 
-function formatIDR(n: number) {
-  return "Rp " + Math.round(n).toLocaleString("id-ID");
+function formatIDR(n: number | string | null | undefined) {
+  const num = typeof n === "string" ? parseFloat(n) : Number(n ?? 0);
+  if (isNaN(num)) return "Rp 0";
+  return "Rp " + Math.round(num).toLocaleString("id-ID");
 }
 
 function pad(s: string, w: number): string {

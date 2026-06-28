@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 
-function formatIDR(n: number) {
-  return "Rp " + Math.round(n).toLocaleString("id-ID");
+function formatIDR(n: number | string | null | undefined) {
+  const num = typeof n === "string" ? parseFloat(n) : Number(n ?? 0);
+  if (isNaN(num)) return "Rp 0";
+  return "Rp " + Math.round(num).toLocaleString("id-ID");
 }
 
 interface LaporanData {

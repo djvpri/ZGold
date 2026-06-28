@@ -78,8 +78,10 @@ export default function DashboardPage() {
 
   if (!user || !tenant) return null;
 
-  function formatIDR(n: number) {
-    return "Rp " + n.toLocaleString("id-ID");
+  function formatIDR(n: number | string | null | undefined) {
+    const num = typeof n === "string" ? parseFloat(n) : Number(n ?? 0);
+    if (isNaN(num)) return "Rp 0";
+    return "Rp " + Math.round(num).toLocaleString("id-ID");
   }
 
   const navItems = [

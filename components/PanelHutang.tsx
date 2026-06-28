@@ -17,8 +17,10 @@ interface Hutang {
   created_at: string;
 }
 
-function formatIDR(n: number) {
-  return "Rp " + Math.round(n).toLocaleString("id-ID");
+function formatIDR(n: number | string | null | undefined) {
+  const num = typeof n === "string" ? parseFloat(n) : Number(n ?? 0);
+  if (isNaN(num)) return "Rp 0";
+  return "Rp " + Math.round(num).toLocaleString("id-ID");
 }
 
 export default function PanelHutang() {
