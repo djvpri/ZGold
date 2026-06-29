@@ -109,6 +109,13 @@ export async function POST(req: NextRequest) {
           case "updateRole":
             await dbRun(`UPDATE users SET role = $1 WHERE email = $2`, [data.role, email]);
             return NextResponse.json({ success: true });
+          case "moveTenant": {
+            if (!data?.tenantId) return NextResponse.json({ error: "tenantId wajib" }, { status: 400 });
+            const tenant = await dbOne(`SELECT id FROM tenants WHERE id = $1`, [data.tenantId]);
+            if (!tenant) return NextResponse.json({ error: "Tenant tidak ditemukan" }, { status: 404 });
+            await dbRun(`UPDATE users SET tenant_id = $1 WHERE email = $2`, [data.tenantId, email]);
+            return NextResponse.json({ success: true });
+          }
           case "toggleActive":
             await dbRun(`UPDATE users SET is_active = $1 WHERE email = $2`, [data.is_active, email]);
             return NextResponse.json({ success: true });
