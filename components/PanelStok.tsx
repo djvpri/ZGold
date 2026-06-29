@@ -200,59 +200,6 @@ export default function PanelStok({ userRole = "kasir", onPilihProduk }: { userR
         </div>
       )}
 
-      {/* Mobile: card layout */}
-      <div className="space-y-2 sm:hidden">
-        {produk.length === 0 ? (
-          <div className="py-8 text-center t-text-4">Belum ada produk</div>
-        ) : produk.map((item) => (
-          <div key={item.id} className="rounded-lg border t-border p-2.5">
-            <div className="flex gap-2.5">
-              {/* Foto */}
-              <div
-                onClick={() => item.foto_url && setFotoPreview(item.foto_url)}
-                className="h-14 w-14 flex-shrink-0 rounded-lg overflow-hidden border t-border flex items-center justify-center"
-                style={{ background: `${getAccent(item.logam_id)}15`, cursor: item.foto_url ? "pointer" : "default" }}
-              >
-                {item.foto_url
-                  ? <img src={item.foto_url} alt={item.nama} className="h-full w-full object-cover" />
-                  : <i className="ti ti-diamond text-xl" style={{ color: getAccent(item.logam_id) }} />
-                }
-              </div>
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-0.5">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-medium t-text-2">{item.kode}</span>
-                    <span className="rounded-full px-1.5 py-0.5 text-[8px]"
-                      style={{ background: `${getAccent(item.logam_id)}20`, color: getAccent(item.logam_id) }}>
-                      {LOGAM[item.logam_id]?.nama.split(" ")[0] || item.logam_id}
-                    </span>
-                  </div>
-                  <span className={`text-sm font-medium ${item.stok <= 0 ? "text-red-400" : ""}`}>{item.stok}</span>
-                </div>
-                <div className="text-[11px] t-text-2 truncate">{item.nama}</div>
-                {item.kadar_label && <div className="text-[9px] t-text-4">{item.kadar_label}</div>}
-                <div className="mt-1 flex items-center justify-between">
-                  <span className="text-[9px] t-text-4">{item.jenis} · {item.berat_gram}g</span>
-                  <div className="flex gap-1">
-                    {userRole === "admin" ? (
-                      <>
-                        <button onClick={() => openStokAdjust(item.id)} className="rounded bg-green-600/20 px-2 py-0.5 text-[9px] text-green-400">Stok</button>
-                        <button onClick={() => handleEdit(item)} className="rounded bg-blue-600/20 px-2 py-0.5 text-[9px] text-blue-400">Edit</button>
-                        <button onClick={() => handleDelete(item.id)} className="rounded bg-red-600/20 px-2 py-0.5 text-[9px] text-red-400">Hapus</button>
-                      </>
-                    ) : (
-                      <button onClick={() => onPilihProduk?.(item)}
-                        className="rounded bg-amber-500/20 px-2 py-0.5 text-[9px] text-amber-400 font-medium">Pilih</button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* Desktop: table layout */}
       <div className="hidden overflow-x-auto sm:block">
         <table className="w-full text-xs">
@@ -266,7 +213,7 @@ export default function PanelStok({ userRole = "kasir", onPilihProduk }: { userR
               <th className="pb-2">Kadar</th>
               <th className="pb-2 text-right">Berat</th>
               <th className="pb-2 text-right">Stok</th>
-              <th className="pb-2 text-right">{userRole === "admin" ? "Aksi" : "Pilih"}</th>
+              <th className="pb-2 text-right">{userRole === "admin" ? "Pilih / Aksi" : "Pilih"}</th>
             </tr>
           </thead>
           <tbody>
@@ -299,15 +246,14 @@ export default function PanelStok({ userRole = "kasir", onPilihProduk }: { userR
                 <td className={`py-2 text-right font-medium ${item.stok <= 0 ? "text-red-400" : ""}`}>{item.stok}</td>
                 <td className="py-2 text-right">
                   <div className="flex justify-end gap-1">
-                    {userRole === "admin" ? (
+                    <button onClick={() => onPilihProduk?.(item)}
+                      className="rounded bg-amber-500/20 px-2 py-1 text-[10px] text-amber-400 font-medium">Pilih</button>
+                    {userRole === "admin" && (
                       <>
                         <button onClick={() => openStokAdjust(item.id)} className="rounded bg-green-600/20 px-2 py-1 text-[10px] text-green-400">Stok</button>
                         <button onClick={() => handleEdit(item)} className="rounded bg-blue-600/20 px-2 py-1 text-[10px] text-blue-400">Edit</button>
                         <button onClick={() => handleDelete(item.id)} className="rounded bg-red-600/20 px-2 py-1 text-[10px] text-red-400">Hapus</button>
                       </>
-                    ) : (
-                      <button onClick={() => onPilihProduk?.(item)}
-                        className="rounded bg-amber-500/20 px-3 py-1 text-[10px] text-amber-400 font-medium">Pilih</button>
                     )}
                   </div>
                 </td>
@@ -350,15 +296,14 @@ export default function PanelStok({ userRole = "kasir", onPilihProduk }: { userR
               </div>
             </div>
             <div className="mt-2 flex gap-1.5">
-              {userRole === "admin" ? (
+              <button onClick={() => onPilihProduk?.(item)}
+                className="flex-1 rounded bg-amber-500/20 py-1.5 text-[10px] text-amber-400 font-medium">✓ Pilih</button>
+              {userRole === "admin" && (
                 <>
                   <button onClick={() => openStokAdjust(item.id)} className="flex-1 rounded bg-green-600/20 py-1.5 text-[10px] text-green-400 font-medium">Atur Stok</button>
                   <button onClick={() => handleEdit(item)} className="flex-1 rounded bg-blue-600/20 py-1.5 text-[10px] text-blue-400 font-medium">Edit</button>
                   <button onClick={() => handleDelete(item.id)} className="flex-1 rounded bg-red-600/20 py-1.5 text-[10px] text-red-400 font-medium">Hapus</button>
                 </>
-              ) : (
-                <button onClick={() => onPilihProduk?.(item)}
-                  className="flex-1 rounded bg-amber-500/20 py-1.5 text-[10px] text-amber-400 font-medium">✓ Pilih</button>
               )}
             </div>
           </div>
