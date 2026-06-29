@@ -27,7 +27,7 @@ create table if not exists users (
   email         text unique not null,
   password_hash text not null,
   nama          text not null,
-  role          text not null default 'kasir' check (role in ('owner','admin','kasir')),
+  role          text not null default 'kasir' check (role in ('admin','kasir')),
   is_active     boolean not null default true,
   last_login    timestamptz,
   created_at    timestamptz not null default now()

@@ -15,13 +15,11 @@ interface UserData {
 }
 
 const ROLE_LABELS: Record<string, string> = {
-  owner: "Owner",
   admin: "Admin",
   kasir: "Kasir",
 };
 
 const ROLE_COLORS: Record<string, string> = {
-  owner: "#B8860B",
   admin: "#60a5fa",
   kasir: "#a3a3a3",
 };
@@ -37,8 +35,7 @@ export default function UsersPage() {
   const [error, setError] = useState("");
   const [loading2, setLoading2] = useState(false);
 
-  const isOwner = user?.role === "admin";
-  const isAdmin = user?.role === "admin" || isOwner;
+  const isAdmin = user?.role === "admin";
 
   useEffect(() => {
     if (!loading && !user) router.push("/landing");
@@ -319,7 +316,7 @@ export default function UsersPage() {
                           >
                             <i className="ti ti-key text-sm" />
                           </button>
-                          {isOwner && (
+                          {isAdmin && (
                             <button
                               onClick={() => deleteUser(u)}
                               className="rounded px-1.5 py-1 text-red-400 hover:bg-gray-100"
@@ -383,7 +380,7 @@ export default function UsersPage() {
                   >
                     <i className="ti ti-key mr-1" />Reset PW
                   </button>
-                  {isOwner && (
+                  {isAdmin && (
                     <button
                       onClick={() => deleteUser(u)}
                       className="rounded bg-red-900/30 px-2 py-1 text-[9px] text-red-400"
@@ -460,7 +457,7 @@ export default function UsersPage() {
                     className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs outline-none"
                   >
                     <option value="kasir">Kasir</option>
-                    {isOwner && <option value="admin">Admin</option>}
+                    {isAdmin && <option value="admin">Admin</option>}
                   </select>
                 </div>
               </div>
