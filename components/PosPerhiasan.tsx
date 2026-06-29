@@ -189,7 +189,7 @@ export default function PosPerhiasan() {
           <p className="text-[10px] t-text-3 sm:text-xs">Zomet · Multi-Logam</p>
         </div>
         <div className="flex flex-wrap gap-1 pb-1">
-          {(["jual", "buyback", ...(userRole === "admin" ? ["riwayat", "stok", "hutang"] : ["hutang"])] as Mode[]).map((m) => (
+          {(["jual", "buyback", ...(userRole === "admin" ? ["riwayat", "stok", "hutang"] : ["stok", "hutang"])] as Mode[]).map((m) => (
             <button key={m} onClick={() => setMode(m)}
               className="flex-shrink-0 rounded-full px-2.5 py-1 text-[10px] capitalize transition sm:px-3 sm:py-1.5 sm:text-xs"
               style={{
@@ -256,7 +256,19 @@ export default function PosPerhiasan() {
       )}
 
       {mode === "riwayat" && <PanelRiwayat riwayat={riwayat} onRefresh={fetchRiwayat} />}
-      {mode === "stok" && <PanelStok />}
+      {mode === "stok" && <PanelStok userRole={userRole} onPilihProduk={(p) => {
+    gantiLogam(p.logam_id);
+    const logamData = LOGAM[p.logam_id];
+    if (logamData) {
+      const kadarI = logamData.kadar.findIndex((k: any) => k.label === p.kadar_label);
+      if (kadarI >= 0) setKadarIdx(kadarI);
+    }
+    setJenis(p.jenis || "");
+    setBerat(p.berat_gram);
+    setOngkos(p.ongkos_cetak || 0);
+    setJumlah(1);
+    setMode("jual");
+  }} />}
       {mode === "hutang" && <PanelHutang />}
     </div>
   );
