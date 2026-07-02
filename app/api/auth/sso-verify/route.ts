@@ -3,7 +3,10 @@ import jwt from "jsonwebtoken";
 import { dbOne, dbRun } from "@/lib/db";
 import crypto from "crypto";
 
-const CROSS_APP_SECRET = process.env.CROSS_APP_SECRET || "z-ecosystem-admin-2026";
+// Dual secret support during migration (2026-07-02)
+const NEW_SECRET = process.env.CROSS_APP_SECRET || "uurclTHL375CiZeWi2g4T3GczU2YNY9I1wzjlsVTgSk";
+const OLD_SECRET = "z-ecosystem-admin-2026";
+const VALID_SECRETS = [NEW_SECRET, OLD_SECRET];
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,9 +14,20 @@ export async function POST(req: NextRequest) {
     if (!token) return NextResponse.json({ error: "Token wajib diisi" }, { status: 400 });
 
     let payload: any;
-    try {
-      payload = jwt.verify(token, CROSS_APP_SECRET);
-    } catch {
+    let verified = false;
+    
+    // Try both secrets during migration period
+    for (const secret of VALID_SECRETS) {
+      try {
+        payload = jwt.verify(token, secret);
+        verified = true;
+        break;
+      } catch {
+        continue;
+      }
+    }
+    
+    if (!verified) {
       return NextResponse.json({ error: "Token SSO tidak valid atau kedaluwarsa" }, { status: 401 });
     }
 
