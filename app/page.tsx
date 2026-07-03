@@ -2,20 +2,15 @@
 import { useAuth } from "@/lib/auth-context";
 import { useTheme } from "@/lib/theme-context";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import PosPerhiasan from "@/components/PosPerhiasan";
+import LandingPage from "./landing/page";
 
 export default function Home() {
   const { user, tenant, loading, logout } = useAuth();
   const { theme, toggle } = useTheme();
   const router = useRouter();
   const [showMenu, setShowMenu] = useState(false);
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/landing");
-    }
-  }, [user, loading, router]);
 
   if (loading) {
     return (
@@ -28,7 +23,10 @@ export default function Home() {
     );
   }
 
-  if (!user || !tenant) return null;
+  // Belum login — tampilkan landing page LANGSUNG di sini (bukan client-side
+  // redirect ke /landing) supaya tidak ada jeda loading/flash sebelum
+  // konten muncul.
+  if (!user || !tenant) return <LandingPage />;
 
   return (
     <div className="min-h-screen t-bg-base safe-top safe-bottom">

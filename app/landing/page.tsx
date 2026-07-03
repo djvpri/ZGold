@@ -6,37 +6,21 @@ import { useRouter } from "next/navigation";
 
 const PLANS = [
   {
-    id: "free",
-    nama: "Gratis",
-    harga: "Rp 0",
-    periode: "selamanya",
-    fitur: ["POS Jual & Buyback", "Riwayat transaksi", "Stok dasar (50 produk)", "100 transaksi/bulan"],
-    accent: "#71717a",
-  },
-  {
-    id: "basic",
-    nama: "Basic",
-    harga: "Rp 99.000",
+    id: "bulanan",
+    nama: "Bulanan",
+    harga: "Rp 100.000",
     periode: "/bulan",
-    fitur: ["Semua fitur Gratis", "Laporan harian", "Cetak struk thermal/PLQ", "500 produk", "2.000 transaksi/bulan"],
-    accent: "#2563eb",
-    badge: "Populer",
-  },
-  {
-    id: "pro",
-    nama: "Pro",
-    harga: "Rp 249.000",
-    periode: "/bulan",
-    fitur: ["Semua fitur Basic", "Multi kasir (unlimited)", "Face login", "Hutang piutang", "Export Excel/CSV/PDF", "5.000 produk"],
+    catatan: "Ditagih tiap bulan, berhenti kapan saja",
     accent: "#d97706",
   },
   {
-    id: "enterprise",
-    nama: "Enterprise",
-    harga: "Rp 499.000",
-    periode: "/bulan",
-    fitur: ["Semua fitur Pro", "Custom domain", "API access", "Priority support", "White label", "Produk & transaksi unlimited"],
-    accent: "#7c3aed",
+    id: "tahunan",
+    nama: "Tahunan",
+    harga: "Rp 1.000.000",
+    periode: "/tahun",
+    catatan: "Setara Rp 83.333/bulan — hemat 2 bulan",
+    accent: "#b45309",
+    badge: "Paling Hemat",
   },
 ];
 
@@ -52,7 +36,7 @@ const FITUR_LENGKAP = [
 ];
 
 const STEP = [
-  { icon: "📋", title: "Daftar Gratis", desc: "Buat akun, dapatkan tenant toko sendiri. Tanpa kartu kredit." },
+  { icon: "📋", title: "Daftar Akun", desc: "Buat akun, dapatkan tenant toko sendiri, pilih paket bulanan/tahunan." },
   { icon: "💎", title: "Input Produk", desc: "Tambah produk emas/perak dengan kode, kadar, berat, dan harga." },
   { icon: "🛒", title: "Mulai Jual", desc: "Scan kode atau pilih produk — hitung otomatis, cetak nota." },
   { icon: "📈", title: "Pantau Bisnis", desc: "Lihat laporan harian, kelola hutang, pantau stok dari dashboard." },
@@ -85,7 +69,7 @@ export default function LandingPage() {
             </Link>
             <Link href="/login"
               className="rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700 shadow-sm">
-              Daftar Gratis
+              Daftar Sekarang
             </Link>
           </div>
         </div>
@@ -97,7 +81,7 @@ export default function LandingPage() {
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-80 w-80 sm:h-[500px] sm:w-[500px] rounded-full bg-amber-100/60 blur-3xl" />
         <div className="relative mx-auto max-w-3xl">
           <div className="mb-4 inline-block rounded-full bg-amber-100 px-3 py-1 text-[10px] font-medium text-amber-700 sm:text-xs">
-            🚀 Baru rilis — Coba gratis
+            🚀 Baru rilis di Zomet
           </div>
           <h1 className="mb-4 text-2xl font-bold leading-tight sm:text-4xl">
             Point of Sale Toko Perhiasan
@@ -113,7 +97,7 @@ export default function LandingPage() {
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link href="/login"
               className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-6 py-3 text-xs font-medium text-white hover:bg-amber-700 shadow-lg shadow-amber-200 sm:text-sm">
-              Mulai Gratis
+              Mulai Sekarang
               <i className="ti ti-arrow-right text-sm" />
             </Link>
             <a href="#demo"
@@ -272,13 +256,51 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ===== HARGA ===== */}
+      <section id="harga" className="border-t border-gray-200 bg-white px-4 py-10 sm:py-16">
+        <div className="mx-auto max-w-3xl">
+          <h2 className="mb-2 text-center text-lg font-medium sm:text-xl">Harga Sederhana</h2>
+          <p className="mb-8 text-center text-[10px] text-gray-400 sm:text-xs">Satu paket, semua fitur — pilih bulanan atau tahunan</p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {PLANS.map((p) => (
+              <div key={p.id}
+                className={`relative rounded-xl border-2 p-6 ${p.badge ? "border-amber-500 shadow-lg" : "border-gray-200"}`}>
+                {p.badge && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-amber-600 px-3 py-1 text-[10px] font-medium text-white">
+                    {p.badge}
+                  </div>
+                )}
+                <div className="text-xs font-medium text-gray-500">{p.nama}</div>
+                <div className="mt-1 flex items-baseline gap-1">
+                  <span className="text-2xl font-bold sm:text-3xl" style={{ color: p.accent }}>{p.harga}</span>
+                  <span className="text-xs text-gray-400">{p.periode}</span>
+                </div>
+                <div className="mt-2 text-[10px] text-gray-400 sm:text-xs">{p.catatan}</div>
+                <ul className="mt-4 space-y-2 text-[11px] text-gray-600 sm:text-xs">
+                  {["Semua fitur POS multi-logam", "Produk & transaksi unlimited", "Multi kasir & face login", "Laporan lengkap + export", "Support prioritas"].map((f) => (
+                    <li key={f} className="flex items-center gap-2">
+                      <i className="ti ti-check text-green-500" /> {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/login"
+                  className="mt-6 block rounded-lg py-2.5 text-center text-xs font-medium text-white hover:opacity-90"
+                  style={{ backgroundColor: p.accent }}>
+                  Pilih {p.nama}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ===== FAQ ===== */}
       <section className="border-t border-gray-200 bg-white px-4 py-8 sm:py-12">
         <div className="mx-auto max-w-3xl">
           <h2 className="mb-6 text-center text-lg font-medium">FAQ</h2>
           <div className="space-y-3">
             {[
-              { q: "Apakah bisa pakai tanpa modal?", a: "Bisa! Paket Gratis selamanya — POS jual & buyback, 50 produk, 100 transaksi/bulan." },
+              { q: "Berapa biayanya?", a: "Rp 100.000/bulan atau Rp 1.000.000/tahun (hemat 2 bulan) — satu paket, semua fitur, tanpa batasan produk/transaksi." },
               { q: "Bisa cetak struk thermal kecil?", a: "Bisa. Kami dukung printer thermal 58mm (Bluetooth/USB) dan printer PLQ-35 21cm." },
               { q: "Data aman ga?", a: "100%. Hosting di Railway (AWS), database PostgreSQL, enkripsi password pakai PBKDF2." },
               { q: "Bisa dipake di HP?", a: "Bisa. PWA — install ke layar utama, responsive, bisa offline." },
@@ -303,11 +325,11 @@ export default function LandingPage() {
         <div className="mx-auto max-w-xl">
           <h2 className="mb-3 text-lg font-medium sm:text-xl">Siap Mulai?</h2>
           <p className="mb-6 text-xs text-gray-400">
-            Gratis selamanya. Upgrade kapan saja. Batal kapan saja.
+            Rp 100.000/bulan atau Rp 1.000.000/tahun. Batal kapan saja.
           </p>
           <Link href="/login"
             className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-6 py-3 text-sm font-medium text-white hover:bg-amber-700 shadow-lg shadow-amber-200">
-            Buat Akun Gratis
+            Mulai Sekarang
             <i className="ti ti-arrow-right" />
           </Link>
         </div>
