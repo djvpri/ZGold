@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import "./globals.css";
+import "./globals.css"
+import "bootstrap-icons/font/bootstrap-icons.css";
 import { AuthProvider } from "@/lib/auth-context";
 import { ThemeProvider } from "@/lib/theme-context";
 import PWARegister from "@/components/PWARegister";
