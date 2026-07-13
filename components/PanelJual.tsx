@@ -214,12 +214,17 @@ export default function PanelJual(props: any) {
             {hasilCari.map((p: any) => (
               <button key={p.id} onClick={() => pilihProduk(p)}
                 className="flex w-full items-center gap-3 rounded-lg border t-border-md t-bg-card p-2.5 text-left transition hover:opacity-80">
-                <i className="ti ti-box text-base" style={{ color: l.accent }} />
-                <div className="flex-1 text-xs">
-                  <span className="font-semibold">{p.kode}</span> — {p.nama}
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-md border t-border"
+                  style={{ background: `${LOGAM[p.logam_id]?.accent || l.accent}14` }}>
+                  {p.foto_url
+                    ? <img src={p.foto_url} alt={p.nama} className="h-full w-full object-cover" />
+                    : <i className="ti ti-diamond text-sm" style={{ color: LOGAM[p.logam_id]?.accent || l.accent }} />}
+                </div>
+                <div className="min-w-0 flex-1 text-xs">
+                  <div className="truncate"><span className="font-semibold">{p.kode}</span> — {p.nama}</div>
                   <div className="text-[10px] t-text-3">{p.berat_gram}g · Stok: {p.stok}</div>
                 </div>
-                <i className="ti ti-chevron-right t-text-3" />
+                <i className="ti ti-chevron-right t-text-3 flex-shrink-0" />
               </button>
             ))}
           </div>
