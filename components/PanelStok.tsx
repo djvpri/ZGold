@@ -182,7 +182,7 @@ export default function PanelStok({ userRole = "kasir", onPilihProduk }: { userR
           return (
             <div key={l.id} className="rounded-lg p-2" style={{ background: l.bg, color: l.textColor }}>
               <div className="text-[8px] uppercase tracking-wide opacity-70 sm:text-[10px]" style={{ color: l.accent }}>
-                {l.nama.split(" ")[0]}
+                {l.nama.replace(/\s*\(.*\)/, "").trim()}
               </div>
               <div className="text-sm font-medium">{lp.reduce((a, b) => a + b.stok, 0)}</div>
             </div>
@@ -238,7 +238,7 @@ export default function PanelStok({ userRole = "kasir", onPilihProduk }: { userR
                 <td className="py-2">
                   <span className="rounded-full px-2 py-0.5 text-[10px]"
                     style={{ background: `${getAccent(item.logam_id)}20`, color: getAccent(item.logam_id) }}>
-                    {LOGAM[item.logam_id]?.nama.split(" ")[0] || item.logam_id}
+                    {LOGAM[item.logam_id]?.nama.replace(/\s*\(.*\)/, "").trim() || item.logam_id}
                   </span>
                 </td>
                 <td className="py-2">{item.jenis}</td>
@@ -286,7 +286,7 @@ export default function PanelStok({ userRole = "kasir", onPilihProduk }: { userR
                   <span className="text-xs font-medium truncate">{item.nama}</span>
                 </div>
                 <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] t-text-3">
-                  <span style={{ color: getAccent(item.logam_id) }}>{LOGAM[item.logam_id]?.nama.split(" ")[0] || item.logam_id}</span>
+                  <span style={{ color: getAccent(item.logam_id) }}>{LOGAM[item.logam_id]?.nama.replace(/\s*\(.*\)/, "").trim() || item.logam_id}</span>
                   <span>{item.jenis}</span>
                   <span>{item.berat_gram}g</span>
                   <span className={item.stok <= 0 ? "text-red-400 font-semibold" : "text-green-400"}>

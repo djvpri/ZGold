@@ -224,7 +224,7 @@ export default function PosPerhiasan() {
               <div className="mb-1.5 flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider" style={{ color: l.accent }}>
                   <span className="inline-block h-2 w-2 rounded-full" style={{ background: l.accent, boxShadow: `0 0 6px ${l.accent}` }} />
-                  {l.nama.split(" ")[0]}
+                  {l.nama.replace(/\s*\(.*\)/, "").trim()}
                 </div>
                 {userRole === "admin" && (
                   <button onClick={() => (editing ? simpan() : setEditSpot(l.id))}
