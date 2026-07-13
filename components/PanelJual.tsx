@@ -12,6 +12,7 @@ export default function PanelJual(props: any) {
     namaPembeli, setNamaPembeli, berat, setBerat, ongkos, setOngkos,
     jumlah, setJumlah, diskon, setDiskon, jenis, setJenis, bayar, setBayar,
     isLM, total, kembalian, hargaPerGram, onProses, userName,
+    produkDipilih, setProdukDipilih,
   } = props;
   const l: LogamConfig = logam;
 
@@ -23,7 +24,6 @@ export default function PanelJual(props: any) {
   // ── Cari / Scan Produk ──
   const [kodeInput, setKodeInput] = useState("");
   const [kodeStatus, setKodeStatus] = useState<"idle"|"loading"|"found"|"notfound">("idle");
-  const [produkDipilih, setProdukDipilih] = useState<any>(null);
   const [hasilCari, setHasilCari] = useState<any[]>([]);
   const [showScanner, setShowScanner] = useState(false);
   const kodeRef = useRef<HTMLInputElement>(null);

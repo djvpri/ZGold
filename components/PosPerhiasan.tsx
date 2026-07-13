@@ -67,6 +67,7 @@ export default function PosPerhiasan() {
   const [diskon, setDiskon] = useState(0);
   const [jenis, setJenis] = useState("");
   const [bayar, setBayar] = useState(0);
+  const [produkDipilih, setProdukDipilih] = useState<any>(null);
 
   const logam = LOGAM[logamId];
   const kadar = logam.kadar[kadarIdx] ?? logam.kadar[0];
@@ -247,6 +248,7 @@ export default function PosPerhiasan() {
           jenis={jenis} setJenis={setJenis} bayar={bayar} setBayar={setBayar}
           isLM={isLM} total={total} kembalian={kembalian}
           hargaPerGram={spot[logamId] * kadar.nilai} userName={userName} onProses={prosesJual}
+          produkDipilih={produkDipilih} setProdukDipilih={setProdukDipilih}
         />
       )}
 
@@ -273,6 +275,7 @@ export default function PosPerhiasan() {
     setBerat(p.berat_gram);
     setOngkos(p.ongkos_cetak || 0);
     setJumlah(1);
+    setProdukDipilih(p);
     setMode("jual");
   }} />}
       {mode === "hutang" && <PanelHutang />}
