@@ -3,6 +3,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useTheme } from "@/lib/theme-context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import BrandMark from "@/components/BrandMark";
 
 interface DashboardStats {
   transaksiHariIni: number;
@@ -69,8 +70,8 @@ export default function DashboardPage() {
     return (
       <div className="flex min-h-screen items-center justify-center t-bg-base">
         <div className="text-center">
-          <div className="mb-2 text-3xl">💎</div>
-          <p className="text-[10px] t-text-3">Memuat...</p>
+          <BrandMark className="mx-auto mb-3 h-12 w-12 text-2xl animate-pulse" />
+          <p className="text-[10px] tracking-widest uppercase t-text-3">Memuat</p>
         </div>
       </div>
     );
@@ -113,15 +114,15 @@ export default function DashboardPage() {
       {/* Sidebar */}
       <div className={`fixed left-0 top-0 z-50 h-full w-56 border-r t-border t-bg-base p-3 transition-transform sm:translate-x-0 ${showSidebar ? "translate-x-0" : "-translate-x-full"}`}>
         {/* Logo - desktop */}
-        <div className="mb-6 hidden items-center gap-2 sm:flex">
-          <span className="text-lg">💎</span>
-          <span className="text-xs font-medium">{tenant.nama_toko}</span>
+        <div className="mb-6 hidden items-center gap-2.5 sm:flex">
+          <BrandMark className="h-8 w-8 text-base" />
+          <span className="font-display truncate text-base font-semibold">{tenant.nama_toko}</span>
         </div>
         {/* Logo - mobile close button */}
         <div className="mb-4 flex items-center justify-between sm:hidden">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">💎</span>
-            <span className="text-xs font-medium">Menu</span>
+          <div className="flex items-center gap-2.5">
+            <BrandMark className="h-8 w-8 text-base" />
+            <span className="font-display text-base font-semibold">Menu</span>
           </div>
           <button onClick={() => setShowSidebar(false)} className="rounded p-1 t-text-3">
             <i className="ti ti-x text-lg" />
@@ -134,7 +135,7 @@ export default function DashboardPage() {
               <button
                 key={item.id}
                 onClick={() => { setShowSidebar(false); router.push(item.href!); }}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-xs t-text-3 t-bg-hover hover:text-gray-800"
+                className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs t-text-3 t-bg-hover transition"
               >
                 <i className={`ti ${item.icon} text-sm`} />
                 {item.label}
@@ -143,11 +144,9 @@ export default function DashboardPage() {
               <button
                 key={item.id}
                 onClick={() => { setActiveTab(item.id as any); setShowSidebar(false); }}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-xs transition sm:py-1.5"
-                style={{
-                  background: activeTab === item.id ? "rgb(38 38 38)" : "transparent",
-                  color: activeTab === item.id ? "#e5e5e5" : "#a3a3a3",
-                }}
+                className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium transition sm:py-2 ${
+                  activeTab === item.id ? "t-gold-soft t-gold" : "t-text-3 t-bg-hover"
+                }`}
               >
                 <i className={`ti ${item.icon} text-sm`} />
                 {item.label}
@@ -160,7 +159,7 @@ export default function DashboardPage() {
           <div className="mb-1 flex items-center gap-1.5 text-[10px] text-neutral-600">
             <span>{user.nama}</span>
             <span className="rounded px-1.5 py-0.5 text-[9px] font-medium text-white"
-              style={{ background: user.role === "admin" ? "#059669" : "#d97706" }}>
+              style={{ background: user.role === "admin" ? "#059669" : "var(--gold)" }}>
               {user.role}
             </span>
           </div>
@@ -171,7 +170,7 @@ export default function DashboardPage() {
           </div>
           <button
             onClick={logout}
-            className="w-full rounded-md px-2 py-1.5 text-left text-[10px] t-text-4 t-bg-hover hover:text-gray-700"
+            className="flex w-full items-center rounded-lg px-2.5 py-2 text-left text-[10px] t-text-3 t-bg-hover transition"
           >
             <i className="ti ti-logout mr-1" /> Keluar
           </button>
@@ -180,15 +179,15 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <div className="p-4 sm:ml-56 sm:p-6">
-        <h1 className="mb-4 text-sm font-medium">
-          {activeTab === "overview" && "Dashboard Overview"}
+        <h1 className="font-display mb-4 text-2xl font-semibold sm:text-3xl">
+          {activeTab === "overview" && "Dashboard"}
           {activeTab === "users" && "Manajemen Pengguna"}
           {activeTab === "settings" && "Pengaturan Toko"}
         </h1>
 
         {/* User info bar — role visible */}
-        <div className="mb-3 flex items-center gap-3 rounded-lg border t-border t-bg-card px-4 py-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full t-bg-muted text-xs font-bold">
+        <div className="t-card mb-4 flex items-center gap-3 rounded-xl border t-border px-4 py-3">
+          <div className="brand-mark flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-white">
             {user.nama?.charAt(0)?.toUpperCase() || "?"}
           </div>
           <div className="flex-1 text-xs">
@@ -196,29 +195,17 @@ export default function DashboardPage() {
             <div className="text-[10px] t-text-4">{user.email}</div>
           </div>
           <span className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-white"
-            style={{ background: user.role === "admin" ? "#059669" : "#d97706" }}>
+            style={{ background: user.role === "admin" ? "#059669" : "var(--gold)" }}>
             {user.role}
           </span>
         </div>
 
         {activeTab === "overview" && stats && (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <div className="rounded-lg border t-border p-3">
-              <div className="text-[9px] t-text-4 sm:text-[10px]">Transaksi Hari Ini</div>
-              <div className="mt-1 text-base font-medium sm:text-lg">{stats.transaksiHariIni}</div>
-            </div>
-            <div className="rounded-lg border t-border p-3">
-              <div className="text-[9px] t-text-4 sm:text-[10px]">Total Penjualan</div>
-              <div className="mt-1 text-sm font-medium text-green-400 sm:text-lg">{formatIDR(stats.totalPenjualan)}</div>
-            </div>
-            <div className="rounded-lg border t-border p-3">
-              <div className="text-[9px] t-text-4 sm:text-[10px]">Total Buyback</div>
-              <div className="mt-1 text-sm font-medium text-amber-400 sm:text-lg">{formatIDR(stats.totalBuyback)}</div>
-            </div>
-            <div className="rounded-lg border t-border p-3">
-              <div className="text-[9px] t-text-4 sm:text-[10px]">Total Produk</div>
-              <div className="mt-1 text-base font-medium sm:text-lg">{stats.produkCount}</div>
-            </div>
+            <StatCard icon="ti-receipt-2" label="Transaksi Hari Ini" value={String(stats.transaksiHariIni)} tone="ink" />
+            <StatCard icon="ti-trending-up" label="Total Penjualan" value={formatIDR(stats.totalPenjualan)} tone="green" />
+            <StatCard icon="ti-recharging" label="Total Buyback" value={formatIDR(stats.totalBuyback)} tone="gold" />
+            <StatCard icon="ti-diamond" label="Total Produk" value={String(stats.produkCount)} tone="ink" />
           </div>
         )}
 
@@ -230,7 +217,7 @@ export default function DashboardPage() {
           <div className="rounded-lg border t-border p-3 sm:p-4">
             <div className="mb-3 flex items-center justify-between">
               <span className="text-xs font-medium">Daftar Pengguna</span>
-              <button className="rounded-md bg-amber-600 px-2 py-1 text-[10px] text-white hover:bg-amber-700 sm:px-3">
+              <button className="btn-gold rounded-lg px-3 py-1.5 text-[10px] font-medium">
                 + Tambah
               </button>
             </div>
@@ -274,7 +261,7 @@ export default function DashboardPage() {
               <p className="text-[10px] t-text-4">
                 Upgrade ke paket Pro atau Enterprise untuk fitur lebih lengkap.
               </p>
-              <button className="mt-2 rounded-md bg-amber-600 px-3 py-1.5 text-[10px] text-white hover:bg-amber-700">
+              <button className="btn-gold mt-2 rounded-lg px-3 py-1.5 text-[10px] font-medium">
                 Upgrade Paket
               </button>
             </div>
@@ -284,15 +271,15 @@ export default function DashboardPage() {
               <div className="mb-3 text-xs font-medium">Model Nota</div>
               <div className="flex gap-2">
                 <button onClick={() => gantiNotaFormat("thermal")}
-                  className={`flex-1 rounded-lg border-2 p-3 text-left transition ${notaFormat === "thermal" ? "border-amber-500" : "t-border"}`}>
-                  <div className="text-[10px] font-medium">🔖 Thermal</div>
-                  <div className="mt-0.5 text-[9px] t-text-4">58mm · Portrait</div>
+                  className={`flex-1 rounded-xl border-2 p-3 text-left transition ${notaFormat === "thermal" ? "t-gold-border t-gold-soft" : "t-border"}`}>
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold"><i className={`ti ti-receipt ${notaFormat === "thermal" ? "t-gold" : "t-text-3"}`} /> Thermal</div>
+                  <div className="mt-1 text-[9px] t-text-4">58mm · Portrait</div>
                   <div className="mt-0.5 text-[9px] t-text-4">Printer Bluetooth</div>
                 </button>
                 <button onClick={() => gantiNotaFormat("plq35")}
-                  className={`flex-1 rounded-lg border-2 p-3 text-left transition ${notaFormat === "plq35" ? "border-amber-500" : "t-border"}`}>
-                  <div className="text-[10px] font-medium">📄 PLQ-35</div>
-                  <div className="mt-0.5 text-[9px] t-text-4">21×11.5cm · Landscape</div>
+                  className={`flex-1 rounded-xl border-2 p-3 text-left transition ${notaFormat === "plq35" ? "t-gold-border t-gold-soft" : "t-border"}`}>
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold"><i className={`ti ti-file-invoice ${notaFormat === "plq35" ? "t-gold" : "t-text-3"}`} /> PLQ-35</div>
+                  <div className="mt-1 text-[9px] t-text-4">21×11.5cm · Landscape</div>
                   <div className="mt-0.5 text-[9px] t-text-4">Dot Matrix Passbook</div>
                 </button>
               </div>
@@ -302,6 +289,31 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ icon, label, value, tone }: {
+  icon: string;
+  label: string;
+  value: string;
+  tone: "ink" | "green" | "gold";
+}) {
+  const color = tone === "green" ? "#16a34a" : tone === "gold" ? "var(--gold)" : "var(--text-1)";
+  const accent = tone === "green" ? "#16a34a" : tone === "gold" ? "var(--gold)" : "var(--border-md)";
+  return (
+    <div className="t-card relative overflow-hidden rounded-xl border t-border p-4 transition hover:t-elev">
+      <span className="absolute inset-x-0 top-0 h-[3px]" style={{ background: accent, opacity: 0.75 }} />
+      <div className="flex items-start justify-between">
+        <span className="pr-2 text-[10px] font-medium uppercase tracking-wide t-text-4">{label}</span>
+        <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg t-bg-muted text-sm" style={{ color }}>
+          <i className={`ti ${icon}`} />
+        </span>
+      </div>
+      <div className="font-display mt-2 text-2xl font-semibold leading-tight sm:text-3xl"
+        style={tone === "ink" ? undefined : { color }}>
+        {value}
       </div>
     </div>
   );

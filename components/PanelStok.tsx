@@ -168,7 +168,7 @@ export default function PanelStok({ userRole = "kasir", onPilihProduk }: { userR
           </select>
           {userRole === "admin" && (
             <button onClick={() => { resetForm(); setEditId(null); setShowForm(true); }}
-              className="rounded-md bg-amber-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-600">
+              className="btn-gold rounded-lg px-3 py-1.5 text-xs font-medium">
               <i className="ti ti-plus mr-1" />Tambah
             </button>
           )}
@@ -247,7 +247,7 @@ export default function PanelStok({ userRole = "kasir", onPilihProduk }: { userR
                 <td className="py-2 text-right">
                   <div className="flex justify-end gap-1">
                     <button onClick={() => onPilihProduk?.(item)}
-                      className="rounded bg-amber-500/20 px-2 py-1 text-[10px] text-amber-400 font-medium">Pilih</button>
+                      className="t-gold-soft t-gold rounded px-2 py-1 text-[10px] font-medium">Pilih</button>
                     {userRole === "admin" && (
                       <>
                         <button onClick={() => openStokAdjust(item.id)} className="rounded bg-green-600/20 px-2 py-1 text-[10px] text-green-400">Stok</button>
@@ -272,7 +272,7 @@ export default function PanelStok({ userRole = "kasir", onPilihProduk }: { userR
             <div className="flex items-start gap-3">
               <div
                 onClick={() => item.foto_url && setFotoPreview(item.foto_url)}
-                className="h-12 w-12 flex-shrink-0 rounded-lg overflow-hidden border t-border-muted flex items-center justify-center"
+                className="h-12 w-12 flex-shrink-0 rounded-lg overflow-hidden border t-border flex items-center justify-center"
                 style={{ background: `${getAccent(item.logam_id)}15`, cursor: item.foto_url ? "pointer" : "default" }}
               >
                 {item.foto_url
@@ -282,7 +282,7 @@ export default function PanelStok({ userRole = "kasir", onPilihProduk }: { userR
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span className="rounded bg-gray-700 px-1.5 py-0.5 text-[9px] font-mono text-gray-200">{item.kode}</span>
+                  <span className="rounded t-bg-muted px-1.5 py-0.5 text-[9px] font-mono t-text-2">{item.kode}</span>
                   <span className="text-xs font-medium truncate">{item.nama}</span>
                 </div>
                 <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] t-text-3">
@@ -297,7 +297,7 @@ export default function PanelStok({ userRole = "kasir", onPilihProduk }: { userR
             </div>
             <div className="mt-2 flex gap-1.5">
               <button onClick={() => onPilihProduk?.(item)}
-                className="flex-1 rounded bg-amber-500/20 py-1.5 text-[10px] text-amber-400 font-medium">✓ Pilih</button>
+                className="t-gold-soft t-gold flex-1 rounded py-1.5 text-[10px] font-medium"><i className="ti ti-check mr-1" />Pilih</button>
               {userRole === "admin" && (
                 <>
                   <button onClick={() => openStokAdjust(item.id)} className="flex-1 rounded bg-green-600/20 py-1.5 text-[10px] text-green-400 font-medium">Atur Stok</button>
@@ -398,7 +398,7 @@ export default function PanelStok({ userRole = "kasir", onPilihProduk }: { userR
               <div className="flex gap-2 pt-1">
                 <button type="button" onClick={() => { setShowForm(false); setEditId(null); setFormFotoBase64(null); }}
                   className="flex-1 rounded-md border t-border py-2 text-xs t-text-3">Batal</button>
-                <button type="submit" className="flex-1 rounded-md bg-amber-500 py-2 text-xs font-medium text-white hover:bg-amber-600">
+                <button type="submit" className="btn-gold flex-1 rounded-lg py-2 text-xs font-medium">
                   {editId ? "Simpan" : "Tambah"}
                 </button>
               </div>

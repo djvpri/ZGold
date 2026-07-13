@@ -157,7 +157,7 @@ export default function PanelJual(props: any) {
           />
           <button onClick={() => setShowScanner(true)}
             className="flex items-center gap-1.5 rounded-md px-3 py-2 text-xs font-medium text-white transition hover:opacity-90"
-            style={{ background: '#d97706' }} title="Scan barcode via kamera">
+            style={{ background: 'var(--gold)' }} title="Scan barcode via kamera">
             <i className="ti ti-camera text-sm" />
             <span className="hidden sm:inline">Scan</span>
           </button>
@@ -214,13 +214,13 @@ export default function PanelJual(props: any) {
         )}
 
         {kodeStatus === "notfound" && (
-          <div className="mt-2 flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+          <div className="mt-2 flex items-center gap-2 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-500">
             <i className="ti ti-alert-circle" /> Produk tidak ditemukan
           </div>
         )}
 
         {kodeStatus === "idle" && !produkDipilih && !hasilCari.length && (
-          <div className="mt-2 flex items-center gap-2 rounded-md t-bg-muted/30 px-3 py-2 text-[11px] t-text-3">
+          <div className="mt-2 flex items-center gap-2 rounded-md t-bg-muted px-3 py-2 text-[11px] t-text-3">
             <i className="ti ti-info-circle" /> Scan barcode atau ketik kode produk
           </div>
         )}
@@ -302,8 +302,8 @@ export default function PanelJual(props: any) {
               <input type="number" value={bayar || ""} onChange={(e) => setBayar(+e.target.value)}
                 placeholder="0 = tanpa bayar" className={inputCls} inputMode="numeric" style={{flex:1}} />
               <button type="button" onClick={() => setBayar(total)}
-                className="px-3 rounded-lg text-xs font-semibold border transition"
-                style={{background:'var(--t-accent)',color:'#fff',borderColor:'var(--t-accent)',whiteSpace:'nowrap'}}>
+                className="btn-gold px-3 rounded-lg text-xs font-semibold transition"
+                style={{ whiteSpace: 'nowrap' }}>
                 Pas
               </button>
             </div>
@@ -343,7 +343,7 @@ export default function PanelJual(props: any) {
             <div className="flex gap-2">
               <button onClick={() => setKonfirmasi(false)} className="flex-1 rounded-lg border t-border-md py-2 text-xs t-text-2">Batal</button>
               <button onClick={konfirmasiProses} className="flex-1 rounded-lg py-2 text-xs font-medium text-white" style={{ background: l.accent }}>
-                ✓ Konfirmasi
+                <i className="ti ti-check mr-1" />Konfirmasi
               </button>
             </div>
           </div>

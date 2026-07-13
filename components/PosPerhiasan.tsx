@@ -6,6 +6,7 @@ import PanelBuyback from "./PanelBuyback";
 import PanelRiwayat from "./PanelRiwayat";
 import PanelStok from "./PanelStok";
 import PanelHutang from "./PanelHutang";
+import BrandMark from "./BrandMark";
 
 type Mode = "jual" | "buyback" | "riwayat" | "stok" | "hutang";
 
@@ -181,21 +182,25 @@ export default function PosPerhiasan() {
   return (
     <div className="mx-auto max-w-4xl p-3 sm:p-4 pb-20 sm:pb-4">
       {/* Header */}
-      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-base font-medium sm:text-lg t-text-1">
-            <i className="ti ti-diamond mr-2" />POS Toko Perhiasan
-          </h1>
-          <p className="text-[10px] t-text-3 sm:text-xs">Zomet · Multi-Logam</p>
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <BrandMark className="h-10 w-10 text-lg" />
+          <div>
+            <h1 className="font-display text-xl font-semibold leading-none sm:text-2xl t-text-1">
+              Toko Perhiasan
+            </h1>
+            <p className="mt-1 text-[10px] uppercase tracking-[0.15em] t-text-3 sm:text-[11px]">Zomet · Multi-Logam</p>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-1 pb-1">
+        <div className="flex flex-wrap gap-1.5 pb-1">
           {(["jual", "buyback", ...(userRole === "admin" ? ["riwayat", "stok", "hutang"] : ["stok", "hutang"])] as Mode[]).map((m) => (
             <button key={m} onClick={() => setMode(m)}
-              className="flex-shrink-0 rounded-full px-2.5 py-1 text-[10px] capitalize transition sm:px-3 sm:py-1.5 sm:text-xs"
+              className="flex-shrink-0 rounded-full px-3 py-1.5 text-[11px] font-medium capitalize transition sm:text-xs"
               style={{
                 background: mode === m ? logam.accent : "transparent",
-                color: mode === m ? "#fff" : "#9ca3af",
-                border: mode === m ? "none" : "0.5px solid #d1d5db",
+                color: mode === m ? "#fff" : "var(--text-3)",
+                border: mode === m ? "1px solid transparent" : "1px solid var(--border-md)",
+                boxShadow: mode === m ? "0 4px 12px -6px " + logam.accent : "none",
               }}>
               {m === "riwayat" ? `${m} (${riwayat.length})` : m}
             </button>
@@ -204,12 +209,13 @@ export default function PosPerhiasan() {
       </div>
 
       {/* Spot price bar — editable hanya admin */}
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
+      <div className="mb-5 flex gap-2.5 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
         {Object.values(LOGAM).map((l) => (
-          <div key={l.id} className="min-w-[120px] flex-shrink-0 rounded-lg p-2"
+          <div key={l.id} className="t-elev-sm min-w-[124px] flex-shrink-0 rounded-xl border border-white/5 p-2.5"
             style={{ background: l.bg, color: l.textColor }}>
-            <div className="text-[9px] uppercase tracking-wide opacity-70" style={{ color: l.accent }}>
-              {l.nama.split(" ")[0]}/gram
+            <div className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-wide opacity-80" style={{ color: l.accent }}>
+              <i className="ti ti-circle-filled text-[6px]" />
+              {l.nama.split(" ")[0]}<span className="opacity-60">/gram</span>
             </div>
             {userRole === "admin" ? (
               <input type="number" value={spot[l.id]}

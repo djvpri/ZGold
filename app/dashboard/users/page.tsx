@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
+import BrandMark from "@/components/BrandMark";
 
 interface UserData {
   id: number;
@@ -158,10 +159,10 @@ export default function UsersPage() {
 
   if (loading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center t-bg-base">
         <div className="text-center">
-          <div className="mb-2 text-3xl">💎</div>
-          <p className="text-[10px] text-gray-500">Memuat...</p>
+          <BrandMark className="mx-auto mb-3 h-12 w-12 text-2xl animate-pulse" />
+          <p className="text-[10px] tracking-widest uppercase t-text-3">Memuat</p>
         </div>
       </div>
     );
@@ -175,14 +176,14 @@ export default function UsersPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen t-bg-base t-text-1">
       {/* Mobile header */}
-      <div className="flex items-center justify-between border-b border-gray-200 px-3 py-2 sm:hidden">
-        <button onClick={() => setShowSidebar(!showSidebar)} className="rounded p-1 text-gray-500 hover:bg-gray-100">
+      <div className="flex items-center justify-between border-b t-border px-3 py-2 sm:hidden">
+        <button onClick={() => setShowSidebar(!showSidebar)} className="rounded p-1 t-text-3 t-bg-hover">
           <i className="ti ti-menu-2 text-lg" />
         </button>
         <span className="text-xs font-medium">Kelola Kasir</span>
-        <button onClick={() => router.push("/")} className="rounded p-1 text-gray-500 hover:bg-gray-100">
+        <button onClick={() => router.push("/")} className="rounded p-1 t-text-3 t-bg-hover">
           <i className="ti ti-point-of-sale text-lg" />
         </button>
       </div>
@@ -193,17 +194,17 @@ export default function UsersPage() {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 z-50 h-full w-56 border-r border-gray-200 bg-gray-50 p-3 transition-transform sm:translate-x-0 ${showSidebar ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="mb-6 hidden items-center gap-2 sm:flex">
-          <span className="text-lg">💎</span>
-          <span className="text-xs font-medium">{tenant?.nama_toko ?? "Zomet POS"}</span>
+      <div className={`fixed left-0 top-0 z-50 h-full w-56 border-r t-border t-bg-base p-3 transition-transform sm:translate-x-0 ${showSidebar ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="mb-6 hidden items-center gap-2.5 sm:flex">
+          <BrandMark className="h-8 w-8 text-base" />
+          <span className="font-display truncate text-base font-semibold">{tenant?.nama_toko ?? "Zomet POS"}</span>
         </div>
         <div className="mb-4 flex items-center justify-between sm:hidden">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">💎</span>
-            <span className="text-xs font-medium">Menu</span>
+          <div className="flex items-center gap-2.5">
+            <BrandMark className="h-8 w-8 text-base" />
+            <span className="font-display text-base font-semibold">Menu</span>
           </div>
-          <button onClick={() => setShowSidebar(false)} className="rounded p-1 text-gray-500">
+          <button onClick={() => setShowSidebar(false)} className="rounded p-1 t-text-3">
             <i className="ti ti-x text-lg" />
           </button>
         </div>
@@ -213,7 +214,7 @@ export default function UsersPage() {
               <button
                 key={item.id}
                 onClick={() => { setShowSidebar(false); router.push(item.href!); }}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-xs text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-xs t-text-3 t-bg-hover hover:t-text-2"
               >
                 <i className={`ti ${item.icon} text-sm`} />
                 {item.label}
@@ -222,7 +223,7 @@ export default function UsersPage() {
               <button
                 key={item.id}
                 onClick={() => setShowSidebar(false)}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-2 bg-gray-100 text-xs text-gray-800"
+                className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 t-gold-soft text-xs font-medium t-gold"
               >
                 <i className={`ti ${item.icon} text-sm`} />
                 {item.label}
@@ -233,7 +234,7 @@ export default function UsersPage() {
         <div className="absolute bottom-3 left-3 right-3">
           <button
             onClick={logout}
-            className="w-full rounded-md px-2 py-1.5 text-left text-[10px] text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+            className="w-full rounded-md px-2 py-1.5 text-left text-[10px] t-text-4 t-bg-hover hover:t-text-2"
           >
             <i className="ti ti-logout mr-1" /> Keluar
           </button>
@@ -243,14 +244,14 @@ export default function UsersPage() {
       {/* Main Content */}
       <div className="p-3 sm:ml-56 sm:p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-sm font-medium sm:text-lg">
-            <i className="ti ti-users mr-2" />
+          <h1 className="font-display flex items-center gap-2 text-2xl font-semibold sm:text-3xl">
+            <i className="ti ti-users t-gold text-xl" />
             Kelola Kasir
           </h1>
           {isAdmin && (
             <button
               onClick={openAdd}
-              className="rounded-lg bg-amber-600 px-3 py-1.5 text-[10px] font-medium text-white hover:bg-amber-700 sm:text-xs"
+              className="btn-gold rounded-lg px-3 py-1.5 text-[10px] font-medium sm:text-xs"
             >
               + Tambah User
             </button>
@@ -258,10 +259,10 @@ export default function UsersPage() {
         </div>
 
         {/* Desktop Table */}
-        <div className="hidden overflow-x-auto rounded-lg border border-gray-200 sm:block">
+        <div className="hidden overflow-x-auto rounded-lg border t-border sm:block">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-gray-200 text-left text-gray-400">
+              <tr className="border-b t-border text-left t-text-4">
                 <th className="px-3 py-2.5">Nama</th>
                 <th className="px-3 py-2.5">Email</th>
                 <th className="px-3 py-2.5">Role</th>
@@ -272,9 +273,9 @@ export default function UsersPage() {
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.id} className="border-b border-gray-200/50 last:border-0">
-                  <td className="px-3 py-2.5 font-medium text-gray-700">{u.nama}</td>
-                  <td className="px-3 py-2.5 text-gray-500">{u.email}</td>
+                <tr key={u.id} className="border-b t-border last:border-0">
+                  <td className="px-3 py-2.5 font-medium t-text-2">{u.nama}</td>
+                  <td className="px-3 py-2.5 t-text-3">{u.email}</td>
                   <td className="px-3 py-2.5">
                     <span
                       className="rounded-full px-2 py-0.5 text-[10px]"
@@ -288,7 +289,7 @@ export default function UsersPage() {
                       {u.is_active ? "Aktif" : "Nonaktif"}
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 text-[10px] text-gray-400">
+                  <td className="px-3 py-2.5 text-[10px] t-text-4">
                     {u.last_login ? new Date(u.last_login).toLocaleString("id-ID") : "—"}
                   </td>
                   {isAdmin && (
@@ -297,21 +298,21 @@ export default function UsersPage() {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => openEdit(u)}
-                            className="rounded px-1.5 py-1 text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                            className="rounded px-1.5 py-1 t-text-3 t-bg-hover hover:t-text-2"
                             title="Edit"
                           >
                             <i className="ti ti-pencil text-sm" />
                           </button>
                           <button
                             onClick={() => toggleActive(u)}
-                            className={`rounded px-1.5 py-1 hover:bg-gray-100 ${u.is_active ? "text-amber-400" : "text-green-400"}`}
+                            className={`rounded px-1.5 py-1 t-bg-hover ${u.is_active ? "t-gold" : "text-green-400"}`}
                             title={u.is_active ? "Nonaktifkan" : "Aktifkan"}
                           >
                             <i className={`ti ${u.is_active ? "ti-toggle-left" : "ti-toggle-right"} text-sm`} />
                           </button>
                           <button
                             onClick={() => { setResetUserId(u.id); setResetPassword(""); }}
-                            className="rounded px-1.5 py-1 text-amber-500 hover:bg-gray-100"
+                            className="rounded px-1.5 py-1 t-gold t-bg-hover"
                             title="Reset Password"
                           >
                             <i className="ti ti-key text-sm" />
@@ -319,7 +320,7 @@ export default function UsersPage() {
                           {isAdmin && (
                             <button
                               onClick={() => deleteUser(u)}
-                              className="rounded px-1.5 py-1 text-red-400 hover:bg-gray-100"
+                              className="rounded px-1.5 py-1 text-red-400 t-bg-hover"
                               title="Hapus"
                             >
                               <i className="ti ti-trash text-sm" />
@@ -334,14 +335,14 @@ export default function UsersPage() {
             </tbody>
           </table>
           {users.length === 0 && (
-            <div className="py-8 text-center text-[10px] text-gray-400">Belum ada user</div>
+            <div className="py-8 text-center text-[10px] t-text-4">Belum ada user</div>
           )}
         </div>
 
         {/* Mobile Cards */}
         <div className="space-y-2 sm:hidden">
           {users.map((u) => (
-            <div key={u.id} className="rounded-lg border border-gray-200 p-3">
+            <div key={u.id} className="rounded-lg border t-border p-3">
               <div className="mb-1 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">{u.nama}</span>
@@ -356,27 +357,27 @@ export default function UsersPage() {
                   {u.is_active ? "Aktif" : "Nonaktif"}
                 </span>
               </div>
-              <div className="mb-2 text-[10px] text-gray-400">{u.email}</div>
-              <div className="text-[9px] text-neutral-600">
+              <div className="mb-2 text-[10px] t-text-4">{u.email}</div>
+              <div className="text-[9px] t-text-3">
                 Login: {u.last_login ? new Date(u.last_login).toLocaleString("id-ID") : "—"}
               </div>
               {isAdmin && u.role !== "admin" && (
                 <div className="mt-2 flex gap-1.5">
                   <button
                     onClick={() => openEdit(u)}
-                    className="rounded bg-gray-100 px-2 py-1 text-[9px] text-gray-700"
+                    className="rounded t-bg-muted px-2 py-1 text-[9px] t-text-2"
                   >
                     <i className="ti ti-pencil mr-1" />Edit
                   </button>
                   <button
                     onClick={() => toggleActive(u)}
-                    className={`rounded px-2 py-1 text-[9px] ${u.is_active ? "bg-amber-900/30 text-amber-400" : "bg-green-900/30 text-green-400"}`}
+                    className={`rounded px-2 py-1 text-[9px] ${u.is_active ? "t-gold-soft t-gold" : "bg-green-900/30 text-green-400"}`}
                   >
                     {u.is_active ? "Nonaktif" : "Aktif"}
                   </button>
                   <button
                     onClick={() => { setResetUserId(u.id); setResetPassword(""); }}
-                    className="rounded bg-amber-900/30 px-2 py-1 text-[9px] text-amber-400"
+                    className="rounded t-gold-soft px-2 py-1 text-[9px] t-gold"
                   >
                     <i className="ti ti-key mr-1" />Reset PW
                   </button>
@@ -393,7 +394,7 @@ export default function UsersPage() {
             </div>
           ))}
           {users.length === 0 && (
-            <div className="rounded-lg border border-gray-200 py-6 text-center text-[10px] text-gray-400">
+            <div className="rounded-lg border t-border py-6 text-center text-[10px] t-text-4">
               Belum ada user
             </div>
           )}
@@ -404,12 +405,12 @@ export default function UsersPage() {
       {showModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-3" onClick={() => setShowModal(false)}>
           <div
-            className="w-full max-w-sm rounded-xl border border-gray-300 bg-white shadow-2xl"
+            className="w-full max-w-sm rounded-xl border t-border-md t-bg-card shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+            <div className="flex items-center justify-between border-b t-border px-4 py-3">
               <h3 className="text-sm font-medium">{editingUser ? "Edit User" : "Tambah User"}</h3>
-              <button onClick={() => setShowModal(false)} className="rounded p-1 text-gray-500 hover:bg-gray-100">
+              <button onClick={() => setShowModal(false)} className="rounded p-1 t-text-3 t-bg-hover">
                 <i className="ti ti-x text-lg" />
               </button>
             </div>
@@ -419,42 +420,42 @@ export default function UsersPage() {
               )}
               <div className="space-y-3">
                 <div>
-                  <label className="mb-1 block text-[10px] text-gray-400">Nama</label>
+                  <label className="mb-1 block text-[10px] t-text-4">Nama</label>
                   <input
                     value={form.nama}
                     onChange={(e) => setForm({ ...form, nama: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs outline-none"
+                    className="w-full rounded-lg border t-border-md t-bg-card px-3 py-2 text-xs outline-none"
                     placeholder="Nama lengkap"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] text-gray-400">Email</label>
+                  <label className="mb-1 block text-[10px] t-text-4">Email</label>
                   <input
                     type="email"
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs outline-none"
+                    className="w-full rounded-lg border t-border-md t-bg-card px-3 py-2 text-xs outline-none"
                     placeholder="email@contoh.com"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] text-gray-400">
+                  <label className="mb-1 block text-[10px] t-text-4">
                     Password {editingUser && "(kosongkan jika tidak diubah)"}
                   </label>
                   <input
                     type="password"
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs outline-none"
+                    className="w-full rounded-lg border t-border-md t-bg-card px-3 py-2 text-xs outline-none"
                     placeholder="Minimal 6 karakter"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[10px] text-gray-400">Role</label>
+                  <label className="mb-1 block text-[10px] t-text-4">Role</label>
                   <select
                     value={form.role}
                     onChange={(e) => setForm({ ...form, role: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs outline-none"
+                    className="w-full rounded-lg border t-border-md t-bg-card px-3 py-2 text-xs outline-none"
                   >
                     <option value="kasir">Kasir</option>
                     {isAdmin && <option value="admin">Admin</option>}
@@ -464,14 +465,14 @@ export default function UsersPage() {
               <div className="mt-4 flex gap-2">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="flex-1 rounded-lg border border-gray-300 py-2.5 text-xs text-gray-500 hover:bg-gray-100"
+                  className="flex-1 rounded-lg border t-border-md py-2.5 text-xs t-text-3 t-bg-hover"
                 >
                   Batal
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={loading2}
-                  className="flex-1 rounded-lg bg-amber-600 py-2.5 text-xs font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+                  className="btn-gold flex-1 rounded-lg py-2.5 text-xs font-medium disabled:opacity-50"
                 >
                   {loading2 ? "Menyimpan..." : editingUser ? "Update" : "Tambah"}
                 </button>
@@ -484,26 +485,26 @@ export default function UsersPage() {
       {/* Reset Password Modal */}
       {resetUserId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setResetUserId(null)}>
-          <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <h3 className="mb-1 text-sm font-semibold text-gray-800">Reset Password</h3>
-            <p className="mb-3 text-[10px] text-gray-400">Masukkan password baru untuk user ini</p>
+          <div className="w-full max-w-sm rounded-xl t-bg-card p-5 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="mb-1 text-sm font-semibold t-text-2">Reset Password</h3>
+            <p className="mb-3 text-[10px] t-text-4">Masukkan password baru untuk user ini</p>
             {resetError && <p className="mb-2 text-[10px] text-red-500">{resetError}</p>}
             <input
               type="text"
               value={resetPassword}
               onChange={(e) => setResetPassword(e.target.value)}
               placeholder="Password baru (min 4 karakter)"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-xs outline-none"
+              className="w-full rounded-lg border t-border-md px-3 py-2 text-xs outline-none"
               autoFocus
               onKeyDown={(e) => e.key === "Enter" && handleResetPassword()}
             />
             <div className="mt-3 flex gap-2">
               <button onClick={() => setResetUserId(null)}
-                className="flex-1 rounded-lg border border-gray-300 py-2 text-xs text-gray-500 hover:bg-gray-100">
+                className="flex-1 rounded-lg border t-border-md py-2 text-xs t-text-3 t-bg-hover">
                 Batal
               </button>
               <button onClick={handleResetPassword}
-                className="flex-1 rounded-lg bg-amber-600 py-2 text-xs font-medium text-white hover:bg-amber-700">
+                className="btn-gold flex-1 rounded-lg py-2 text-xs font-medium">
                 Reset
               </button>
             </div>

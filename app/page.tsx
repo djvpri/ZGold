@@ -4,6 +4,7 @@ import { useTheme } from "@/lib/theme-context";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import PosPerhiasan from "@/components/PosPerhiasan";
+import BrandMark from "@/components/BrandMark";
 import LandingPage from "./landing/page";
 
 export default function Home() {
@@ -16,8 +17,8 @@ export default function Home() {
     return (
       <div className="flex min-h-screen items-center justify-center t-bg-base">
         <div className="text-center">
-          <div className="mb-2 text-3xl sm:text-4xl">💎</div>
-          <p className="text-[10px] t-text-3 sm:text-xs">Memuat...</p>
+          <BrandMark className="mx-auto mb-3 h-12 w-12 text-2xl animate-pulse" />
+          <p className="text-[10px] tracking-widest uppercase t-text-3 sm:text-xs">Memuat</p>
         </div>
       </div>
     );
@@ -31,18 +32,19 @@ export default function Home() {
   return (
     <div className="min-h-screen t-bg-base safe-top safe-bottom">
       {/* Top bar */}
-      <div className="flex items-center justify-between border-b t-border px-3 py-2 sm:px-4">
-        <div className="flex items-center gap-2">
-          <span className="text-sm">💎</span>
-          <span className="max-w-[100px] truncate text-xs t-text-2 sm:max-w-none">{tenant.nama_toko}</span>
-          <span className="hidden rounded-full t-bg-muted px-1.5 py-0.5 text-[9px] t-text-3 sm:inline-block">
+      <div className="sticky top-0 z-40 flex items-center justify-between border-b t-border px-3 py-2.5 backdrop-blur-md sm:px-4"
+        style={{ background: "color-mix(in srgb, var(--bg-card) 82%, transparent)" }}>
+        <div className="flex items-center gap-2.5">
+          <BrandMark className="h-8 w-8 text-base" />
+          <span className="font-display max-w-[130px] truncate text-base font-semibold leading-none t-text-1 sm:max-w-none sm:text-lg">{tenant.nama_toko}</span>
+          <span className="hidden rounded-full t-gold-soft px-2 py-0.5 text-[9px] font-medium uppercase tracking-wide t-gold sm:inline-block">
             {tenant.plan}
           </span>
         </div>
         <div className="relative">
           <button
             onClick={() => setShowMenu(!showMenu)}
-            className="flex items-center gap-1 rounded px-2 py-1 text-[10px] t-text-3 t-bg-hover"
+            className="flex items-center gap-1.5 rounded-lg border t-border px-2.5 py-1.5 text-[11px] t-text-2 t-bg-hover transition"
           >
             <span className="max-w-[60px] truncate sm:max-w-none">{user.nama}</span>
             <i className="ti ti-chevron-down text-[8px]" />
@@ -52,7 +54,7 @@ export default function Home() {
               <div className="border-b t-border px-3 py-2">
                 <div className="text-xs font-medium">{user.nama}</div>
                 <div className="text-[9px] t-text-4">{user.email}</div>
-                <div className="mt-1 rounded-full t-bg-muted px-1.5 py-0.5 text-[9px] t-text-3 inline-block">
+                <div className="mt-1 rounded-full t-gold-soft px-2 py-0.5 text-[9px] font-medium uppercase tracking-wide t-gold inline-block">
                   {tenant.plan}
                 </div>
               </div>
@@ -89,21 +91,23 @@ export default function Home() {
       <PosPerhiasan />
 
       {/* Bottom Nav — mobile only */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 border-t t-border t-bg-card sm:hidden safe-bottom">
+      <div className="fixed bottom-0 left-0 right-0 z-30 border-t t-border backdrop-blur-md sm:hidden safe-bottom"
+        style={{ background: "color-mix(in srgb, var(--bg-card) 88%, transparent)" }}>
         <div className="flex">
           <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] t-text-2">
-            <i className="ti ti-point-of-sale text-sm" />
+            className="relative flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[10px] font-medium t-gold">
+            <span className="absolute top-0 h-0.5 w-8 rounded-full" style={{ background: "var(--gold)" }} />
+            <i className="ti ti-point-of-sale text-base" />
             <span>POS</span>
           </button>
           <button onClick={() => router.push("/dashboard")}
-            className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] t-text-3">
-            <i className="ti ti-dashboard text-sm" />
+            className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[10px] t-text-3 transition hover:t-text-1">
+            <i className="ti ti-dashboard text-base" />
             <span>Dashboard</span>
           </button>
           <button onClick={() => router.push("/laporan")}
-            className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] t-text-3">
-            <i className="ti ti-chart-bar text-sm" />
+            className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[10px] t-text-3 transition hover:t-text-1">
+            <i className="ti ti-chart-bar text-base" />
             <span>Laporan</span>
           </button>
         </div>

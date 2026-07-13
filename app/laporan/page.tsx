@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
+import BrandMark from "@/components/BrandMark";
 
 function formatIDR(n: number | string | null | undefined) {
   const num = typeof n === "string" ? parseFloat(n) : Number(n ?? 0);
@@ -171,8 +172,8 @@ export default function LaporanPage() {
     return (
       <div className="flex min-h-screen items-center justify-center t-bg-base">
         <div className="text-center">
-          <div className="mb-2 text-3xl">💎</div>
-          <p className="text-[10px] t-text-3">Memuat...</p>
+          <BrandMark className="mx-auto mb-3 h-12 w-12 text-2xl animate-pulse" />
+          <p className="text-[10px] tracking-widest uppercase t-text-3">Memuat</p>
         </div>
       </div>
     );
@@ -204,14 +205,14 @@ export default function LaporanPage() {
 
       {/* Sidebar */}
       <div className={`fixed left-0 top-0 z-50 h-full w-56 border-r t-border t-bg-base p-3 transition-transform sm:translate-x-0 ${showSidebar ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="mb-6 hidden items-center gap-2 sm:flex">
-          <span className="text-lg">💎</span>
-          <span className="text-xs font-medium">{tenant?.nama_toko ?? "Zomet POS"}</span>
+        <div className="mb-6 hidden items-center gap-2.5 sm:flex">
+          <BrandMark className="h-8 w-8 text-base" />
+          <span className="font-display truncate text-base font-semibold">{tenant?.nama_toko ?? "Zomet POS"}</span>
         </div>
         <div className="mb-4 flex items-center justify-between sm:hidden">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">💎</span>
-            <span className="text-xs font-medium">Menu</span>
+          <div className="flex items-center gap-2.5">
+            <BrandMark className="h-8 w-8 text-base" />
+            <span className="font-display text-base font-semibold">Menu</span>
           </div>
           <button onClick={() => setShowSidebar(false)} className="rounded p-1 t-text-3">
             <i className="ti ti-x text-lg" />
@@ -223,7 +224,7 @@ export default function LaporanPage() {
               <button
                 key={item.id}
                 onClick={() => { setShowSidebar(false); router.push(item.href!); }}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-xs t-text-3 t-bg-hover hover:text-gray-800"
+                className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs t-text-3 t-bg-hover transition"
               >
                 <i className={`ti ${item.icon} text-sm`} />
                 {item.label}
@@ -232,7 +233,7 @@ export default function LaporanPage() {
               <button
                 key={item.id}
                 onClick={() => setShowSidebar(false)}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-2 t-bg-muted text-xs t-text-2"
+                className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 t-gold-soft text-xs font-medium t-gold"
               >
                 <i className={`ti ${item.icon} text-sm`} />
                 {item.label}
@@ -243,7 +244,7 @@ export default function LaporanPage() {
         <div className="absolute bottom-3 left-3 right-3">
           <button
             onClick={logout}
-            className="w-full rounded-md px-2 py-1.5 text-left text-[10px] t-text-4 t-bg-hover hover:text-gray-700"
+            className="flex w-full items-center rounded-lg px-2.5 py-2 text-left text-[10px] t-text-3 t-bg-hover transition"
           >
             <i className="ti ti-logout mr-1" /> Keluar
           </button>
@@ -252,10 +253,11 @@ export default function LaporanPage() {
 
       {/* Main Content */}
       <div className="p-3 sm:ml-56 sm:p-6">
-        <h1 className="mb-4 text-sm font-medium sm:text-lg">
-          <i className="ti ti-chart-bar mr-2" />
+        <h1 className="font-display mb-1 flex items-center gap-2 text-2xl font-semibold sm:text-3xl">
+          <i className="ti ti-chart-bar t-gold text-xl" />
           Laporan Penjualan
         </h1>
+        <p className="mb-4 text-[10px] uppercase tracking-[0.15em] t-text-4 sm:text-[11px]">Rekap jual &amp; buyback</p>
 
         {/* Date Filter */}
         <div className="mb-4 flex flex-wrap gap-1.5 sm:gap-2">
@@ -263,11 +265,11 @@ export default function LaporanPage() {
             <button
               key={p}
               onClick={() => setPreset(p)}
-              className="rounded-full px-3 py-1.5 text-[11px] transition sm:text-xs"
+              className="rounded-full px-3.5 py-1.5 text-[11px] font-medium transition sm:text-xs"
               style={{
-                background: preset === p ? "#B8860B" : "transparent",
-                color: preset === p ? "#fff" : "#9ca3af",
-                border: preset === p ? "none" : "0.5px solid #d1d5db",
+                background: preset === p ? "var(--gold)" : "transparent",
+                color: preset === p ? "var(--on-gold)" : "var(--text-3)",
+                border: preset === p ? "1px solid transparent" : "1px solid var(--border-md)",
               }}
             >
               {p === "today" && "Hari Ini"}
@@ -300,11 +302,11 @@ export default function LaporanPage() {
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <p className="text-[10px] t-text-4 sm:text-xs">{data.range.from} s/d {data.range.to}</p>
             <div className="ml-auto flex gap-1.5">
-              <button onClick={cetakPDF} className="rounded bg-amber-600/20 px-2.5 py-1 text-[9px] text-amber-400 hover:bg-amber-600/30 sm:text-[10px]">
-                <i className="ti ti-file-text mr-1" />PDF
+              <button onClick={cetakPDF} className="t-gold-soft t-gold flex items-center gap-1 rounded-lg border t-gold-border px-3 py-1.5 text-[10px] font-medium transition hover:brightness-105">
+                <i className="ti ti-file-text" />PDF
               </button>
-              <button onClick={exportCSV} className="rounded bg-emerald-600/20 px-2.5 py-1 text-[9px] text-emerald-400 hover:bg-emerald-600/30 sm:text-[10px]">
-                <i className="ti ti-table-export mr-1" />CSV
+              <button onClick={exportCSV} className="flex items-center gap-1 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-medium text-emerald-500 transition hover:bg-emerald-500/20">
+                <i className="ti ti-table-export" />CSV
               </button>
             </div>
           </div>
@@ -312,18 +314,18 @@ export default function LaporanPage() {
 
         {/* Summary Cards */}
         {data && (
-          <div className="mb-6 grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
-            <SummaryCard label="Total Penjualan" value={formatIDR(data.summary.total_jual)} color="#4ade80" />
-            <SummaryCard label="Total Buyback" value={formatIDR(data.summary.total_buyback)} color="#fbbf24" />
-            <SummaryCard label="Transaksi" value={String(data.summary.jumlah_transaksi)} color="#60a5fa" />
-            <SummaryCard label="Rata-rata" value={formatIDR(data.summary.avg_transaksi)} color="#a78bfa" />
+          <div className="mb-6 grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4">
+            <SummaryCard icon="ti-trending-up" label="Total Penjualan" value={formatIDR(data.summary.total_jual)} color="#16a34a" />
+            <SummaryCard icon="ti-recharging" label="Total Buyback" value={formatIDR(data.summary.total_buyback)} color="var(--gold)" />
+            <SummaryCard icon="ti-receipt-2" label="Transaksi" value={String(data.summary.jumlah_transaksi)} color="var(--text-1)" />
+            <SummaryCard icon="ti-scale" label="Rata-rata" value={formatIDR(data.summary.avg_transaksi)} color="var(--gold)" />
           </div>
         )}
 
         {/* Breakdown by Logam */}
         {data && data.byLogam.length > 0 && (
-          <div className="mb-6 rounded-lg border t-border p-3 sm:p-4">
-            <h3 className="mb-3 text-xs font-medium sm:text-sm">Breakdown per Logam</h3>
+          <div className="t-card mb-6 rounded-xl border t-border p-3 sm:p-4">
+            <h3 className="font-display mb-3 text-base font-semibold sm:text-lg">Breakdown per Logam</h3>
             <div className="space-y-2">
               {data.byLogam.map((item) => (
                 <div key={item.logam_id} className="flex items-center justify-between border-b t-border pb-2 last:border-0">
@@ -338,7 +340,7 @@ export default function LaporanPage() {
                   <div className="text-right">
                     <div className="text-[10px] text-green-400 sm:text-xs">{formatIDR(item.total_jual)}</div>
                     {item.total_buyback > 0 && (
-                      <div className="text-[9px] text-amber-400">BB: {formatIDR(item.total_buyback)}</div>
+                      <div className="text-[9px] t-gold">BB: {formatIDR(item.total_buyback)}</div>
                     )}
                   </div>
                 </div>
@@ -349,8 +351,8 @@ export default function LaporanPage() {
 
         {/* Daily Totals Table */}
         {data && data.daily.length > 0 && (
-          <div className="rounded-lg border t-border p-3 sm:p-4">
-            <h3 className="mb-3 text-xs font-medium sm:text-sm">Total Harian</h3>
+          <div className="t-card rounded-xl border t-border p-3 sm:p-4">
+            <h3 className="font-display mb-3 text-base font-semibold sm:text-lg">Total Harian</h3>
             {/* Desktop table */}
             <div className="hidden overflow-x-auto sm:block">
               <table className="w-full text-xs">
@@ -364,12 +366,12 @@ export default function LaporanPage() {
                 </thead>
                 <tbody>
                   {data.daily.map((d) => (
-                    <tr key={d.tanggal} className="border-b t-border/50 last:border-0">
+                    <tr key={d.tanggal} className="border-b t-border last:border-0">
                       <td className="py-2 pr-4 t-text-2">
                         {new Date(d.tanggal).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
                       </td>
                       <td className="py-2 pr-4 text-right text-green-400">{formatIDR(d.total_jual)}</td>
-                      <td className="py-2 pr-4 text-right text-amber-400">{formatIDR(d.total_buyback)}</td>
+                      <td className="py-2 pr-4 text-right t-gold">{formatIDR(d.total_buyback)}</td>
                       <td className="py-2 text-right t-text-3">{d.jumlah}</td>
                     </tr>
                   ))}
@@ -385,7 +387,7 @@ export default function LaporanPage() {
                   </div>
                   <div className="flex justify-between text-[11px]">
                     <span className="text-green-400">Jual: {formatIDR(d.total_jual)}</span>
-                    <span className="text-amber-400">BB: {formatIDR(d.total_buyback)}</span>
+                    <span className="t-gold">BB: {formatIDR(d.total_buyback)}</span>
                   </div>
                   <div className="text-[10px] t-text-4">{d.jumlah} transaksi</div>
                 </div>
@@ -396,8 +398,8 @@ export default function LaporanPage() {
 
         {/* Empty state */}
         {data && data.daily.length === 0 && (
-          <div className="rounded-lg border t-border py-8 text-center">
-            <div className="mb-2 text-2xl">📊</div>
+          <div className="t-card rounded-xl border t-border py-10 text-center">
+            <i className="ti ti-chart-bar-off mb-2 block text-3xl t-text-4" />
             <p className="text-[10px] t-text-4 sm:text-xs">Belum ada transaksi di periode ini</p>
           </div>
         )}
@@ -406,11 +408,18 @@ export default function LaporanPage() {
   );
 }
 
-function SummaryCard({ label, value, color }: { label: string; value: string; color: string }) {
+function SummaryCard({ icon, label, value, color }: { icon: string; label: string; value: string; color: string }) {
+  const isInk = color === "var(--text-1)";
   return (
-    <div className="rounded-lg border t-border p-3 sm:p-4">
-      <div className="text-[9px] uppercase tracking-wider t-text-4 sm:text-[10px]">{label}</div>
-      <div className="mt-1 text-sm font-medium sm:text-lg" style={{ color }}>
+    <div className="t-card relative overflow-hidden rounded-xl border t-border p-3 transition hover:t-elev sm:p-4">
+      <span className="absolute inset-x-0 top-0 h-[3px]" style={{ background: isInk ? "var(--border-md)" : color, opacity: 0.75 }} />
+      <div className="flex items-start justify-between">
+        <span className="pr-2 text-[9px] font-medium uppercase tracking-wide t-text-4 sm:text-[10px]">{label}</span>
+        <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg t-bg-muted text-[13px]" style={{ color }}>
+          <i className={`ti ${icon}`} />
+        </span>
+      </div>
+      <div className="font-display mt-1.5 text-lg font-semibold leading-tight sm:text-2xl" style={{ color }}>
         {value}
       </div>
     </div>

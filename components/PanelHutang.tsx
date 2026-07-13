@@ -109,12 +109,12 @@ export default function PanelHutang() {
           </h2>
           {status === "aktif" && (
             <p className="text-[10px] t-text-4">
-              Total outstanding: <span className="font-semibold text-amber-400">{formatIDR(totalSisa)}</span>
+              Total outstanding: <span className="font-semibold t-gold">{formatIDR(totalSisa)}</span>
             </p>
           )}
         </div>
         <button onClick={() => setShowForm(true)}
-          className="rounded bg-amber-600/20 px-3 py-1.5 text-[10px] text-amber-400 hover:bg-amber-600/30">
+          className="t-gold-soft t-gold rounded-lg px-3 py-1.5 text-[10px] font-medium transition hover:brightness-105">
           <i className="ti ti-plus mr-1" />Tambah
         </button>
       </div>
@@ -125,8 +125,8 @@ export default function PanelHutang() {
           {(["aktif", "lunas", "semua"] as const).map((s) => (
             <button key={s}
               onClick={() => setStatus(s)}
-              className="rounded-md px-2.5 py-1 text-[10px]"
-              style={{ background: status === s ? "#B8860B" : "transparent", color: status === s ? "#fff" : "#9ca3af" }}>
+              className="rounded-md px-2.5 py-1 text-[10px] font-medium transition"
+              style={{ background: status === s ? "var(--gold)" : "transparent", color: status === s ? "var(--on-gold)" : "var(--text-3)" }}>
               {s === "aktif" ? "Aktif" : s === "lunas" ? "Lunas" : "Semua"}
             </button>
           ))}
@@ -153,7 +153,7 @@ export default function PanelHutang() {
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs font-medium truncate">{h.nama_pihak}</span>
                   <span className={`rounded-full px-1.5 py-0.5 text-[8px] font-medium ${
-                    h.tipe === "jual" ? "bg-amber-600/20 text-amber-400" : "bg-blue-600/20 text-blue-400"
+                    h.tipe === "jual" ? "t-gold-soft t-gold" : "bg-blue-600/20 text-blue-400"
                   }`}>
                     {h.tipe === "jual" ? "PIUTANG" : "HUTANG"}
                   </span>
@@ -175,8 +175,8 @@ export default function PanelHutang() {
             {/* Progress bar */}
             {h.status === "aktif" && h.total > 0 && (
               <div className="mt-2 h-1.5 w-full rounded-full t-bg-muted overflow-hidden">
-                <div className="h-full rounded-full bg-amber-500 transition-all"
-                  style={{ width: `${Math.min(100, (h.dibayar / h.total) * 100)}%` }}
+                <div className="h-full rounded-full transition-all"
+                  style={{ width: `${Math.min(100, (h.dibayar / h.total) * 100)}%`, background: "var(--gold)" }}
                 />
               </div>
             )}
@@ -187,7 +187,7 @@ export default function PanelHutang() {
             {h.status === "aktif" && (
               <div className="mt-2 flex gap-1.5">
                 <button onClick={() => setBayarId(h.id)}
-                  className="flex-1 rounded bg-amber-600/20 py-1.5 text-[9px] text-amber-400 font-medium hover:bg-amber-600/30">
+                  className="t-gold-soft t-gold flex-1 rounded py-1.5 text-[9px] font-medium transition hover:brightness-105">
                   <i className="ti ti-cash mr-1" />Bayar
                 </button>
                 <button onClick={() => handleLunas(h.id)}
@@ -212,7 +212,7 @@ export default function PanelHutang() {
                   onKeyDown={(e) => e.key === "Enter" && handleBayar()}
                 />
                 <button onClick={handleBayar}
-                  className="rounded bg-amber-600 px-3 py-1.5 text-[10px] text-white font-medium">Bayar</button>
+                  className="btn-gold rounded-lg px-3 py-1.5 text-[10px] font-medium">Bayar</button>
                 <button onClick={() => setBayarId(null)}
                   className="rounded t-bg-card px-2 py-1.5 text-[10px] t-text-3">Batal</button>
               </div>
@@ -233,9 +233,9 @@ export default function PanelHutang() {
                     onClick={() => setForm({ ...form, tipe: t })}
                     className="flex-1 rounded-md py-2 text-xs font-medium"
                     style={{
-                      background: form.tipe === t ? (t === "jual" ? "#B8860B" : "#3b82f6") : "transparent",
-                      color: form.tipe === t ? "#fff" : "#9ca3af",
-                      border: form.tipe === t ? "none" : "0.5px solid #404040",
+                      background: form.tipe === t ? (t === "jual" ? "var(--gold)" : "#3b82f6") : "transparent",
+                      color: form.tipe === t ? "#fff" : "var(--text-3)",
+                      border: form.tipe === t ? "none" : "1px solid var(--border-md)",
                     }}>
                     {t === "jual" ? "Piutang" : "Hutang"}
                   </button>
@@ -262,7 +262,7 @@ export default function PanelHutang() {
                 <button onClick={() => setShowForm(false)}
                   className="flex-1 rounded-md t-bg-card py-2 text-xs t-text-3 border t-border">Batal</button>
                 <button onClick={handleCreate}
-                  className="flex-1 rounded-md bg-amber-600 py-2 text-xs font-medium text-white">Simpan</button>
+                  className="btn-gold flex-1 rounded-lg py-2 text-xs font-medium">Simpan</button>
               </div>
             </div>
           </div>

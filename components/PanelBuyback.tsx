@@ -58,7 +58,7 @@ export default function PanelBuyback(props: any) {
           <div className="grid grid-cols-2 gap-1.5 md:grid-cols-1">
             {Object.values(LOGAM).map((lg) => (
               <button key={lg.id} onClick={() => onGantiLogam(lg.id)}
-                className="rounded-lg border-2 t-bg-muted/40 p-2.5 text-left transition"
+                className="rounded-lg border-2 t-bg-muted p-2.5 text-left transition"
                 style={{ borderColor: logamId === lg.id ? lg.accent : "transparent" }}>
                 <div className="flex items-center gap-2">
                   <i className={`ti ${lg.icon} text-base`} style={{ color: lg.accent }} />
@@ -75,8 +75,8 @@ export default function PanelBuyback(props: any) {
                 className="rounded-full px-2.5 py-1.5 text-[11px] transition sm:text-xs"
                 style={{
                   background: kadarIdx === i ? l.accent : "transparent",
-                  color: kadarIdx === i ? "#fff" : "#9ca3af",
-                  border: kadarIdx === i ? "none" : "0.5px solid #d1d5db",
+                  color: kadarIdx === i ? "#fff" : "var(--text-3)",
+                  border: kadarIdx === i ? "none" : "1px solid var(--border-md)",
                 }}>
                 {kd.label}
               </button>
@@ -135,7 +135,7 @@ export default function PanelBuyback(props: any) {
             </div>
             <div className="flex gap-2">
               <button onClick={() => setKonfirmasi(false)} className="flex-1 rounded-lg border t-border-md py-2 text-xs t-text-2">Batal</button>
-              <button onClick={konfirmasiProses} className="flex-1 rounded-lg py-2 text-xs font-medium text-white" style={{ background: l.accent }}>✓ Konfirmasi</button>
+              <button onClick={konfirmasiProses} className="flex-1 rounded-lg py-2 text-xs font-medium text-white" style={{ background: l.accent }}><i className="ti ti-check mr-1" />Konfirmasi</button>
             </div>
           </div>
         </div>

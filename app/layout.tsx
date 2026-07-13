@@ -1,6 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { Cormorant, Montserrat } from "next/font/google";
 import "./globals.css"
 import "bootstrap-icons/font/bootstrap-icons.css";
+
+const serif = Cormorant({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-serif",
+  display: "swap",
+});
+const sans = Montserrat({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
 import { AuthProvider } from "@/lib/auth-context";
 import { ThemeProvider } from "@/lib/theme-context";
 import PWARegister from "@/components/PWARegister";
@@ -29,7 +43,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id">
+    <html lang="id" className={`${serif.variable} ${sans.variable}`}>
       <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />

@@ -2,47 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ══════════════════════════════════════════════════════════════
+   ZGold — Premium theme (warm stone + gold)
+   ══════════════════════════════════════════════════════════════ */
+
 /* ── Light theme ── */
 :root, [data-theme="light"] {
-  --bg-base:   #f9fafb;
+  --bg-base:   #faf9f7;   /* warm off-white */
   --bg-card:   #ffffff;
-  --bg-muted:  #f3f4f6;
-  --bg-hover:  #e5e7eb;
-  --border:    #e5e7eb;
-  --border-md: #d1d5db;
-  --text-1:    #111827;
-  --text-2:    #374151;
-  --text-3:    #6b7280;
-  --text-4:    #9ca3af;
+  --bg-muted:  #f3f1ec;
+  --bg-hover:  #ebe8e1;
+  --border:    #e8e3d9;
+  --border-md: #d8d1c2;
+  --text-1:    #1c1917;
+  --text-2:    #44403c;
+  --text-3:    #78716c;
+  --text-4:    #a8a29e;
   --input-bg:  #ffffff;
-  --input-border: #d1d5db;
-  --scrollbar: #d1d5db;
+  --input-border: #d8d1c2;
+  --scrollbar: #d8d1c2;
+
+  /* Gold accent system */
+  --gold:        #a16207;   /* solid accent — icons, borders, large numerals */
+  --gold-1:      #c69320;   /* gradient stop (light) */
+  --gold-2:      #8a5a0a;   /* gradient stop (dark) */
+  --on-gold:     #ffffff;   /* text/icon on a gold surface */
+  --gold-soft:   #fbf3df;   /* soft gold wash background */
+  --gold-border: #e7cf8f;
+
+  --elev: 0 1px 2px rgba(28,25,23,.04), 0 12px 28px -14px rgba(28,25,23,.16);
+  --elev-sm: 0 1px 2px rgba(28,25,23,.05), 0 4px 12px -8px rgba(28,25,23,.14);
 }
 
 /* ── Dark theme ── */
 [data-theme="dark"] {
-  --bg-base:   #0a0a0a;
-  --bg-card:   #171717;
-  --bg-muted:  #262626;
-  --bg-hover:  #3f3f46;
-  --border:    #27272a;
-  --border-md: #3f3f46;
-  --text-1:    #f5f5f5;
-  --text-2:    #d4d4d4;
-  --text-3:    #a1a1aa;
-  --text-4:    #71717a;
-  --input-bg:  #1c1c1c;
-  --input-border: #3f3f46;
-  --scrollbar: #3f3f46;
+  --bg-base:   #0c0a09;
+  --bg-card:   #1a1714;
+  --bg-muted:  #292524;
+  --bg-hover:  #3a352f;
+  --border:    #292524;
+  --border-md: #44403c;
+  --text-1:    #f5f5f4;
+  --text-2:    #d6d3d1;
+  --text-3:    #a8a29e;
+  --text-4:    #78716c;
+  --input-bg:  #17130f;
+  --input-border: #44403c;
+  --scrollbar: #44403c;
+
+  --gold:        #e6b84f;
+  --gold-1:      #f0cd7a;
+  --gold-2:      #c99a3a;
+  --on-gold:     #1c1917;
+  --gold-soft:   #241d10;
+  --gold-border: #5c481f;
+
+  --elev: 0 1px 2px rgba(0,0,0,.4), 0 16px 32px -18px rgba(0,0,0,.7);
+  --elev-sm: 0 1px 2px rgba(0,0,0,.35), 0 6px 16px -10px rgba(0,0,0,.6);
 }
 
 body {
   background: var(--bg-base);
   color: var(--text-1);
+  font-family: var(--font-sans), "Montserrat", system-ui, -apple-system, sans-serif;
   transition: background 0.2s, color 0.2s;
 }
 
-/* Theme utility classes */
+/* Serif display for premium headings / large numerals */
+.font-display {
+  font-family: var(--font-serif), "Cormorant", Georgia, serif;
+  letter-spacing: 0.01em;
+}
+
+/* ── Theme utility classes ── */
 .t-bg-base   { background: var(--bg-base) !important; }
 .t-bg-card   { background: var(--bg-card) !important; }
 .t-bg-muted  { background: var(--bg-muted) !important; }
@@ -54,6 +86,31 @@ body {
 .t-text-3    { color: var(--text-3) !important; }
 .t-text-4    { color: var(--text-4) !important; }
 
+/* ── Gold accent utilities ── */
+.t-gold        { color: var(--gold) !important; }
+.t-gold-border { border-color: var(--gold-border) !important; }
+.t-gold-soft   { background: var(--gold-soft) !important; }
+.t-card        { background: var(--bg-card); box-shadow: var(--elev-sm); }
+.t-elev        { box-shadow: var(--elev); }
+.t-elev-sm     { box-shadow: var(--elev-sm); }
+
+/* Premium gold button */
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+  color: var(--on-gold) !important;
+  box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--gold-2) 70%, transparent);
+  transition: filter .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+.btn-gold:hover { filter: brightness(1.06); }
+.btn-gold:active { transform: translateY(1px); }
+
+/* Gold gradient brand mark (used by BrandMark component) */
+.brand-mark {
+  background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+  color: #fff;
+  box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--gold-2) 65%, transparent);
+}
+
 /* Input otomatis ikut tema */
 input, select, textarea {
   font-size: 16px !important;
@@ -62,6 +119,13 @@ input, select, textarea {
   color: var(--text-1) !important;
 }
 input::placeholder { color: var(--text-4) !important; }
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 22%, transparent);
+}
+
+::selection { background: color-mix(in srgb, var(--gold) 30%, transparent); }
 
 * { -webkit-tap-highlight-color: transparent; }
 .safe-top { padding-top: env(safe-area-inset-top); }
@@ -69,3 +133,7 @@ input::placeholder { color: var(--text-4) !important; }
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

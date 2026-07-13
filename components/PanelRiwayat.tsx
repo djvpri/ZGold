@@ -23,9 +23,9 @@ export default function PanelRiwayat({ riwayat, onRefresh }: { riwayat: any[]; o
   if (riwayat.length === 0) {
     return (
       <div className="py-12 text-center">
-        <i className="ti ti-receipt mb-2 block text-3xl text-gray-300" />
+        <i className="ti ti-receipt mb-2 block text-3xl t-text-4" />
         <p className="text-xs t-text-4">Belum ada transaksi hari ini</p>
-        <button onClick={onRefresh} className="mt-3 text-xs text-amber-500 underline">Refresh</button>
+        <button onClick={onRefresh} className="mt-3 text-xs t-gold underline">Refresh</button>
       </div>
     );
   }
@@ -38,13 +38,13 @@ export default function PanelRiwayat({ riwayat, onRefresh }: { riwayat: any[]; o
           <div className="text-[10px] t-text-3">Transaksi</div>
           <div className="text-lg font-bold t-text-1">{riwayat.length}</div>
         </div>
-        <div className="rounded-lg border border-green-100 bg-green-50 p-2.5 text-center">
+        <div className="rounded-lg border border-green-500/20 bg-green-500/10 p-2.5 text-center">
           <div className="text-[10px] text-green-600">Total Jual</div>
-          <div className="text-xs font-bold text-green-700">{formatIDR(totalJual)}</div>
+          <div className="text-xs font-bold text-green-600">{formatIDR(totalJual)}</div>
         </div>
-        <div className="rounded-lg border border-orange-100 bg-orange-50 p-2.5 text-center">
-          <div className="text-[10px] text-orange-600">Total Buyback</div>
-          <div className="text-xs font-bold text-orange-700">{formatIDR(totalBuyback)}</div>
+        <div className="t-gold-soft rounded-lg border t-gold-border p-2.5 text-center">
+          <div className="text-[10px] t-gold">Total Buyback</div>
+          <div className="text-xs font-bold t-gold">{formatIDR(totalBuyback)}</div>
         </div>
       </div>
 
@@ -86,8 +86,8 @@ export default function PanelRiwayat({ riwayat, onRefresh }: { riwayat: any[]; o
                 <div className="text-xs font-bold" style={{ color: lg.accent }}>{formatIDR(r.total)}</div>
                 <div className="rounded-full px-1.5 py-0.5 text-[9px] font-medium"
                   style={{
-                    background: r.tipe === "jual" ? "#dcfce7" : "#fef3c7",
-                    color: r.tipe === "jual" ? "#16a34a" : "#d97706",
+                    background: r.tipe === "jual" ? "#dcfce7" : "var(--gold-soft)",
+                    color: r.tipe === "jual" ? "#16a34a" : "var(--gold)",
                   }}>
                   {r.tipe}
                 </div>
