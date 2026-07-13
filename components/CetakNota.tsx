@@ -87,10 +87,61 @@ export default function CetakNota({ data, onClose, format = "thermal" }: CetakNo
   ].filter((l) => l !== null) as string[];
 
   const handlePrint = useCallback(() => {
-    window.print();
+    const text = receiptLines.join("\n");
+    const esc = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const pageCss = isWide
+      ? `@page { size: 210mm 115mm landscape; margin: 0; } pre { width: 210mm; box-sizing: border-box; padding: 3mm 5mm; font-size: 9pt; line-height: 1.0; }`
+      : `@page { size: 58mm auto; margin: 0; } pre { width: 58mm; box-sizing: border-box; padding: 2mm 3mm; font-size: 7.5pt; line-height: 1.15; }`;
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Nota ${data.no_transaksi}</title><style>
+      html,body{margin:0;padding:0;background:#fff;color:#000;}
+      pre{font-family:'Courier New',Courier,monospace;white-space:pre;color:#000;margin:0;}
+      ${pageCss}
+    </style></head><body><pre>${esc}</pre></body></html>`;
+
+    // Cetak lewat iframe tersembunyi — dokumen struk terisolasi, lebih andal
+    // daripada window.print() + @media print (yang sering blank di modal/PWA).
+    const iframe = document.createElement("iframe");
+    iframe.setAttribute("aria-hidden", "true");
+    iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;";
+    document.body.appendChild(iframe);
+
+    const win = iframe.contentWindow;
+    const doc = win?.document;
+    if (!win || !doc) {
+      document.body.removeChild(iframe);
+      // Fallback ke metode lama bila iframe tak tersedia.
+      window.print();
+      setPrinted(true);
+      setTimeout(() => onClose(), 500);
+      return;
+    }
+
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      setTimeout(() => { try { document.body.removeChild(iframe); } catch {} }, 300);
+      onClose();
+    };
+
+    doc.open();
+    doc.write(html);
+    doc.close();
+    win.onafterprint = finish;
+
     setPrinted(true);
-    setTimeout(() => onClose(), 500);
-  }, [onClose]);
+    // Beri jeda agar iframe selesai render sebelum print.
+    setTimeout(() => {
+      try {
+        win.focus();
+        win.print();
+      } catch {
+        window.print();
+      }
+      // Fallback cleanup bila onafterprint tidak didukung (mis. beberapa mobile).
+      setTimeout(finish, 2000);
+    }, 200);
+  }, [receiptLines, isWide, data.no_transaksi, onClose]);
 
   const handleShare = useCallback(async () => {
     const text = receiptLines.join("\n");
@@ -138,7 +189,7 @@ export default function CetakNota({ data, onClose, format = "thermal" }: CetakNo
           <button onClick={handleShare} className="flex-1 rounded-lg border t-border-md py-2.5 text-xs t-text-3 t-bg-hover">
             <i className="ti ti-share mr-1.5" />Bagikan
           </button>
-          <button onClick={handlePrint} className="flex-1 rounded-lg bg-amber-600 py-2.5 text-xs font-medium text-white hover:bg-amber-700">
+          <button onClick={handlePrint} className="btn-gold flex-1 rounded-lg py-2.5 text-xs font-medium">
             <i className="ti ti-printer mr-1.5" />Cetak
           </button>
         </div>
