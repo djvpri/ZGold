@@ -111,14 +111,17 @@ export async function ambilRiwayatHariIni(tenantId?: string | number): Promise<T
   );
 }
 
-/** Generate nomor transaksi berikutnya (tenant-aware) */
+/** Generate nomor transaksi berikutnya (tenant-aware).
+ *  Pakai MAX(nomor urut)+1, bukan COUNT+1 — supaya nomor tidak dipakai ulang
+ *  setelah ada transaksi yang dihapus (yang sebelumnya memicu duplicate key). */
 export async function nomorTransaksiBerikutnya(tipe: "jual" | "buyback", tenantId?: string | number): Promise<string> {
   const prefix = tipe === "jual" ? "TRX" : "BB";
-  const row = await dbOne<{ cnt: number }>(
-    `SELECT COUNT(*)::int AS cnt FROM transaksi WHERE tipe = $1 ${tenantId ? "AND tenant_id = $2" : ""}`,
+  const row = await dbOne<{ mx: number }>(
+    `SELECT COALESCE(MAX((SUBSTRING(no_transaksi FROM '\\d+$'))::int), 0) AS mx
+     FROM transaksi WHERE tipe = $1 ${tenantId ? "AND tenant_id = $2" : ""}`,
     tenantId ? [tipe, tenantId] : [tipe]
   );
-  return prefix + String((row?.cnt ?? 0) + 1).padStart(4, "0");
+  return prefix + String((row?.mx ?? 0) + 1).padStart(4, "0");
 }
 
 /** Ambil rekap harian */

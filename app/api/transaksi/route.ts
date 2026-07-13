@@ -42,10 +42,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Field wajib belum diisi" }, { status: 400 });
     }
 
-    const no_transaksi = await nomorTransaksiBerikutnya(tipe, auth.tenantId);
-
-    const result = await simpanTransaksi({
-      no_transaksi,
+    const base = {
       tipe,
       logam_id,
       tenant_id: auth.tenantId,
@@ -62,7 +59,21 @@ export async function POST(req: NextRequest) {
       total,
       bayar: bayar ?? 0,
       kembalian: kembalian ?? 0,
-    });
+    };
+
+    // Generate nomor + simpan dengan retry: kalau nomor bentrok (23505, mis. dua
+    // kasir menyimpan bersamaan), regenerate nomor & coba lagi.
+    let result = null;
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const no_transaksi = await nomorTransaksiBerikutnya(tipe, auth.tenantId);
+      try {
+        result = await simpanTransaksi({ no_transaksi, ...base });
+        break;
+      } catch (e: any) {
+        if (e?.code === "23505" && attempt < 5) continue; // unique_violation → retry
+        throw e;
+      }
+    }
 
     return NextResponse.json({ data: result });
   } catch (e: any) {
