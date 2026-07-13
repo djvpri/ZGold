@@ -26,6 +26,7 @@ export default function PanelJual(props: any) {
   const [kodeStatus, setKodeStatus] = useState<"idle"|"loading"|"found"|"notfound">("idle");
   const [hasilCari, setHasilCari] = useState<any[]>([]);
   const [showScanner, setShowScanner] = useState(false);
+  const [fotoZoom, setFotoZoom] = useState<string | null>(null);
   const kodeRef = useRef<HTMLInputElement>(null);
 
   function handleScanResult(kode: string) {
@@ -176,11 +177,22 @@ export default function PanelJual(props: any) {
         {/* Produk terpilih — kartu besar */}
         {produkDipilih && (
           <div className="mt-2 rounded-lg border-2 p-3" style={{ borderColor: l.accent, background: l.bg + "20" }}>
-            <div className="flex items-start justify-between">
-              <div>
+            <div className="flex items-start gap-3">
+              {/* Thumbnail */}
+              <div
+                onClick={() => produkDipilih.foto_url && setFotoZoom(produkDipilih.foto_url)}
+                className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border t-border"
+                style={{ background: `${l.accent}14`, cursor: produkDipilih.foto_url ? "zoom-in" : "default" }}
+              >
+                {produkDipilih.foto_url
+                  ? <img src={produkDipilih.foto_url} alt={produkDipilih.nama} className="h-full w-full object-cover" />
+                  : <i className="ti ti-diamond text-lg" style={{ color: l.accent }} />}
+              </div>
+              {/* Info */}
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="rounded bg-green-600 px-1.5 py-0.5 text-[10px] font-bold text-white">{produkDipilih.kode}</span>
-                  <span className="text-sm font-bold t-text-1">{produkDipilih.nama}</span>
+                  <span className="truncate text-sm font-bold t-text-1">{produkDipilih.nama}</span>
                 </div>
                 <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] t-text-3">
                   <span>{produkDipilih.jenis}</span>
@@ -231,24 +243,53 @@ export default function PanelJual(props: any) {
         <div>
           <SectionTitle>Info Produk</SectionTitle>
           {produkDipilih ? (
-            <div className="rounded-lg border t-border t-bg-card p-3 space-y-1.5">
-              <div className="flex justify-between text-xs">
-                <span className="t-text-3">Logam</span>
-                <span className="font-medium">{l.nama}</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="t-text-3">Kadar</span>
-                <span className="font-medium">{l.kadar[kadarIdx]?.label}</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="t-text-3">Jenis</span>
-                <span className="font-medium">{jenis}</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="t-text-3">Stok</span>
-                <span className={produkDipilih.stok <= 0 ? "text-red-500 font-bold" : "text-green-600 font-medium"}>
-                  {produkDipilih.stok} pcs
+            <div className="overflow-hidden rounded-lg border t-border t-bg-card">
+              {/* Foto hero */}
+              <div
+                onClick={() => produkDipilih.foto_url && setFotoZoom(produkDipilih.foto_url)}
+                className="relative aspect-[4/3] w-full overflow-hidden"
+                style={{ background: `${l.accent}14`, cursor: produkDipilih.foto_url ? "zoom-in" : "default" }}
+              >
+                {produkDipilih.foto_url ? (
+                  <img src={produkDipilih.foto_url} alt={produkDipilih.nama}
+                    className="h-full w-full object-cover transition duration-300 hover:scale-105" />
+                ) : (
+                  <div className="flex h-full w-full flex-col items-center justify-center gap-1">
+                    <i className="ti ti-diamond text-4xl" style={{ color: l.accent }} />
+                    <span className="text-[9px] t-text-4">Tanpa foto</span>
+                  </div>
+                )}
+                {/* Kode chip */}
+                <span className="absolute left-2 top-2 rounded bg-black/60 px-1.5 py-0.5 text-[9px] font-semibold text-white backdrop-blur-sm">
+                  {produkDipilih.kode}
                 </span>
+                {produkDipilih.foto_url && (
+                  <span className="absolute bottom-2 right-2 rounded-full bg-black/50 p-1 text-white backdrop-blur-sm">
+                    <i className="ti ti-zoom-in text-[12px]" />
+                  </span>
+                )}
+              </div>
+              {/* Detail */}
+              <div className="space-y-1.5 p-3">
+                <div className="mb-1 truncate text-sm font-semibold t-text-1">{produkDipilih.nama}</div>
+                <div className="flex justify-between text-xs">
+                  <span className="t-text-3">Logam</span>
+                  <span className="font-medium">{l.nama}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="t-text-3">Kadar</span>
+                  <span className="font-medium">{l.kadar[kadarIdx]?.label}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="t-text-3">Jenis</span>
+                  <span className="font-medium">{jenis}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="t-text-3">Stok</span>
+                  <span className={produkDipilih.stok <= 0 ? "text-red-500 font-bold" : "text-green-600 font-medium"}>
+                    {produkDipilih.stok} pcs
+                  </span>
+                </div>
               </div>
             </div>
           ) : (
@@ -352,6 +393,18 @@ export default function PanelJual(props: any) {
 
       {notaData && <CetakNota data={notaData} format={(typeof window !== 'undefined' && localStorage.getItem('zgold_nota_format') as 'thermal'|'plq35') || 'thermal'} onClose={() => setNotaData(null)} />}
       {showScanner && <BarcodeScanner onResult={handleScanResult} onClose={() => setShowScanner(false)} />}
+
+      {/* Zoom foto produk */}
+      {fotoZoom && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/90 p-4" onClick={() => setFotoZoom(null)}>
+          <img src={fotoZoom} alt="Foto produk" className="max-h-[82vh] max-w-full rounded-xl object-contain"
+            onClick={(e) => e.stopPropagation()} />
+          <button onClick={() => setFotoZoom(null)}
+            className="absolute right-4 top-4 rounded-full bg-white/90 p-1.5 text-black shadow-lg">
+            <i className="ti ti-x text-lg" />
+          </button>
+        </div>
+      )}
     </>
   );
 }
