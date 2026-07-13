@@ -18,6 +18,7 @@ export default function PosPerhiasan() {
   const [userRole, setUserRole] = useState<string>("kasir");
   const [userName, setUserName] = useState<string>("Kasir");
   const [riwayat, setRiwayat] = useState<any[]>([]);
+  const [editSpot, setEditSpot] = useState<string | null>(null);
 
   // Fetch user role & spot price
   useEffect(() => {
@@ -209,33 +210,58 @@ export default function PosPerhiasan() {
         </div>
       </div>
 
-      {/* Spot price bar — editable hanya admin */}
+      {/* Spot price bar — kartu bursa (editable hanya admin) */}
       <div className="mb-5 flex gap-2.5 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
-        {Object.values(LOGAM).map((l) => (
-          <div key={l.id} className="t-elev-sm min-w-[124px] flex-shrink-0 rounded-xl border border-white/5 p-2.5"
-            style={{ background: l.bg, color: l.textColor }}>
-            <div className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-wide opacity-80" style={{ color: l.accent }}>
-              <i className="ti ti-circle-filled text-[6px]" />
-              {l.nama.split(" ")[0]}<span className="opacity-60">/gram</span>
-            </div>
-            {userRole === "admin" ? (
-              <input type="number" value={spot[l.id]}
-                onChange={(e) => {
-                  const val = Number(e.target.value)
-                  if (val > 0 && val < 100_000_000) simpanSpot(l.id, val)
-                }}
-                className="w-full bg-transparent text-xs font-medium outline-none"
-                style={{ color: l.textColor }} />
-            ) : (
-              <div className="text-xs font-medium" style={{ color: l.textColor }}>
-                {formatIDR(spot[l.id])}
+        {Object.values(LOGAM).map((l) => {
+          const editing = userRole === "admin" && editSpot === l.id;
+          const simpan = () => { simpanSpot(l.id, spot[l.id]); setEditSpot(null); };
+          return (
+            <div key={l.id} className="t-elev-sm relative min-w-[148px] flex-shrink-0 overflow-hidden rounded-xl border border-white/5 p-3"
+              style={{ background: l.bg, color: l.textColor }}>
+              {/* aksen tepi kiri */}
+              <span className="absolute inset-y-0 left-0 w-[3px]" style={{ background: l.accent }} />
+              {/* header: swatch + nama + pensil */}
+              <div className="mb-1.5 flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider" style={{ color: l.accent }}>
+                  <span className="inline-block h-2 w-2 rounded-full" style={{ background: l.accent, boxShadow: `0 0 6px ${l.accent}` }} />
+                  {l.nama.split(" ")[0]}
+                </div>
+                {userRole === "admin" && (
+                  <button onClick={() => (editing ? simpan() : setEditSpot(l.id))}
+                    className="rounded p-0.5 opacity-55 transition hover:opacity-100"
+                    title={editing ? "Simpan" : "Ubah harga"}>
+                    <i className={`ti ${editing ? "ti-check" : "ti-pencil"} text-[12px]`} style={{ color: editing ? l.accent : l.textColor }} />
+                  </button>
+                )}
               </div>
-            )}
-            {userRole !== "admin" && (
-              <div className="text-[8px] opacity-50 mt-0.5">hanya admin</div>
-            )}
-          </div>
-        ))}
+              {/* harga */}
+              {editing ? (
+                <div className="flex items-baseline gap-1" style={{ color: l.textColor }}>
+                  <span className="text-[11px] opacity-70">Rp</span>
+                  <input
+                    autoFocus
+                    inputMode="numeric"
+                    value={spot[l.id].toLocaleString("id-ID")}
+                    onChange={(e) => {
+                      const val = Number(e.target.value.replace(/\D/g, ""));
+                      if (val >= 0 && val < 100_000_000) setSpot((s) => ({ ...s, [l.id]: val }));
+                    }}
+                    onBlur={simpan}
+                    onKeyDown={(e) => { if (e.key === "Enter") simpan(); }}
+                    className="spot-input w-full font-semibold tabular-nums tracking-tight"
+                    style={{ color: l.textColor }}
+                  />
+                </div>
+              ) : (
+                <div className="text-lg font-semibold tabular-nums tracking-tight" style={{ color: l.textColor }}>
+                  {formatIDR(spot[l.id])}
+                </div>
+              )}
+              {/* subtitle */}
+              <div className="mt-0.5 text-[9px] opacity-55">per gram</div>
+            </div>
+          );
+        })}
       </div>
 
       {mode === "jual" && (

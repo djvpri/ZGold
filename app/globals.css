@@ -125,6 +125,25 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 22%, transparent);
 }
 
+/* Editor harga spot — menyatu dengan kartu logam gelap
+   (override aturan input global agar tidak jadi kotak putih). */
+.spot-input {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1.5px solid transparent !important;
+  border-radius: 0 !important;
+  color: inherit !important;
+  font-size: 1.125rem !important;   /* = text-lg, tetap >=16px agar tak auto-zoom di iOS */
+  line-height: 1.4 !important;
+  padding: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.spot-input:focus {
+  border-bottom-color: var(--gold) !important;
+  box-shadow: none !important;
+}
+
 ::selection { background: color-mix(in srgb, var(--gold) 30%, transparent); }
 
 * { -webkit-tap-highlight-color: transparent; }
