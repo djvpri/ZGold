@@ -25,6 +25,26 @@ function daysAgo(n) { const d = new Date(now); d.setDate(d.getDate() - n); d.set
 const JENIS = ['Cincin', 'Kalung', 'Gelang', 'Anting', 'Liontin', 'Cincin Kawin']
 const NAMA_PIHAK = ['Ibu Sari', 'Bpk Andi', 'Ibu Dewi', 'Bpk Hendra', 'Ibu Ratna', 'Bpk Budi', 'Ibu Maya', 'Bpk Eko', 'Ibu Citra', 'Bpk Rizky']
 
+// Warna aksen per logam (samakan dengan lib/logam.ts)
+const LOGAM_COLOR = { emas: '#B8860B', perak: '#708090', platinum: '#5B6675', emasputih: '#A9A9A9', palladium: '#7B68EE' }
+
+// Foto dummy self-contained (SVG data-URL) — tanpa host/internet, aman utk PWA.
+function fotoDummy(logamId, metalNama, kadarLabel, jenis) {
+  const c = LOGAM_COLOR[logamId] || '#B8860B'
+  const metal = String(metalNama || '').replace(/\s*\(.*\)/, '').trim()
+  const svg =
+    `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300'>` +
+    `<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>` +
+    `<stop offset='0' stop-color='#141210'/><stop offset='1' stop-color='${c}'/>` +
+    `</linearGradient></defs>` +
+    `<rect width='400' height='300' fill='url(#g)'/>` +
+    `<text x='200' y='150' font-family='Georgia, serif' font-size='110' fill='#ffffff' fill-opacity='0.92' text-anchor='middle' dominant-baseline='central'>◆</text>` +
+    `<text x='200' y='215' font-family='Arial, sans-serif' font-size='26' font-weight='bold' fill='#ffffff' fill-opacity='0.95' text-anchor='middle'>${jenis}</text>` +
+    `<text x='200' y='245' font-family='Arial, sans-serif' font-size='17' fill='#ffffff' fill-opacity='0.8' text-anchor='middle'>${metal} ${kadarLabel}</text>` +
+    `</svg>`
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg)
+}
+
 async function main() {
   // 1. Toko target
   let rows = await q(`SELECT id, nama_toko FROM tenants WHERE lower(owner_email) = lower($1) LIMIT 1`, [DEMO_EMAIL])
@@ -53,12 +73,16 @@ async function main() {
   for (let i = 0; i < 15; i++) {
     const l = pick(logamPunyaKadar.length ? logamPunyaKadar : logam)
     const k = pick(kadarByLogam[l.id] || kadar)
+    const jenis = pick(JENIS)
     const berat = (Math.random() * 9 + 1).toFixed(2) // 1–10 gram
     const ongkos = Number(l.ongkos_default) || rint(20, 80) * 1000
+    const nama = `${jenis} ${l.nama} ${k.label}`
+    // ~1 dari 5 produk sengaja tanpa foto untuk mendemokan placeholder fallback
+    const foto = i % 5 === 4 ? null : fotoDummy(l.id, l.nama, k.label, jenis)
     await q(
-      `INSERT INTO produk (kode, logam_id, kadar_id, jenis, nama, berat_gram, ongkos_cetak, stok, tenant_id)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
-      [`PRD-${tenantId}-${base}-${i}`, l.id, k.id, pick(JENIS), `${pick(JENIS)} ${l.nama} ${k.label}`, berat, ongkos, rint(1, 5), tenantId]
+      `INSERT INTO produk (kode, logam_id, kadar_id, jenis, nama, berat_gram, ongkos_cetak, stok, tenant_id, foto_url)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+      [`PRD-${tenantId}-${base}-${i}`, l.id, k.id, jenis, nama, berat, ongkos, rint(1, 5), tenantId, foto]
     )
     produkCount++
   }
