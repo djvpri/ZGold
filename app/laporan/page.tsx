@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
-import BrandMark from "@/components/BrandMark";
+import AppShell from "@/components/AppShell";
 
 function formatIDR(n: number | string | null | undefined) {
   const num = typeof n === "string" ? parseFloat(n) : Number(n ?? 0);
@@ -44,17 +44,12 @@ const LOGAM_COLORS: Record<string, string> = {
 };
 
 export default function LaporanPage() {
-  const { user, tenant, loading, logout } = useAuth();
+  const { user, tenant } = useAuth();
   const router = useRouter();
   const [data, setData] = useState<LaporanData | null>(null);
   const [preset, setPreset] = useState<Preset>("30days");
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
-  const [showSidebar, setShowSidebar] = useState(false);
-
-  useEffect(() => {
-    if (!loading && !user) router.push("/landing");
-  }, [user, loading, router]);
 
   useEffect(() => {
     fetchLaporan();
@@ -168,91 +163,11 @@ export default function LaporanPage() {
     doc.save(`laporan_${from}_${to}.pdf`);
   }
 
-  if (loading || !user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center t-bg-base">
-        <div className="text-center">
-          <BrandMark className="mx-auto mb-3 h-12 w-12 text-2xl animate-pulse" />
-          <p className="text-[10px] tracking-widest uppercase t-text-3">Memuat</p>
-        </div>
-      </div>
-    );
-  }
-
-  const navItems = [
-    { id: "dashboard", icon: "ti-dashboard", label: "Dashboard", href: "/dashboard" },
-    { id: "pos", icon: "ti-point-of-sale", label: "POS", href: "/" },
-    { id: "laporan", icon: "ti-chart-bar", label: "Laporan" },
-  ];
+  if (!user) return null;
 
   return (
-    <div className="min-h-screen t-bg-base t-text-1">
-      {/* Mobile header */}
-      <div className="flex items-center justify-between border-b t-border px-3 py-2 sm:hidden">
-        <button onClick={() => setShowSidebar(!showSidebar)} className="rounded p-1 t-text-3 t-bg-hover">
-          <i className="ti ti-menu-2 text-lg" />
-        </button>
-        <span className="text-xs font-medium">Laporan Penjualan</span>
-        <button onClick={() => router.push("/")} className="rounded p-1 t-text-3 t-bg-hover">
-          <i className="ti ti-point-of-sale text-lg" />
-        </button>
-      </div>
-
-      {/* Sidebar overlay (mobile) */}
-      {showSidebar && (
-        <div className="fixed inset-0 z-40 bg-black/50 sm:hidden" onClick={() => setShowSidebar(false)} />
-      )}
-
-      {/* Sidebar */}
-      <div className={`fixed left-0 top-0 z-50 h-full w-56 border-r t-border t-bg-base p-3 transition-transform sm:translate-x-0 ${showSidebar ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="mb-6 hidden items-center gap-2.5 sm:flex">
-          <BrandMark className="h-8 w-8 text-base" />
-          <span className="font-display truncate text-base font-semibold">{tenant?.nama_toko ?? "Zomet POS"}</span>
-        </div>
-        <div className="mb-4 flex items-center justify-between sm:hidden">
-          <div className="flex items-center gap-2.5">
-            <BrandMark className="h-8 w-8 text-base" />
-            <span className="font-display text-base font-semibold">Menu</span>
-          </div>
-          <button onClick={() => setShowSidebar(false)} className="rounded p-1 t-text-3">
-            <i className="ti ti-x text-lg" />
-          </button>
-        </div>
-        <nav className="space-y-1">
-          {navItems.map((item) =>
-            item.href ? (
-              <button
-                key={item.id}
-                onClick={() => { setShowSidebar(false); router.push(item.href!); }}
-                className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs t-text-3 t-bg-hover transition"
-              >
-                <i className={`ti ${item.icon} text-sm`} />
-                {item.label}
-              </button>
-            ) : (
-              <button
-                key={item.id}
-                onClick={() => setShowSidebar(false)}
-                className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 t-gold-soft text-xs font-medium t-gold"
-              >
-                <i className={`ti ${item.icon} text-sm`} />
-                {item.label}
-              </button>
-            )
-          )}
-        </nav>
-        <div className="absolute bottom-3 left-3 right-3">
-          <button
-            onClick={logout}
-            className="flex w-full items-center rounded-lg px-2.5 py-2 text-left text-[10px] t-text-3 t-bg-hover transition"
-          >
-            <i className="ti ti-logout mr-1" /> Keluar
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="p-3 sm:ml-56 sm:p-6">
+    <AppShell>
+      <div className="p-3 sm:p-6">
         <h1 className="font-display mb-1 flex items-center gap-2 text-2xl font-semibold sm:text-3xl">
           <i className="ti ti-chart-bar t-gold text-xl" />
           Laporan Penjualan
@@ -404,7 +319,7 @@ export default function LaporanPage() {
           </div>
         )}
       </div>
-    </div>
+    </AppShell>
   );
 }
 

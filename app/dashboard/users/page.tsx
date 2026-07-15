@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
-import BrandMark from "@/components/BrandMark";
 
 interface UserData {
   id: number;
@@ -29,7 +28,6 @@ export default function UsersPage() {
   const { user, tenant, loading, logout } = useAuth();
   const router = useRouter();
   const [users, setUsers] = useState<UserData[]>([]);
-  const [showSidebar, setShowSidebar] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState<UserData | null>(null);
   const [form, setForm] = useState({ email: "", password: "", nama: "", role: "kasir" });
@@ -157,92 +155,10 @@ export default function UsersPage() {
     }
   }
 
-  if (loading || !user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center t-bg-base">
-        <div className="text-center">
-          <BrandMark className="mx-auto mb-3 h-12 w-12 text-2xl animate-pulse" />
-          <p className="text-[10px] tracking-widest uppercase t-text-3">Memuat</p>
-        </div>
-      </div>
-    );
-  }
-
-  const navItems = [
-    { id: "dashboard", icon: "ti-dashboard", label: "Dashboard", href: "/dashboard" },
-    { id: "pos", icon: "ti-point-of-sale", label: "POS", href: "/" },
-    { id: "laporan", icon: "ti-chart-bar", label: "Laporan", href: "/laporan" },
-    { id: "users", icon: "ti-users", label: "Kelola Kasir" },
-  ];
+  if (!user) return null;
 
   return (
-    <div className="min-h-screen t-bg-base t-text-1">
-      {/* Mobile header */}
-      <div className="flex items-center justify-between border-b t-border px-3 py-2 sm:hidden">
-        <button onClick={() => setShowSidebar(!showSidebar)} className="rounded p-1 t-text-3 t-bg-hover">
-          <i className="ti ti-menu-2 text-lg" />
-        </button>
-        <span className="text-xs font-medium">Kelola Kasir</span>
-        <button onClick={() => router.push("/")} className="rounded p-1 t-text-3 t-bg-hover">
-          <i className="ti ti-point-of-sale text-lg" />
-        </button>
-      </div>
-
-      {/* Sidebar overlay (mobile) */}
-      {showSidebar && (
-        <div className="fixed inset-0 z-40 bg-black/50 sm:hidden" onClick={() => setShowSidebar(false)} />
-      )}
-
-      {/* Sidebar */}
-      <div className={`fixed left-0 top-0 z-50 h-full w-56 border-r t-border t-bg-base p-3 transition-transform sm:translate-x-0 ${showSidebar ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="mb-6 hidden items-center gap-2.5 sm:flex">
-          <BrandMark className="h-8 w-8 text-base" />
-          <span className="font-display truncate text-base font-semibold">{tenant?.nama_toko ?? "Zomet POS"}</span>
-        </div>
-        <div className="mb-4 flex items-center justify-between sm:hidden">
-          <div className="flex items-center gap-2.5">
-            <BrandMark className="h-8 w-8 text-base" />
-            <span className="font-display text-base font-semibold">Menu</span>
-          </div>
-          <button onClick={() => setShowSidebar(false)} className="rounded p-1 t-text-3">
-            <i className="ti ti-x text-lg" />
-          </button>
-        </div>
-        <nav className="space-y-1">
-          {navItems.map((item) =>
-            item.href ? (
-              <button
-                key={item.id}
-                onClick={() => { setShowSidebar(false); router.push(item.href!); }}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-xs t-text-3 t-bg-hover hover:t-text-2"
-              >
-                <i className={`ti ${item.icon} text-sm`} />
-                {item.label}
-              </button>
-            ) : (
-              <button
-                key={item.id}
-                onClick={() => setShowSidebar(false)}
-                className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 t-gold-soft text-xs font-medium t-gold"
-              >
-                <i className={`ti ${item.icon} text-sm`} />
-                {item.label}
-              </button>
-            )
-          )}
-        </nav>
-        <div className="absolute bottom-3 left-3 right-3">
-          <button
-            onClick={logout}
-            className="w-full rounded-md px-2 py-1.5 text-left text-[10px] t-text-4 t-bg-hover hover:t-text-2"
-          >
-            <i className="ti ti-logout mr-1" /> Keluar
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="p-3 sm:ml-56 sm:p-6">
+    <div className="p-3 sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           <h1 className="font-display flex items-center gap-2 text-2xl font-semibold sm:text-3xl">
             <i className="ti ti-users t-gold text-xl" />
