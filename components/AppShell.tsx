@@ -13,12 +13,19 @@ const NAV_ITEMS = [
 ];
 
 const PAGE_TITLES: Record<string, string> = {
+  "/": "Kasir",
   "/dashboard": "Dashboard",
   "/dashboard/users": "Kelola Kasir",
   "/laporan": "Laporan Penjualan",
 };
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
+export default function AppShell({
+  children,
+  hideMobileHeader,
+}: {
+  children: React.ReactNode;
+  hideMobileHeader?: boolean;
+}) {
   const { user, tenant, loading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -55,7 +62,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen t-bg-base t-text-1 safe-top safe-bottom">
       {/* Mobile header */}
-      <div className="flex items-center justify-between border-b t-border px-3 py-2 sm:hidden">
+      {!hideMobileHeader && <div className="flex items-center justify-between border-b t-border px-3 py-2 sm:hidden">
         <button
           onClick={() => setShowSidebar(!showSidebar)}
           className="rounded p-1 t-text-3 t-bg-hover"
@@ -66,7 +73,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <button onClick={() => router.push("/")} className="rounded p-1 t-text-3 t-bg-hover">
           <i className="ti ti-point-of-sale text-lg" />
         </button>
-      </div>
+      </div>}
 
       {/* Sidebar overlay (mobile) */}
       {showSidebar && (
